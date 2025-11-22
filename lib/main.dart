@@ -8,7 +8,12 @@ import 'package:traffic_app/theme/app_theme.dart';
 
 void main() {
   runApp(
-    DevicePreview(enabled: !kReleaseMode, builder: (context) => const MyApp()),
+    kIsWeb
+        ? DevicePreview(
+            enabled: !kReleaseMode,
+            builder: (context) => const MyApp(),
+          )
+        : const MyApp(),
   );
 }
 

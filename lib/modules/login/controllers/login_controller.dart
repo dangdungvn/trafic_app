@@ -1,11 +1,17 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class LoginController extends GetxController {
-  var isPasswordVisible = false.obs;
   var rememberMe = false.obs;
 
-  void togglePasswordVisibility() {
-    isPasswordVisible.value = !isPasswordVisible.value;
+  final emailFocusNode = FocusNode();
+  final passwordFocusNode = FocusNode();
+
+  @override
+  void onClose() {
+    emailFocusNode.dispose();
+    passwordFocusNode.dispose();
+    super.onClose();
   }
 
   void toggleRememberMe(bool? value) {

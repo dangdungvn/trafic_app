@@ -3,21 +3,21 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:traffic_app/modules/login/controllers/login_controller.dart';
+import 'package:traffic_app/modules/signup/controllers/signup_controller.dart';
 import 'package:traffic_app/theme/app_theme.dart';
 import 'package:traffic_app/widgets/custom_text_field.dart';
 import 'package:traffic_app/widgets/primary_button.dart';
 import 'package:traffic_app/widgets/social_button.dart';
+import 'package:traffic_app/widgets/custom_dropdown.dart';
 
-import 'package:traffic_app/routes/app_pages.dart';
-
-class LoginScreen extends GetView<LoginController> {
-  const LoginScreen({super.key});
+class SignupScreen extends GetView<SignupController> {
+  const SignupScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
+
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).unfocus();
@@ -25,14 +25,14 @@ class LoginScreen extends GetView<LoginController> {
         child: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
-              padding: .symmetric(horizontal: 24.w),
+              padding: EdgeInsets.symmetric(horizontal: 24.w),
               child: Column(
                 crossAxisAlignment: .start,
                 children: [
                   SizedBox(height: 40.h),
                   // Title
                   Text(
-                    'Đăng nhập',
+                    'Đăng ký tài khoản',
                     style: GoogleFonts.urbanist(
                       fontSize: 44.sp,
                       fontWeight: FontWeight.w700,
@@ -42,7 +42,16 @@ class LoginScreen extends GetView<LoginController> {
                   ),
                   SizedBox(height: 40.h),
 
-                  // Email Input
+                  // Full Name
+                  CustomTextField(
+                    hintText: 'Họ và tên',
+                    prefixIcon: FontAwesomeIcons.userPen,
+                    focusNode: controller.nameFocusNode,
+                    textInputAction: TextInputAction.next,
+                  ),
+                  SizedBox(height: 16.h),
+
+                  // Email
                   CustomTextField(
                     hintText: 'Email',
                     prefixIcon: FontAwesomeIcons.solidEnvelope,
@@ -50,17 +59,61 @@ class LoginScreen extends GetView<LoginController> {
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
                   ),
-                  SizedBox(height: 24.h),
+                  SizedBox(height: 16.h),
 
-                  // Password Input
+                  // Phone
+                  CustomTextField(
+                    hintText: 'Số điện thoại',
+                    prefixIcon: FontAwesomeIcons.phone,
+                    focusNode: controller.phoneFocusNode,
+                    keyboardType: TextInputType.phone,
+                    textInputAction: TextInputAction.next,
+                  ),
+                  SizedBox(height: 16.h),
+
+                  // Province Dropdown
+                  Obx(
+                    () => CustomDropdown<Map<String, dynamic>>(
+                      hintText: 'Tỉnh/Thành phố',
+                      prefixIcon: FontAwesomeIcons.mapLocationDot,
+                      value: controller.selectedProvince.value,
+                      items: controller.provinces,
+                      itemLabel: (item) => item['name'],
+                      onChanged: (value) {
+                        controller.selectedProvince.value = value;
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
+
+                  // Address
+                  CustomTextField(
+                    hintText: 'Địa chỉ cụ thể',
+                    prefixIcon: FontAwesomeIcons.locationDot,
+                    focusNode: controller.addressFocusNode,
+                    textInputAction: TextInputAction.next,
+                  ),
+                  SizedBox(height: 16.h),
+
+                  // Password
                   CustomTextField(
                     hintText: 'Mật khẩu',
                     prefixIcon: FontAwesomeIcons.lock,
                     isPassword: true,
                     focusNode: controller.passwordFocusNode,
+                    textInputAction: TextInputAction.next,
+                  ),
+                  SizedBox(height: 16.h),
+
+                  // Confirm Password
+                  CustomTextField(
+                    hintText: 'Nhập lại mật khẩu',
+                    prefixIcon: FontAwesomeIcons.lock,
+                    isPassword: true,
+                    focusNode: controller.confirmPasswordFocusNode,
                     textInputAction: TextInputAction.done,
                   ),
-                  SizedBox(height: 24.h),
+                  SizedBox(height: 20.h),
 
                   // Remember Me
                   Row(
@@ -90,32 +143,16 @@ class LoginScreen extends GetView<LoginController> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 24.h),
+                  SizedBox(height: 20.h),
 
-                  // Login Button
+                  // Signup Button
                   PrimaryButton(
-                    text: 'Đăng nhập',
+                    text: 'Đăng ký',
                     onPressed: () {
-                      // Handle login
+                      // Handle signup
                     },
                   ),
-                  SizedBox(height: 24.h),
-
-                  // Forgot Password
-                  Center(
-                    child: TextButton(
-                      onPressed: () {},
-                      child: Text(
-                        'Quên mật khẩu?',
-                        style: GoogleFonts.urbanist(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w600,
-                          color: AppTheme.primaryColor,
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 40.h),
+                  SizedBox(height: 20.h),
 
                   // Divider
                   Row(
@@ -129,7 +166,7 @@ class LoginScreen extends GetView<LoginController> {
                       Padding(
                         padding: .symmetric(horizontal: 16.w),
                         child: Text(
-                          'Hoặc đăng nhập với',
+                          'Hoặc đăng ký với',
                           style: GoogleFonts.urbanist(
                             fontSize: 18.sp,
                             fontWeight: FontWeight.w600,
@@ -152,7 +189,7 @@ class LoginScreen extends GetView<LoginController> {
                     mainAxisAlignment: .center,
                     children: [
                       SocialButton(
-                        icon: FontAwesomeIcons.facebook,
+                        icon: FontAwesomeIcons.facebookF,
                         color: const Color(0xFF1877F2),
                         onPressed: () {},
                       ),
@@ -172,12 +209,12 @@ class LoginScreen extends GetView<LoginController> {
                   ),
                   SizedBox(height: 40.h),
 
-                  // Sign Up
+                  // Login Link
                   Row(
                     mainAxisAlignment: .center,
                     children: [
                       Text(
-                        'Đăng ký tài khoản mới? ',
+                        'Đã có tài khoản? ',
                         style: GoogleFonts.urbanist(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w400,
@@ -185,9 +222,9 @@ class LoginScreen extends GetView<LoginController> {
                         ),
                       ),
                       GestureDetector(
-                        onTap: () => Get.offNamed(Routes.SIGNUP),
+                        onTap: controller.goToLogin,
                         child: Text(
-                          'Đăng ký',
+                          'Đăng nhập',
                           style: GoogleFonts.urbanist(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w600,

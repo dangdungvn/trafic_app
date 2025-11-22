@@ -17,7 +17,12 @@ class AppTheme {
       colorScheme: ColorScheme.fromSeed(
         seedColor: primaryColor,
         primary: primaryColor,
-        background: backgroundColor,
+        surface: backgroundColor,
+      ),
+      textSelectionTheme: const TextSelectionThemeData(
+        cursorColor: primaryColor,
+        selectionColor: Color(0x334D5DFA), // primaryColor with ~0.2 opacity
+        selectionHandleColor: primaryColor,
       ),
       textTheme: GoogleFonts.urbanistTextTheme(),
     );
