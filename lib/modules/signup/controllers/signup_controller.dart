@@ -46,7 +46,7 @@ class SignupController extends GetxController {
           .toList();
       provinces.assignAll(mappedData);
     } catch (e) {
-      print('Error loading provinces: $e');
+      debugPrint('Error loading provinces: $e');
     }
   }
 
