@@ -32,7 +32,7 @@ class SignupScreen extends GetView<SignupController> {
                   SizedBox(height: 40.h),
                   // Title
                   Text(
-                    'Đăng ký tài khoản',
+                    'signup_title'.tr,
                     style: GoogleFonts.urbanist(
                       fontSize: 44.sp,
                       fontWeight: FontWeight.w700,
@@ -44,7 +44,7 @@ class SignupScreen extends GetView<SignupController> {
 
                   // Full Name
                   CustomTextField(
-                    hintText: 'Họ và tên',
+                    hintText: 'full_name'.tr,
                     prefixIcon: FontAwesomeIcons.userPen,
                     focusNode: controller.nameFocusNode,
                     textInputAction: TextInputAction.next,
@@ -53,7 +53,7 @@ class SignupScreen extends GetView<SignupController> {
 
                   // Email
                   CustomTextField(
-                    hintText: 'Email',
+                    hintText: 'email'.tr,
                     prefixIcon: FontAwesomeIcons.solidEnvelope,
                     focusNode: controller.emailFocusNode,
                     keyboardType: TextInputType.emailAddress,
@@ -63,7 +63,7 @@ class SignupScreen extends GetView<SignupController> {
 
                   // Phone
                   CustomTextField(
-                    hintText: 'Số điện thoại',
+                    hintText: 'phone_number'.tr,
                     prefixIcon: FontAwesomeIcons.phone,
                     focusNode: controller.phoneFocusNode,
                     keyboardType: TextInputType.phone,
@@ -74,7 +74,8 @@ class SignupScreen extends GetView<SignupController> {
                   // Province Dropdown
                   Obx(
                     () => CustomDropdown<Map<String, dynamic>>(
-                      hintText: 'Tỉnh/Thành phố',
+                      key: ValueKey(controller.provinces.length),
+                      hintText: 'province_city'.tr,
                       prefixIcon: FontAwesomeIcons.mapLocationDot,
                       value: controller.selectedProvince.value,
                       items: controller.provinces,
@@ -84,20 +85,20 @@ class SignupScreen extends GetView<SignupController> {
                       },
                     ),
                   ),
-                  SizedBox(height: 16.h),
+                  // SizedBox(height: 16.h),
 
-                  // Address
-                  CustomTextField(
-                    hintText: 'Địa chỉ cụ thể',
-                    prefixIcon: FontAwesomeIcons.locationDot,
-                    focusNode: controller.addressFocusNode,
-                    textInputAction: TextInputAction.next,
-                  ),
+                  // // Address
+                  // CustomTextField(
+                  //   hintText: 'Địa chỉ cụ thể',
+                  //   prefixIcon: FontAwesomeIcons.locationDot,
+                  //   focusNode: controller.addressFocusNode,
+                  //   textInputAction: TextInputAction.next,
+                  // ),
                   SizedBox(height: 16.h),
 
                   // Password
                   CustomTextField(
-                    hintText: 'Mật khẩu',
+                    hintText: 'password'.tr,
                     prefixIcon: FontAwesomeIcons.lock,
                     isPassword: true,
                     focusNode: controller.passwordFocusNode,
@@ -107,7 +108,7 @@ class SignupScreen extends GetView<SignupController> {
 
                   // Confirm Password
                   CustomTextField(
-                    hintText: 'Nhập lại mật khẩu',
+                    hintText: 'confirm_password'.tr,
                     prefixIcon: FontAwesomeIcons.lock,
                     isPassword: true,
                     focusNode: controller.confirmPasswordFocusNode,
@@ -134,7 +135,7 @@ class SignupScreen extends GetView<SignupController> {
                         ),
                       ),
                       Text(
-                        'Ghi nhớ mật khẩu',
+                        'remember_password'.tr,
                         style: GoogleFonts.urbanist(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w600,
@@ -147,7 +148,7 @@ class SignupScreen extends GetView<SignupController> {
 
                   // Signup Button
                   PrimaryButton(
-                    text: 'Đăng ký',
+                    text: 'signup_button'.tr,
                     onPressed: () {
                       // Handle signup
                     },
@@ -166,7 +167,7 @@ class SignupScreen extends GetView<SignupController> {
                       Padding(
                         padding: .symmetric(horizontal: 16.w),
                         child: Text(
-                          'Hoặc đăng ký với',
+                          'or_signup_with'.tr,
                           style: GoogleFonts.urbanist(
                             fontSize: 18.sp,
                             fontWeight: FontWeight.w600,
@@ -214,7 +215,7 @@ class SignupScreen extends GetView<SignupController> {
                     mainAxisAlignment: .center,
                     children: [
                       Text(
-                        'Đã có tài khoản? ',
+                        'already_have_account'.tr,
                         style: GoogleFonts.urbanist(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w400,
@@ -224,7 +225,7 @@ class SignupScreen extends GetView<SignupController> {
                       GestureDetector(
                         onTap: controller.goToLogin,
                         child: Text(
-                          'Đăng nhập',
+                          'login_link'.tr,
                           style: GoogleFonts.urbanist(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w600,

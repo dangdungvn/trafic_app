@@ -1,0 +1,20 @@
+{
+  "signup_title": "Đăng ký tài khoản",
+  "full_name": "Họ và tên",
+  "email": "Email",
+  "phone_number": "Số điện thoại",
+  "province_city": "Tỉnh/Thành phố",
+  "password": "Mật khẩu",
+  "confirm_password": "Nhập lại mật khẩu",
+  "remember_password": "Ghi nhớ mật khẩu",
+  "signup_button": "Đăng ký",
+  "or_signup_with": "Hoặc đăng ký với",
+  "already_have_account": "Đã có tài khoản? ",
+  "login_link": "Đăng nhập",
+  "login_title": "Đăng nhập",
+  "login_button": "Đăng nhập",
+  "forgot_password": "Quên mật khẩu?",
+  "or_login_with": "Hoặc đăng nhập với",
+  "register_new_account": "Đăng ký tài khoản mới? ",
+  "signup_link": "Đăng ký"
+}

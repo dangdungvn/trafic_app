@@ -15,7 +15,7 @@ class SignupController extends GetxController {
   final nameFocusNode = FocusNode();
   final passwordFocusNode = FocusNode();
   final phoneFocusNode = FocusNode();
-  final addressFocusNode = FocusNode();
+  // final addressFocusNode = FocusNode();
   final confirmPasswordFocusNode = FocusNode();
 
   @override
@@ -30,7 +30,7 @@ class SignupController extends GetxController {
     nameFocusNode.dispose();
     passwordFocusNode.dispose();
     phoneFocusNode.dispose();
-    addressFocusNode.dispose();
+    // addressFocusNode.dispose();
     confirmPasswordFocusNode.dispose();
     super.onClose();
   }
@@ -41,7 +41,10 @@ class SignupController extends GetxController {
         'assets/json/provinces.json',
       );
       final List<dynamic> data = json.decode(response);
-      provinces.value = data.cast<Map<String, dynamic>>();
+      final List<Map<String, dynamic>> mappedData = data
+          .map((e) => Map<String, dynamic>.from(e))
+          .toList();
+      provinces.assignAll(mappedData);
     } catch (e) {
       print('Error loading provinces: $e');
     }

@@ -4,9 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:traffic_app/routes/app_pages.dart';
+import 'package:traffic_app/services/localization_service.dart';
 import 'package:traffic_app/theme/app_theme.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await LocalizationService.init();
   runApp(
     kIsWeb
         ? DevicePreview(
@@ -36,6 +39,9 @@ class MyApp extends StatelessWidget {
           theme: AppTheme.lightTheme,
           initialRoute: AppPages.INITIAL,
           getPages: AppPages.routes,
+          translations: LocalizationService(),
+          locale: LocalizationService.locale,
+          fallbackLocale: LocalizationService.fallbackLocale,
         );
       },
     );

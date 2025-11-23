@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:traffic_app/modules/login/controllers/login_controller.dart';
+import 'package:traffic_app/services/localization_service.dart';
 import 'package:traffic_app/theme/app_theme.dart';
 import 'package:traffic_app/widgets/custom_text_field.dart';
 import 'package:traffic_app/widgets/primary_button.dart';
@@ -30,9 +31,32 @@ class LoginScreen extends GetView<LoginController> {
                 crossAxisAlignment: .start,
                 children: [
                   SizedBox(height: 40.h),
+                  // Language Switcher (Temporary for testing)
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () {
+                        if (Get.locale?.languageCode == 'vi') {
+                          LocalizationService.changeLocale('English');
+                        } else {
+                          LocalizationService.changeLocale('Tiếng Việt');
+                        }
+                      },
+                      child: Text(
+                        Get.locale?.languageCode == 'vi'
+                            ? 'English'
+                            : 'Tiếng Việt',
+                        style: GoogleFonts.urbanist(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.primaryColor,
+                        ),
+                      ),
+                    ),
+                  ),
                   // Title
                   Text(
-                    'Đăng nhập',
+                    'login_title'.tr,
                     style: GoogleFonts.urbanist(
                       fontSize: 44.sp,
                       fontWeight: FontWeight.w700,
@@ -44,7 +68,7 @@ class LoginScreen extends GetView<LoginController> {
 
                   // Email Input
                   CustomTextField(
-                    hintText: 'Email',
+                    hintText: 'email'.tr,
                     prefixIcon: FontAwesomeIcons.solidEnvelope,
                     focusNode: controller.emailFocusNode,
                     keyboardType: TextInputType.emailAddress,
@@ -54,7 +78,7 @@ class LoginScreen extends GetView<LoginController> {
 
                   // Password Input
                   CustomTextField(
-                    hintText: 'Mật khẩu',
+                    hintText: 'password'.tr,
                     prefixIcon: FontAwesomeIcons.lock,
                     isPassword: true,
                     focusNode: controller.passwordFocusNode,
@@ -81,7 +105,7 @@ class LoginScreen extends GetView<LoginController> {
                         ),
                       ),
                       Text(
-                        'Ghi nhớ mật khẩu',
+                        'remember_password'.tr,
                         style: GoogleFonts.urbanist(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w600,
@@ -94,7 +118,7 @@ class LoginScreen extends GetView<LoginController> {
 
                   // Login Button
                   PrimaryButton(
-                    text: 'Đăng nhập',
+                    text: 'login_button'.tr,
                     onPressed: () {
                       // Handle login
                     },
@@ -106,7 +130,7 @@ class LoginScreen extends GetView<LoginController> {
                     child: TextButton(
                       onPressed: () {},
                       child: Text(
-                        'Quên mật khẩu?',
+                        'forgot_password'.tr,
                         style: GoogleFonts.urbanist(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w600,
@@ -129,7 +153,7 @@ class LoginScreen extends GetView<LoginController> {
                       Padding(
                         padding: .symmetric(horizontal: 16.w),
                         child: Text(
-                          'Hoặc đăng nhập với',
+                          'or_login_with'.tr,
                           style: GoogleFonts.urbanist(
                             fontSize: 18.sp,
                             fontWeight: FontWeight.w600,
@@ -177,7 +201,7 @@ class LoginScreen extends GetView<LoginController> {
                     mainAxisAlignment: .center,
                     children: [
                       Text(
-                        'Đăng ký tài khoản mới? ',
+                        'register_new_account'.tr,
                         style: GoogleFonts.urbanist(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w400,
@@ -187,7 +211,7 @@ class LoginScreen extends GetView<LoginController> {
                       GestureDetector(
                         onTap: () => Get.offNamed(Routes.SIGNUP),
                         child: Text(
-                          'Đăng ký',
+                          'signup_link'.tr,
                           style: GoogleFonts.urbanist(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w600,
