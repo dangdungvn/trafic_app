@@ -70,7 +70,7 @@ class LoginScreen extends GetView<LoginController> {
                       // Email Input
                       CustomTextField(
                         hintText: 'username'.tr,
-                        prefixIcon: FontAwesomeIcons.solidEnvelope,
+                        prefixIcon: FontAwesomeIcons.userGear,
                         focusNode: controller.usernameFocusNode,
                         keyboardType: TextInputType.name,
                         textInputAction: TextInputAction.next,

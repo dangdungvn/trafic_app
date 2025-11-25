@@ -45,7 +45,7 @@ class SignupScreen extends GetView<SignupController> {
                   // Username
                   CustomTextField(
                     hintText: 'username'.tr,
-                    prefixIcon: FontAwesomeIcons.user,
+                    prefixIcon: FontAwesomeIcons.userGear,
                     focusNode: controller.usernameFocusNode,
                     controller: controller.usernameController,
                     textInputAction: TextInputAction.next,
@@ -87,7 +87,7 @@ class SignupScreen extends GetView<SignupController> {
                     () => CustomDropdown<Map<String, dynamic>>(
                       key: ValueKey(controller.provinces.length),
                       hintText: 'province_city'.tr,
-                      prefixIcon: FontAwesomeIcons.mapLocationDot,
+                      prefixIcon: FontAwesomeIcons.mapPin,
                       value: controller.selectedProvince.value,
                       items: controller.provinces,
                       itemLabel: (item) => item['name'],
