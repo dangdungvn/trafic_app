@@ -24,7 +24,7 @@ class AppTheme {
         selectionColor: Color(0x334D5DFA), // primaryColor with ~0.2 opacity
         selectionHandleColor: primaryColor,
       ),
-      textTheme: GoogleFonts.urbanistTextTheme(),
+      textTheme: GoogleFonts.quicksandTextTheme(),
     );
   }
 }

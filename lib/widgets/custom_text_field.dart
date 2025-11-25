@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:traffic_app/theme/app_theme.dart';
 
 class CustomTextField extends StatefulWidget {
@@ -85,7 +84,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
               keyboardType: widget.keyboardType,
               textInputAction: widget.textInputAction,
               cursorColor: AppTheme.primaryColor,
-              style: GoogleFonts.urbanist(
+              style: TextStyle(
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w600,
                 color: AppTheme.textColor,
@@ -93,7 +92,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
               decoration: InputDecoration(
                 border: InputBorder.none,
                 hintText: widget.hintText,
-                hintStyle: GoogleFonts.urbanist(
+                hintStyle: TextStyle(
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w400,
                   color: AppTheme.subTextColor,

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:traffic_app/modules/signup/controllers/signup_controller.dart';
 import 'package:traffic_app/theme/app_theme.dart';
 import 'package:traffic_app/widgets/custom_text_field.dart';
@@ -33,7 +32,7 @@ class SignupScreen extends GetView<SignupController> {
                   // Title
                   Text(
                     'signup_title'.tr,
-                    style: GoogleFonts.urbanist(
+                    style: TextStyle(
                       fontSize: 44.sp,
                       fontWeight: FontWeight.w700,
                       color: AppTheme.textColor,
@@ -52,24 +51,24 @@ class SignupScreen extends GetView<SignupController> {
                   SizedBox(height: 16.h),
 
                   // Email
-                  CustomTextField(
-                    hintText: 'email'.tr,
-                    prefixIcon: FontAwesomeIcons.solidEnvelope,
-                    focusNode: controller.emailFocusNode,
-                    keyboardType: TextInputType.emailAddress,
-                    textInputAction: TextInputAction.next,
-                  ),
-                  SizedBox(height: 16.h),
+                  // CustomTextField(
+                  //   hintText: 'email'.tr,
+                  //   prefixIcon: FontAwesomeIcons.solidEnvelope,
+                  //   focusNode: controller.emailFocusNode,
+                  //   keyboardType: TextInputType.emailAddress,
+                  //   textInputAction: TextInputAction.next,
+                  // ),
+                  // SizedBox(height: 16.h),
 
-                  // Phone
-                  CustomTextField(
-                    hintText: 'phone_number'.tr,
-                    prefixIcon: FontAwesomeIcons.phone,
-                    focusNode: controller.phoneFocusNode,
-                    keyboardType: TextInputType.phone,
-                    textInputAction: TextInputAction.next,
-                  ),
-                  SizedBox(height: 16.h),
+                  // // Phone
+                  // CustomTextField(
+                  //   hintText: 'phone_number'.tr,
+                  //   prefixIcon: FontAwesomeIcons.phone,
+                  //   focusNode: controller.phoneFocusNode,
+                  //   keyboardType: TextInputType.phone,
+                  //   textInputAction: TextInputAction.next,
+                  // ),
+                  // SizedBox(height: 16.h),
 
                   // Province Dropdown
                   Obx(
@@ -136,7 +135,7 @@ class SignupScreen extends GetView<SignupController> {
                       ),
                       Text(
                         'remember_password'.tr,
-                        style: GoogleFonts.urbanist(
+                        style: TextStyle(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w600,
                           color: AppTheme.textColor,
@@ -168,7 +167,7 @@ class SignupScreen extends GetView<SignupController> {
                         padding: .symmetric(horizontal: 16.w),
                         child: Text(
                           'or_signup_with'.tr,
-                          style: GoogleFonts.urbanist(
+                          style: TextStyle(
                             fontSize: 18.sp,
                             fontWeight: FontWeight.w600,
                             color: const Color(0xFF616161),
@@ -216,7 +215,7 @@ class SignupScreen extends GetView<SignupController> {
                     children: [
                       Text(
                         'already_have_account'.tr,
-                        style: GoogleFonts.urbanist(
+                        style: TextStyle(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w400,
                           color: AppTheme.subTextColor,
@@ -226,7 +225,7 @@ class SignupScreen extends GetView<SignupController> {
                         onTap: controller.goToLogin,
                         child: Text(
                           'login_link'.tr,
-                          style: GoogleFonts.urbanist(
+                          style: TextStyle(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w600,
                             color: AppTheme.primaryColor,

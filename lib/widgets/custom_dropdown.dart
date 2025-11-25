@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:traffic_app/theme/app_theme.dart';
 
 class CustomDropdown<T> extends StatelessWidget {
@@ -37,7 +36,7 @@ class CustomDropdown<T> extends StatelessWidget {
           leadingIcon: prefixIcon != null
               ? Icon(prefixIcon, color: AppTheme.subTextColor, size: 20.sp)
               : null,
-          textStyle: GoogleFonts.urbanist(
+          textStyle: TextStyle(
             fontSize: 16.sp,
             fontWeight: FontWeight.w600,
             color: AppTheme.textColor,
@@ -45,7 +44,7 @@ class CustomDropdown<T> extends StatelessWidget {
           inputDecorationTheme: InputDecorationTheme(
             filled: true,
             fillColor: AppTheme.inputFillColor,
-            hintStyle: GoogleFonts.urbanist(
+            hintStyle: TextStyle(
               fontSize: 16.sp,
               fontWeight: FontWeight.w400,
               color: AppTheme.subTextColor,
@@ -95,7 +94,7 @@ class CustomDropdown<T> extends StatelessWidget {
               label: itemLabel(item),
               style: ButtonStyle(
                 textStyle: MaterialStateProperty.all(
-                  GoogleFonts.urbanist(
+                  TextStyle(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w500,
                     color: AppTheme.textColor,

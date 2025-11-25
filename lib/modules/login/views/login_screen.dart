@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:traffic_app/modules/login/controllers/login_controller.dart';
 import 'package:traffic_app/services/localization_service.dart';
 import 'package:traffic_app/theme/app_theme.dart';
@@ -46,7 +45,7 @@ class LoginScreen extends GetView<LoginController> {
                         Get.locale?.languageCode == 'vi'
                             ? 'English'
                             : 'Tiếng Việt',
-                        style: GoogleFonts.urbanist(
+                        style: TextStyle(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w600,
                           color: AppTheme.primaryColor,
@@ -57,7 +56,7 @@ class LoginScreen extends GetView<LoginController> {
                   // Title
                   Text(
                     'login_title'.tr,
-                    style: GoogleFonts.urbanist(
+                    style: TextStyle(
                       fontSize: 44.sp,
                       fontWeight: FontWeight.w700,
                       color: AppTheme.textColor,
@@ -106,7 +105,7 @@ class LoginScreen extends GetView<LoginController> {
                       ),
                       Text(
                         'remember_password'.tr,
-                        style: GoogleFonts.urbanist(
+                        style: TextStyle(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w600,
                           color: AppTheme.textColor,
@@ -131,7 +130,7 @@ class LoginScreen extends GetView<LoginController> {
                       onPressed: () {},
                       child: Text(
                         'forgot_password'.tr,
-                        style: GoogleFonts.urbanist(
+                        style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w600,
                           color: AppTheme.primaryColor,
@@ -154,7 +153,7 @@ class LoginScreen extends GetView<LoginController> {
                         padding: .symmetric(horizontal: 16.w),
                         child: Text(
                           'or_login_with'.tr,
-                          style: GoogleFonts.urbanist(
+                          style: TextStyle(
                             fontSize: 18.sp,
                             fontWeight: FontWeight.w600,
                             color: const Color(0xFF616161),
@@ -202,7 +201,7 @@ class LoginScreen extends GetView<LoginController> {
                     children: [
                       Text(
                         'register_new_account'.tr,
-                        style: GoogleFonts.urbanist(
+                        style: TextStyle(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w400,
                           color: AppTheme.subTextColor,
@@ -212,7 +211,7 @@ class LoginScreen extends GetView<LoginController> {
                         onTap: () => Get.offNamed(Routes.SIGNUP),
                         child: Text(
                           'signup_link'.tr,
-                          style: GoogleFonts.urbanist(
+                          style: TextStyle(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w600,
                             color: AppTheme.primaryColor,
