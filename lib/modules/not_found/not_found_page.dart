@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
-import 'package:traffic_app/routes/app_pages.dart';
-import 'package:traffic_app/theme/app_theme.dart';
+
+import '../../routes/app_pages.dart';
+import '../../theme/app_theme.dart';
 
 class NotFoundPage extends StatelessWidget {
   final String animationAsset;

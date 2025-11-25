@@ -2,10 +2,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:traffic_app/data/models/signup_request.dart';
-import 'package:traffic_app/data/repositories/auth_repository.dart';
-import 'package:traffic_app/routes/app_pages.dart';
-import 'package:traffic_app/widgets/custom_dialog.dart';
+
+import '../../../data/models/signup_request.dart';
+import '../../../data/repositories/auth_repository.dart';
+import '../../../routes/app_pages.dart';
+import '../../../widgets/custom_dialog.dart';
 
 class SignupController extends GetxController {
   final AuthRepository _authRepository = AuthRepository();

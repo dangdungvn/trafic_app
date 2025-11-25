@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:traffic_app/data/models/signup_request.dart';
-import 'package:traffic_app/data/services/api_service.dart';
+
+import '../models/signup_request.dart';
+import '../services/api_service.dart';
 
 class AuthRepository {
   final ApiService _apiService = ApiService();

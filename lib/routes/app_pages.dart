@@ -1,8 +1,9 @@
 import 'package:get/get.dart';
-import 'package:traffic_app/modules/login/binding/login_binding.dart';
-import 'package:traffic_app/modules/login/views/login_screen.dart';
-import 'package:traffic_app/modules/signup/bindings/signup_binding.dart';
-import 'package:traffic_app/modules/signup/views/signup_screen.dart';
+
+import '../modules/login/binding/login_binding.dart';
+import '../modules/login/views/login_screen.dart';
+import '../modules/signup/bindings/signup_binding.dart';
+import '../modules/signup/views/signup_screen.dart';
 
 part 'app_routes.dart';
 
