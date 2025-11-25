@@ -41,11 +41,22 @@ class SignupScreen extends GetView<SignupController> {
                   ),
                   SizedBox(height: 40.h),
 
+                  // Username
+                  CustomTextField(
+                    hintText: 'username'.tr,
+                    prefixIcon: FontAwesomeIcons.user,
+                    focusNode: controller.usernameFocusNode,
+                    controller: controller.usernameController,
+                    textInputAction: TextInputAction.next,
+                  ),
+                  SizedBox(height: 16.h),
+
                   // Full Name
                   CustomTextField(
                     hintText: 'full_name'.tr,
                     prefixIcon: FontAwesomeIcons.userPen,
                     focusNode: controller.nameFocusNode,
+                    controller: controller.fullNameController,
                     textInputAction: TextInputAction.next,
                   ),
                   SizedBox(height: 16.h),
@@ -101,6 +112,7 @@ class SignupScreen extends GetView<SignupController> {
                     prefixIcon: FontAwesomeIcons.lock,
                     isPassword: true,
                     focusNode: controller.passwordFocusNode,
+                    controller: controller.passwordController,
                     textInputAction: TextInputAction.next,
                   ),
                   SizedBox(height: 16.h),
@@ -111,6 +123,7 @@ class SignupScreen extends GetView<SignupController> {
                     prefixIcon: FontAwesomeIcons.lock,
                     isPassword: true,
                     focusNode: controller.confirmPasswordFocusNode,
+                    controller: controller.confirmPasswordController,
                     textInputAction: TextInputAction.done,
                   ),
                   SizedBox(height: 20.h),
@@ -146,11 +159,13 @@ class SignupScreen extends GetView<SignupController> {
                   SizedBox(height: 20.h),
 
                   // Signup Button
-                  PrimaryButton(
-                    text: 'signup_button'.tr,
-                    onPressed: () {
-                      // Handle signup
-                    },
+                  Obx(
+                    () => controller.isLoading.value
+                        ? const Center(child: CircularProgressIndicator())
+                        : PrimaryButton(
+                            text: 'signup_button'.tr,
+                            onPressed: controller.signup,
+                          ),
                   ),
                   SizedBox(height: 20.h),
 

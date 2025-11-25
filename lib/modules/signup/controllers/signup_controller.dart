@@ -2,15 +2,27 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:traffic_app/data/models/signup_request.dart';
+import 'package:traffic_app/data/repositories/auth_repository.dart';
 import 'package:traffic_app/routes/app_pages.dart';
+import 'package:traffic_app/widgets/custom_dialog.dart';
 
 class SignupController extends GetxController {
+  final AuthRepository _authRepository = AuthRepository();
+
   var rememberMe = false.obs;
+  var isLoading = false.obs;
 
   // Provinces data
   var provinces = <Map<String, dynamic>>[].obs;
   var selectedProvince = Rxn<Map<String, dynamic>>();
 
+  final usernameController = TextEditingController();
+  final fullNameController = TextEditingController();
+  final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+
+  final usernameFocusNode = FocusNode();
   final emailFocusNode = FocusNode();
   final nameFocusNode = FocusNode();
   final passwordFocusNode = FocusNode();
@@ -26,6 +38,12 @@ class SignupController extends GetxController {
 
   @override
   void onClose() {
+    usernameController.dispose();
+    fullNameController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+
+    usernameFocusNode.dispose();
     emailFocusNode.dispose();
     nameFocusNode.dispose();
     passwordFocusNode.dispose();
@@ -33,6 +51,56 @@ class SignupController extends GetxController {
     // addressFocusNode.dispose();
     confirmPasswordFocusNode.dispose();
     super.onClose();
+  }
+
+  Future<void> signup() async {
+    if (usernameController.text.isEmpty ||
+        fullNameController.text.isEmpty ||
+        passwordController.text.isEmpty ||
+        selectedProvince.value == null) {
+      CustomDialog.show(
+        title: 'Thông báo',
+        message: 'Vui lòng điền đầy đủ thông tin',
+        type: DialogType.warning,
+      );
+      return;
+    }
+
+    if (passwordController.text != confirmPasswordController.text) {
+      CustomDialog.show(
+        title: 'Thông báo',
+        message: 'Mật khẩu không khớp',
+        type: DialogType.warning,
+      );
+      return;
+    }
+
+    try {
+      isLoading.value = true;
+      final request = SignupRequest(
+        userName: usernameController.text,
+        fullName: fullNameController.text,
+        password: passwordController.text,
+        province: selectedProvince.value!['name'],
+      );
+
+      await _authRepository.signup(request);
+
+      CustomDialog.show(
+        title: 'Thành công',
+        message: 'Đăng ký tài khoản thành công',
+        type: DialogType.success,
+        onPressed: () => Get.offNamed(Routes.LOGIN),
+      );
+    } catch (e) {
+      CustomDialog.show(
+        title: 'Lỗi',
+        message: e.toString(),
+        type: DialogType.error,
+      );
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   Future<void> loadProvinces() async {

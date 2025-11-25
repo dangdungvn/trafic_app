@@ -16,5 +16,6 @@
   "forgot_password": "Forgot Password?",
   "or_login_with": "Or login with",
   "register_new_account": "Don't have an account? ",
-  "signup_link": "Sign Up"
+  "signup_link": "Sign Up",
+  "username": "Username"
 }

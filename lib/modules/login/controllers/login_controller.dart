@@ -4,12 +4,12 @@ import 'package:get/get.dart';
 class LoginController extends GetxController {
   var rememberMe = false.obs;
 
-  final emailFocusNode = FocusNode();
+  final usernameFocusNode = FocusNode();
   final passwordFocusNode = FocusNode();
 
   @override
   void onClose() {
-    emailFocusNode.dispose();
+    usernameFocusNode.dispose();
     passwordFocusNode.dispose();
     super.onClose();
   }

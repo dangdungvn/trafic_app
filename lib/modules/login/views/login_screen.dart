@@ -67,10 +67,10 @@ class LoginScreen extends GetView<LoginController> {
 
                   // Email Input
                   CustomTextField(
-                    hintText: 'email'.tr,
+                    hintText: 'username'.tr,
                     prefixIcon: FontAwesomeIcons.solidEnvelope,
-                    focusNode: controller.emailFocusNode,
-                    keyboardType: TextInputType.emailAddress,
+                    focusNode: controller.usernameFocusNode,
+                    keyboardType: TextInputType.name,
                     textInputAction: TextInputAction.next,
                   ),
                   SizedBox(height: 24.h),
