@@ -2,14 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:traffic_app/routes/app_pages.dart';
+import 'package:traffic_app/modules/not_found/not_found_page.dart';
 import 'package:traffic_app/services/localization_service.dart';
 import 'package:traffic_app/theme/app_theme.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:lottie/lottie.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   await LocalizationService.init();
+
+  // Preload critical assets
+  AssetLottie('assets/animations/404_not_found.json').load();
+
   runApp(const MyApp());
 }
 
@@ -32,6 +38,7 @@ class MyApp extends StatelessWidget {
           theme: AppTheme.lightTheme,
           initialRoute: AppPages.INITIAL,
           getPages: AppPages.routes,
+          unknownRoute: GetPage(name: '/404', page: () => NotFoundPage()),
           translations: LocalizationService(),
           locale: LocalizationService.locale,
           fallbackLocale: LocalizationService.fallbackLocale,

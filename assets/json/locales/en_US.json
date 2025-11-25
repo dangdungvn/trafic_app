@@ -17,5 +17,8 @@
   "or_login_with": "Or login with",
   "register_new_account": "Don't have an account? ",
   "signup_link": "Sign Up",
-  "username": "Username"
+  "username": "Username",
+  "404_title": "Oops! Feature Not Ready",
+  "404_subtitle": "We are working hard to complete this feature. Please come back later to experience the full version. Thank you for using the app!",
+  "go_home": "Go Home"
 }

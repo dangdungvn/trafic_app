@@ -17,5 +17,8 @@
   "or_login_with": "Hoặc đăng nhập với",
   "register_new_account": "Đăng ký tài khoản mới? ",
   "signup_link": "Đăng ký",
-  "username": "Tên đăng nhập"
+  "username": "Tên đăng nhập",
+  "404_title": "Oops! Chức năng chưa sẵn sàng",
+  "404_subtitle": "Chúng tôi đang nỗ lực hoàn thiện tính năng này. Vui lòng quay lại sau để trải nghiệm phiên bản đầy đủ hơn. Cảm ơn bạn đã sử dụng ứng dụng!",
+  "go_home": "Quay về trang chủ"
 }

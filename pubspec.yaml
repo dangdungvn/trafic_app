@@ -42,6 +42,7 @@ dependencies:
   flutter_svg: ^2.2.3
   dio: ^5.9.0
   flutter_dotenv: ^6.0.0
+  lottie: ^2.4.0
 
 dev_dependencies:
   flutter_test:
@@ -71,6 +72,7 @@ flutter:
     - assets/icons/
     - assets/json/
     - assets/json/locales/
+    - assets/animations/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
