@@ -16,6 +16,12 @@ class AuthRepository {
       if (response.data['success'] == false) {
         throw response.data['message'] ?? 'Đăng ký thất bại';
       }
+
+      // Save token if available
+      if (response.data['data'] != null) {
+        final token = response.data['data'] as String;
+        _apiService.setToken(token);
+      }
     } on DioException catch (e) {
       if (e.response != null && e.response!.data is Map) {
         throw e.response!.data['message'] ?? 'Đăng ký thất bại';
