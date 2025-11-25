@@ -1,5 +1,3 @@
-import 'package:device_preview/device_preview.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -10,14 +8,7 @@ import 'package:traffic_app/theme/app_theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await LocalizationService.init();
-  runApp(
-    kIsWeb
-        ? DevicePreview(
-            enabled: !kReleaseMode,
-            builder: (context) => const MyApp(),
-          )
-        : const MyApp(),
-  );
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
