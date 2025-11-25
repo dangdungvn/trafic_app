@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
+import 'package:traffic_app/widgets/primary_button.dart';
 
 import '../../routes/app_pages.dart';
 import '../../theme/app_theme.dart';
+
+import 'package:traffic_app/services/assets_service.dart';
 
 class NotFoundPage extends StatelessWidget {
   final String animationAsset;
@@ -33,11 +36,18 @@ class NotFoundPage extends StatelessWidget {
               children: [
                 SizedBox(
                   height: 260.h,
-                  child: Lottie.asset(
-                    animationAsset,
-                    fit: BoxFit.contain,
-                    repeat: true,
-                  ),
+                  child: AssetsService.to.notFoundComposition.value != null
+                      ? Lottie(
+                          composition:
+                              AssetsService.to.notFoundComposition.value!,
+                          fit: BoxFit.contain,
+                          repeat: true,
+                        )
+                      : Lottie.asset(
+                          animationAsset,
+                          fit: BoxFit.contain,
+                          repeat: true,
+                        ),
                 ),
                 SizedBox(height: 24.h),
                 Text(
@@ -60,29 +70,11 @@ class NotFoundPage extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 24.h),
-                SizedBox(
-                  width: double.infinity,
-                  height: 48.h,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // Default: go back to initial route
-                      Get.offAllNamed(Routes.LOGIN);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.r),
-                      ),
-                    ),
-                    child: Text(
-                      buttonText ?? 'go_home'.tr,
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
+                PrimaryButton(
+                  text: buttonText ?? 'go_home'.tr,
+                  onPressed: () {
+                    Get.offAllNamed(AppPages.INITIAL);
+                  },
                 ),
               ],
             ),

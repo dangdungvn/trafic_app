@@ -228,25 +228,6 @@ class LoginScreen extends GetView<LoginController> {
                   ),
                 ),
               ),
-              // Loading Indicator Overlay
-              Obx(() {
-                if (!controller.isAssetsLoaded.value) {
-                  return Positioned(
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    child: LinearProgressIndicator(
-                      value: controller.assetLoadProgress.value,
-                      backgroundColor: AppTheme.backgroundColor,
-                      valueColor: const AlwaysStoppedAnimation<Color>(
-                        AppTheme.primaryColor,
-                      ),
-                      minHeight: 4.h,
-                    ),
-                  );
-                }
-                return const SizedBox.shrink();
-              }),
             ],
           ),
         ),
