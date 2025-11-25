@@ -6,16 +6,11 @@ import 'package:traffic_app/modules/not_found/not_found_page.dart';
 import 'package:traffic_app/services/localization_service.dart';
 import 'package:traffic_app/theme/app_theme.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:lottie/lottie.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   await LocalizationService.init();
-
-  // Preload critical assets
-  AssetLottie('assets/animations/404_not_found.json').load();
-
   runApp(const MyApp());
 }
 
