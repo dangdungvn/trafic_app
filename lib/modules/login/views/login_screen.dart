@@ -121,8 +121,7 @@ class LoginScreen extends GetView<LoginController> {
                       PrimaryButton(
                         text: 'login_button'.tr,
                         onPressed: () {
-                          // Handle login
-                          Get.offNamed("/abc");
+                          controller.login();
                         },
                       ),
                       SizedBox(height: 24.h),

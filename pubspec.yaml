@@ -43,6 +43,10 @@ dependencies:
   dio: ^5.9.0
   flutter_dotenv: ^6.0.0
   lottie: ^2.4.0
+  google_maps_flutter: ^2.5.0
+  geolocator: ^10.1.0
+  permission_handler: ^11.0.1
+  geocoding: ^2.1.1
 
 dev_dependencies:
   flutter_test:

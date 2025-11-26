@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../routes/app_pages.dart';
 
 class LoginController extends GetxController {
   var rememberMe = false.obs;
@@ -16,5 +17,10 @@ class LoginController extends GetxController {
 
   void toggleRememberMe(bool? value) {
     rememberMe.value = value ?? false;
+  }
+
+  void login() {
+    // TODO: Implement actual login logic here
+    Get.offAllNamed(Routes.HOME);
   }
 }
