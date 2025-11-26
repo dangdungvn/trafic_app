@@ -18,6 +18,8 @@ PODS:
     - GoogleMaps/Base
   - objective_c (0.0.1):
     - Flutter
+  - package_info_plus (0.4.5):
+    - Flutter
   - permission_handler_apple (9.3.0):
     - Flutter
   - shared_preferences_foundation (0.0.1):
@@ -30,6 +32,7 @@ DEPENDENCIES:
   - geolocator_apple (from `.symlinks/plugins/geolocator_apple/darwin`)
   - google_maps_flutter_ios (from `.symlinks/plugins/google_maps_flutter_ios/ios`)
   - objective_c (from `.symlinks/plugins/objective_c/ios`)
+  - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
 
@@ -49,6 +52,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/google_maps_flutter_ios/ios"
   objective_c:
     :path: ".symlinks/plugins/objective_c/ios"
+  package_info_plus:
+    :path: ".symlinks/plugins/package_info_plus/ios"
   permission_handler_apple:
     :path: ".symlinks/plugins/permission_handler_apple/ios"
   shared_preferences_foundation:
@@ -56,12 +61,13 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
-  geocoding_ios: 86f1c479822f07a2f79f7094f2b753d1e9e20215
+  geocoding_ios: 33776c9ebb98d037b5e025bb0e7537f6dd19646e
   geolocator_apple: ab36aa0e8b7d7a2d7639b3b4e48308394e8cef5e
   Google-Maps-iOS-Utils: 66d6de12be1ce6d3742a54661e7a79cb317a9321
   google_maps_flutter_ios: 0291eb2aa252298a769b04d075e4a9d747ff7264
   GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
   objective_c: 89e720c30d716b036faf9c9684022048eee1eee2
+  package_info_plus: af8e2ca6888548050f16fa2f1938db7b5a5df499
   permission_handler_apple: 4ed2196e43d0651e8ff7ca3483a069d469701f2d
   shared_preferences_foundation: 7036424c3d8ec98dfe75ff1667cb0cd531ec82bb
 

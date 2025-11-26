@@ -42,11 +42,11 @@ dependencies:
   flutter_svg: ^2.2.3
   dio: ^5.9.0
   flutter_dotenv: ^6.0.0
-  lottie: ^2.4.0
-  google_maps_flutter: ^2.5.0
-  geolocator: ^10.1.0
-  permission_handler: ^11.0.1
-  geocoding: ^2.1.1
+  lottie: ^3.3.2
+  google_maps_flutter: ^2.14.0
+  geolocator: ^14.0.2
+  permission_handler: ^12.0.1
+  geocoding: ^4.0.0
 
 dev_dependencies:
   flutter_test:
