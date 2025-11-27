@@ -7,6 +7,7 @@ import '../../map/views/map_view.dart';
 import '../../camera/views/camera_view.dart';
 import '../../discovery/views/discovery_view.dart';
 import '../../chatbot/views/chatbot_view.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
@@ -33,19 +34,17 @@ class HomeView extends GetView<HomeController> {
 
   Widget _buildBottomNavigationBar() {
     return SizedBox(
-      height: 100,
+      height: 100.h,
       child: Stack(
         alignment: Alignment.bottomCenter,
         clipBehavior: Clip.none,
         children: [
           Container(
-            height: 80,
-            padding: const EdgeInsets.only(top: 8, bottom: 20),
+            height: 80.h,
+            padding: EdgeInsets.only(top: 8.h, bottom: 20.h),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(16),
-              ),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.05),
@@ -81,7 +80,7 @@ class HomeView extends GetView<HomeController> {
               ],
             ),
           ),
-          Positioned(bottom: 0, child: _buildCenterButton()),
+          Positioned(bottom: 0.h, child: _buildCenterButton()),
         ],
       ),
     );
@@ -102,16 +101,16 @@ class HomeView extends GetView<HomeController> {
           children: [
             SvgPicture.asset(
               iconPath,
-              width: 24,
-              height: 24,
+              width: 24.w,
+              height: 24.h,
               colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4.h),
             Text(
               label,
               style: TextStyle(
                 fontFamily: 'Urbanist',
-                fontSize: 10,
+                fontSize: 10.sp,
                 fontWeight: FontWeight.w500,
                 color: color,
               ),
