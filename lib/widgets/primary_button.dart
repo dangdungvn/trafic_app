@@ -56,12 +56,14 @@ class PrimaryButton extends StatelessWidget {
         composition: composition,
         height: 40.h,
         fit: BoxFit.contain,
+        renderCache: RenderCache.drawingCommands,
       );
     }
     return Lottie.asset(
       'assets/animations/Loading.json',
       height: 40.h,
       fit: BoxFit.contain,
+      renderCache: RenderCache.drawingCommands,
     );
   }
 }

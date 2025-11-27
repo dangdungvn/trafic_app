@@ -47,6 +47,7 @@ class NotFoundPage extends StatelessWidget {
                           animationAsset,
                           fit: BoxFit.contain,
                           repeat: true,
+                          renderCache: RenderCache.drawingCommands,
                         ),
                 ),
                 SizedBox(height: 24.h),
