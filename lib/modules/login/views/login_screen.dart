@@ -67,8 +67,9 @@ class LoginScreen extends GetView<LoginController> {
                       ),
                       SizedBox(height: 40.h),
 
-                      // Email Input
+                      // Username Input
                       CustomTextField(
+                        controller: controller.usernameController,
                         hintText: 'username'.tr,
                         prefixIcon: FontAwesomeIcons.userGear,
                         focusNode: controller.usernameFocusNode,
@@ -79,6 +80,7 @@ class LoginScreen extends GetView<LoginController> {
 
                       // Password Input
                       CustomTextField(
+                        controller: controller.passwordController,
                         hintText: 'password'.tr,
                         prefixIcon: FontAwesomeIcons.lock,
                         isPassword: true,
