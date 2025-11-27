@@ -1,12 +1,15 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:get/get.dart';
+import '../../services/storage_service.dart';
+import '../../routes/app_pages.dart';
 
 class ApiService {
   static final ApiService _instance = ApiService._internal();
   factory ApiService() => _instance;
 
   late final Dio _dio;
-  String? _token;
+  final StorageService _storageService = Get.find<StorageService>();
 
   ApiService._internal() {
     final baseUrl = dotenv.env['BASE_URL'] ?? '';
@@ -22,10 +25,69 @@ class ApiService {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
-          if (_token != null && _token!.isNotEmpty) {
-            options.headers['Authorization'] = 'Bearer $_token';
+          final token = _storageService.getToken();
+          if (token != null && token.isNotEmpty) {
+            options.headers['Authorization'] = 'Bearer $token';
           }
           return handler.next(options);
+        },
+        onError: (DioException e, handler) async {
+          if (e.response?.statusCode == 401) {
+            // Try to login again
+            final credentials = _storageService.getCredentials();
+            if (credentials != null) {
+              try {
+                // Prevent infinite loop if login itself fails
+                if (e.requestOptions.path.contains('/auth/login')) {
+                  _storageService.removeToken();
+                  _storageService.clearCredentials();
+                  Get.offAllNamed(Routes.LOGIN);
+                  return handler.next(e);
+                }
+
+                final response = await _dio.post(
+                  '/auth/login',
+                  data: {
+                    'username': credentials['username'],
+                    'password': credentials['password'],
+                  },
+                );
+
+                if (response.data['success'] == true &&
+                    response.data['data'] != null) {
+                  final newToken = response.data['data'];
+                  setToken(newToken);
+
+                  // Retry original request
+                  final opts = e.requestOptions;
+                  opts.headers['Authorization'] = 'Bearer $newToken';
+
+                  final clonedRequest = await _dio.request(
+                    opts.path,
+                    options: Options(
+                      method: opts.method,
+                      headers: opts.headers,
+                      contentType: opts.contentType,
+                      responseType: opts.responseType,
+                    ),
+                    data: opts.data,
+                    queryParameters: opts.queryParameters,
+                  );
+
+                  return handler.resolve(clonedRequest);
+                }
+              } catch (loginError) {
+                // Login failed, proceed to logout
+              }
+            }
+
+            // Token expired or invalid and auto-login failed
+            _storageService.removeToken();
+            _storageService.clearCredentials();
+            Get.offAllNamed(Routes.LOGIN);
+            // Get.snackbar('Phiên đăng nhập hết hạn', 'Vui lòng đăng nhập lại');
+          }
+          return handler.next(e);
         },
       ),
     );
@@ -36,11 +98,11 @@ class ApiService {
   }
 
   void setToken(String token) {
-    _token = token;
+    _storageService.setToken(token);
   }
 
   void clearToken() {
-    _token = null;
+    _storageService.removeToken();
   }
 
   Dio get dio => _dio;

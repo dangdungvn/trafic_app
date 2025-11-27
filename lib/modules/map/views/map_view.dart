@@ -107,8 +107,8 @@ class MapView extends GetView<MapController> {
 
         // Control Buttons
         Positioned(
-          right: 20,
-          bottom: 100,
+          right: 10,
+          bottom: 90,
           child: Column(
             children: [
               // Map Type Toggle

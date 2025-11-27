@@ -4,6 +4,7 @@ import 'package:traffic_app/widgets/custom_dialog.dart';
 import '../../../routes/app_pages.dart';
 import '../../../data/repositories/auth_repository.dart';
 import '../../../data/models/login_request.dart';
+import '../../../services/storage_service.dart';
 
 class LoginController extends GetxController {
   var rememberMe = false.obs;
@@ -11,6 +12,7 @@ class LoginController extends GetxController {
   var isPasswordHidden = true.obs;
 
   final AuthRepository _authRepository = Get.find<AuthRepository>();
+  final StorageService _storageService = Get.find<StorageService>();
 
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
@@ -36,16 +38,14 @@ class LoginController extends GetxController {
   }
 
   Future<void> login() async {
-
     // Get.focusScope?.unfocus(); ẩn bàn phím
 
-    if (usernameController.text.isEmpty ||
-        passwordController.text.isEmpty) {
-        CustomDialog.show(
-          title: 'Thông báo',
-          message: 'Vui lòng điền đầy đủ thông tin đăng nhập',
-          type: DialogType.warning,
-        );
+    if (usernameController.text.isEmpty || passwordController.text.isEmpty) {
+      CustomDialog.show(
+        title: 'Thông báo',
+        message: 'Vui lòng điền đầy đủ thông tin đăng nhập',
+        type: DialogType.warning,
+      );
       return;
     }
 
@@ -58,7 +58,13 @@ class LoginController extends GetxController {
           password: passwordController.text,
         ),
       );
-      
+
+      // Save credentials for auto-login
+      await _storageService.saveCredentials(
+        usernameController.text.trim(),
+        passwordController.text,
+      );
+
       // Navigate to home page on successful login
       Get.offAllNamed(Routes.HOME);
     } catch (e) {
