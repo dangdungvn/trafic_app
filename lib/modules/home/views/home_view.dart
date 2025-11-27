@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../controllers/home_controller.dart';
+import '../../dashboard/views/dashboard_view.dart';
+import '../../map/views/map_view.dart';
+import '../../camera/views/camera_view.dart';
+import '../../discovery/views/discovery_view.dart';
+import '../../chatbot/views/chatbot_view.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
@@ -9,152 +14,118 @@ class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
+      extendBody: true,
+      body: Obx(
+        () => IndexedStack(
+          index: controller.currentIndex.value,
+          children: const [
+            DashboardView(),
+            MapView(),
+            CameraView(),
+            DiscoveryView(),
+            ChatbotView(),
+          ],
+        ),
+      ),
+      bottomNavigationBar: _buildBottomNavigationBar(),
+    );
+  }
+
+  Widget _buildBottomNavigationBar() {
+    return SizedBox(
+      height: 100,
+      child: Stack(
+        alignment: Alignment.bottomCenter,
+        clipBehavior: Clip.none,
         children: [
-          // Google Map
-          Obx(
-            () => GoogleMap(
-              onMapCreated: controller.onMapCreated,
-              initialCameraPosition: CameraPosition(
-                target: controller.center,
-                zoom: 14.0,
+          Container(
+            height: 80,
+            padding: const EdgeInsets.only(top: 8, bottom: 20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(16),
               ),
-              mapType: controller.currentMapType.value,
-              trafficEnabled: controller.isTrafficEnabled.value,
-              markers: Set<Marker>.of(controller.markers),
-              polylines: Set<Polyline>.of(controller.polylines),
-              myLocationEnabled: true,
-              myLocationButtonEnabled: false, // We use custom button
-              zoomControlsEnabled: true, // We use custom buttons or gestures
-            ),
-          ),
-
-          // Search Bar with Suggestions
-          Positioned(
-            top: 50,
-            left: 20,
-            right: 20,
-            child: Column(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(30),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 10,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
-                  child: TextField(
-                    controller: controller.searchController,
-                    decoration: const InputDecoration(
-                      hintText: 'Tìm kiếm địa điểm...',
-                      border: InputBorder.none,
-                      icon: Icon(Icons.search, color: Colors.grey),
-                    ),
-                    onChanged: (value) {
-                      controller.fetchSuggestions(value);
-                    },
-                    onSubmitted: (value) {
-                      controller.searchLocation(value);
-                    },
-                  ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 12,
+                  offset: const Offset(0, -1),
                 ),
-                Obx(
-                  () => controller.placeSuggestions.isNotEmpty
-                      ? Container(
-                          margin: const EdgeInsets.only(top: 10),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 10,
-                                offset: const Offset(0, 5),
-                              ),
-                            ],
-                          ),
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            padding: EdgeInsets.zero,
-                            itemCount: controller.placeSuggestions.length,
-                            itemBuilder: (context, index) {
-                              final suggestion =
-                                  controller.placeSuggestions[index];
-                              return ListTile(
-                                title: Text(suggestion['description']),
-                                leading: const Icon(
-                                  Icons.location_on,
-                                  color: Colors.grey,
-                                ),
-                                onTap: () {
-                                  controller.selectSuggestion(suggestion);
-                                  FocusScope.of(context).unfocus();
-                                },
-                              );
-                            },
-                          ),
-                        )
-                      : const SizedBox.shrink(),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildNavItem(
+                  0,
+                  'assets/icons/home_bottom_navbar.svg',
+                  'Trang chủ',
+                ),
+                _buildNavItem(
+                  1,
+                  'assets/icons/location_bottom_navbar.svg',
+                  'Bản đồ',
+                ),
+                const SizedBox(width: 50), // Placeholder for center button
+                _buildNavItem(
+                  3,
+                  'assets/icons/discovery_bottom_navbar.svg',
+                  'Tra cứu',
+                ),
+                _buildNavItem(
+                  4,
+                  'assets/icons/chatbot_bottom_navbar.svg',
+                  'Chatbot',
                 ),
               ],
             ),
           ),
-
-          // Control Buttons
-          Positioned(
-            right: 20,
-            bottom: 100,
-            child: Column(
-              children: [
-                // Map Type Toggle
-                FloatingActionButton(
-                  heroTag: 'map_type',
-                  onPressed: controller.toggleMapType,
-                  backgroundColor: Colors.white,
-                  child: const Icon(Icons.layers, color: Colors.black87),
-                ),
-                const SizedBox(height: 10),
-
-                // Traffic Toggle
-                Obx(
-                  () => FloatingActionButton(
-                    heroTag: 'traffic',
-                    onPressed: controller.toggleTraffic,
-                    backgroundColor: controller.isTrafficEnabled.value
-                        ? Colors.blue
-                        : Colors.white,
-                    child: Icon(
-                      Icons.traffic,
-                      color: controller.isTrafficEnabled.value
-                          ? Colors.white
-                          : Colors.black87,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-
-                // My Location
-                FloatingActionButton(
-                  heroTag: 'my_location',
-                  onPressed: controller.goToMyLocation,
-                  backgroundColor: Colors.white,
-                  child: Obx(
-                    () => controller.isLoading.value
-                        ? const CircularProgressIndicator(strokeWidth: 2)
-                        : const Icon(Icons.my_location, color: Colors.black87),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          Positioned(bottom: 0, child: _buildCenterButton()),
         ],
       ),
+    );
+  }
+
+  Widget _buildNavItem(int index, String iconPath, String label) {
+    return Obx(() {
+      final isSelected = controller.currentIndex.value == index;
+      final color = isSelected
+          ? const Color(0xFF4D5DFA)
+          : const Color(0xFF9E9E9E);
+
+      return GestureDetector(
+        onTap: () => controller.changeTab(index),
+        behavior: HitTestBehavior.opaque,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SvgPicture.asset(
+              iconPath,
+              width: 24,
+              height: 24,
+              colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontFamily: 'Urbanist',
+                fontSize: 10,
+                fontWeight: FontWeight.w500,
+                color: color,
+              ),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget _buildCenterButton() {
+    return GestureDetector(
+      onTap: () => controller.changeTab(2),
+      child: SvgPicture.asset('assets/icons/camera_bottom_navbar.svg'),
     );
   }
 }
