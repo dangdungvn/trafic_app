@@ -120,11 +120,14 @@ class LoginScreen extends GetView<LoginController> {
                       SizedBox(height: 24.h),
 
                       // Login Button
-                      PrimaryButton(
-                        text: 'login_button'.tr,
-                        onPressed: () {
-                          controller.login();
-                        },
+                      Obx(
+                        () => PrimaryButton(
+                          text: 'login_button'.tr,
+                          isLoading: controller.isLoading.value,
+                          onPressed: () {
+                            controller.login();
+                          },
+                        ),
                       ),
                       SizedBox(height: 24.h),
 

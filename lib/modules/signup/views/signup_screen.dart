@@ -161,12 +161,11 @@ class SignupScreen extends GetView<SignupController> {
 
                   // Signup Button
                   Obx(
-                    () => controller.isLoading.value
-                        ? const Center(child: CircularProgressIndicator())
-                        : PrimaryButton(
-                            text: 'signup_button'.tr,
-                            onPressed: controller.signup,
-                          ),
+                    () => PrimaryButton(
+                      text: 'signup_button'.tr,
+                      isLoading: controller.isLoading.value,
+                      onPressed: controller.signup,
+                    ),
                   ),
                   SizedBox(height: 20.h),
 

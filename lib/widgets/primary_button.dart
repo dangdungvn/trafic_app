@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lottie/lottie.dart';
+import 'package:traffic_app/services/assets_service.dart';
 import 'package:traffic_app/theme/app_theme.dart';
 
 class PrimaryButton extends StatelessWidget {
@@ -7,6 +9,7 @@ class PrimaryButton extends StatelessWidget {
   final VoidCallback onPressed;
   final double? width;
   final double? height;
+  final bool isLoading;
 
   const PrimaryButton({
     super.key,
@@ -14,6 +17,7 @@ class PrimaryButton extends StatelessWidget {
     required this.onPressed,
     this.width,
     this.height,
+    this.isLoading = false,
   });
 
   @override
@@ -22,7 +26,7 @@ class PrimaryButton extends StatelessWidget {
       width: width ?? double.infinity,
       height: height ?? 58.h,
       child: ElevatedButton(
-        onPressed: onPressed,
+        onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: AppTheme.primaryColor,
           shape: RoundedRectangleBorder(
@@ -31,15 +35,33 @@ class PrimaryButton extends StatelessWidget {
           elevation: 4,
           shadowColor: AppTheme.primaryColor.withOpacity(0.25),
         ),
-        child: Text(
-          text,
-          style: TextStyle(
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
-          ),
-        ),
+        child: isLoading
+            ? _buildLoading()
+            : Text(
+                text,
+                style: TextStyle(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
+              ),
       ),
+    );
+  }
+
+  Widget _buildLoading() {
+    final composition = AssetsService.to.loadingComposition.value;
+    if (composition != null) {
+      return Lottie(
+        composition: composition,
+        height: 40.h,
+        fit: BoxFit.contain,
+      );
+    }
+    return Lottie.asset(
+      'assets/animations/Loading.json',
+      height: 40.h,
+      fit: BoxFit.contain,
     );
   }
 }

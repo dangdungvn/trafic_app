@@ -25,7 +25,7 @@ class HomeView extends GetView<HomeController> {
               polylines: Set<Polyline>.of(controller.polylines),
               myLocationEnabled: true,
               myLocationButtonEnabled: false, // We use custom button
-              zoomControlsEnabled: false, // We use custom buttons or gestures
+              zoomControlsEnabled: true, // We use custom buttons or gestures
             ),
           ),
 
