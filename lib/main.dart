@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import 'data/models/login_request.dart';
+import 'data/repositories/auth_repository.dart';
 import 'modules/not_found/not_found_page.dart';
 import 'routes/app_pages.dart';
 import 'services/assets_service.dart';
@@ -16,22 +18,40 @@ void main() async {
   await LocalizationService.init();
 
   // Initialize StorageService
-  await Get.putAsync(() => StorageService().init());
+  final storageService = await Get.putAsync(() => StorageService().init());
 
   // Initialize AssetsService
   await Get.putAsync(() => AssetsService().init().then((_) => AssetsService()));
 
-  runApp(const MyApp());
+  // Check auto login
+  String initialRoute = AppPages.INITIAL;
+  final credentials = storageService.getCredentials();
+
+  if (credentials != null) {
+    try {
+      final authRepository = AuthRepository();
+      await authRepository.login(
+        LoginRequest(
+          username: credentials['username']!,
+          password: credentials['password']!,
+        ),
+      );
+      initialRoute = Routes.HOME;
+    } catch (e) {
+      // Login failed, stay at LOGIN
+      debugPrint("Auto login failed: $e");
+    }
+  }
+
+  runApp(MyApp(initialRoute: initialRoute));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final String initialRoute;
+  const MyApp({super.key, required this.initialRoute});
 
   @override
   Widget build(BuildContext context) {
-    final storageService = Get.find<StorageService>();
-    final isLoggedIn = storageService.getToken() != null;
-
     return ScreenUtilInit(
       designSize: const Size(
         428,
@@ -44,7 +64,7 @@ class MyApp extends StatelessWidget {
           title: 'Traffic App',
           debugShowCheckedModeBanner: false,
           theme: AppTheme.lightTheme,
-          initialRoute: isLoggedIn ? Routes.HOME : AppPages.INITIAL,
+          initialRoute: initialRoute,
           getPages: AppPages.routes,
           unknownRoute: GetPage(name: '/404', page: () => NotFoundPage()),
           translations: LocalizationService(),
