@@ -54,28 +54,36 @@ class HomeView extends GetView<HomeController> {
               ],
             ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildNavItem(
-                  0,
-                  'assets/icons/home_bottom_navbar.svg',
-                  'home_bottom_navbar'.tr,
+                Expanded(
+                  child: _buildNavItem(
+                    0,
+                    'assets/icons/home_bottom_navbar.svg',
+                    'home_bottom_navbar'.tr,
+                  ),
                 ),
-                _buildNavItem(
-                  1,
-                  'assets/icons/location_bottom_navbar.svg',
-                  'map_bottom_navbar'.tr,
+                Expanded(
+                  child: _buildNavItem(
+                    1,
+                    'assets/icons/location_bottom_navbar.svg',
+                    'map_bottom_navbar'.tr,
+                  ),
                 ),
-                const SizedBox(width: 50), // Placeholder for center button
-                _buildNavItem(
-                  3,
-                  'assets/icons/discovery_bottom_navbar.svg',
-                  'discovery_bottom_navbar'.tr,
+                SizedBox(width: 70.w), // Placeholder for center button
+                Expanded(
+                  child: _buildNavItem(
+                    3,
+                    'assets/icons/discovery_bottom_navbar.svg',
+                    'discovery_bottom_navbar'.tr,
+                  ),
                 ),
-                _buildNavItem(
-                  4,
-                  'assets/icons/chatbot_bottom_navbar.svg',
-                  'chatbot_bottom_navbar'.tr,
+                Expanded(
+                  child: _buildNavItem(
+                    4,
+                    'assets/icons/chatbot_bottom_navbar.svg',
+                    'chatbot_bottom_navbar'.tr,
+                  ),
                 ),
               ],
             ),
@@ -98,6 +106,7 @@ class HomeView extends GetView<HomeController> {
         behavior: HitTestBehavior.opaque,
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SvgPicture.asset(
               iconPath,
@@ -108,6 +117,8 @@ class HomeView extends GetView<HomeController> {
             SizedBox(height: 4.h),
             Text(
               label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontSize: 12.sp,
                 fontWeight: FontWeight.w600,
@@ -125,8 +136,8 @@ class HomeView extends GetView<HomeController> {
       onTap: () => controller.changeTab(2),
       child: SvgPicture.asset(
         'assets/icons/camera_bottom_navbar.svg',
-        width: 120,
-        height: 120,
+        width: 120.w,
+        height: 120.h,
       ),
     );
   }
