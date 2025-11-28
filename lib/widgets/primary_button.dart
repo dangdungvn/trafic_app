@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
-import 'package:traffic_app/services/assets_service.dart';
-import 'package:traffic_app/theme/app_theme.dart';
+
+import '../theme/app_theme.dart';
+import '../services/assets_service.dart';
 
 class PrimaryButton extends StatelessWidget {
   final String text;

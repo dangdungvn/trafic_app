@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:traffic_app/widgets/custom_dialog.dart';
 import '../../../routes/app_pages.dart';
 import '../../../data/repositories/auth_repository.dart';
 import '../../../data/models/login_request.dart';
 import '../../../services/storage_service.dart';
+import '../../../widgets/custom_dialog.dart';
 
 class LoginController extends GetxController {
   var rememberMe = false.obs;

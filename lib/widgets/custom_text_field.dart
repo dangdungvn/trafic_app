@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:traffic_app/theme/app_theme.dart';
+
+import '../theme/app_theme.dart';
 
 class CustomTextField extends StatefulWidget {
   final String hintText;

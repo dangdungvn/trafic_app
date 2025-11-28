@@ -70,7 +70,7 @@ class MapController extends GetxController {
         placeSuggestions.value = predictions.cast<Map<String, dynamic>>();
       }
     } catch (e) {
-      print('Error fetching suggestions: $e');
+      debugPrint('Error fetching suggestions: $e');
     }
   }
 

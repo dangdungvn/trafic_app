@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:traffic_app/theme/app_theme.dart';
+
+import '../theme/app_theme.dart';
 
 enum DialogType { success, error, warning, info }
 

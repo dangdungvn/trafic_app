@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:traffic_app/routes/app_pages.dart';
-import 'package:traffic_app/modules/not_found/not_found_page.dart';
-import 'package:traffic_app/services/localization_service.dart';
-import 'package:traffic_app/theme/app_theme.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:traffic_app/services/assets_service.dart';
-import 'package:traffic_app/services/storage_service.dart';
+
+import 'modules/not_found/not_found_page.dart';
+import 'routes/app_pages.dart';
+import 'services/assets_service.dart';
+import 'services/localization_service.dart';
+import 'services/storage_service.dart';
+import 'theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
