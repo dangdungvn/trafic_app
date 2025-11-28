@@ -41,7 +41,7 @@ class HomeView extends GetView<HomeController> {
         children: [
           Container(
             height: 80.h,
-            padding: EdgeInsets.only(top: 8.h, bottom: 20.h),
+            padding: EdgeInsets.only(top: 8.h, bottom: 16.h),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
@@ -109,9 +109,8 @@ class HomeView extends GetView<HomeController> {
             Text(
               label,
               style: TextStyle(
-                fontFamily: 'Urbanist',
-                fontSize: 10.sp,
-                fontWeight: FontWeight.w500,
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w600,
                 color: color,
               ),
             ),
@@ -124,7 +123,11 @@ class HomeView extends GetView<HomeController> {
   Widget _buildCenterButton() {
     return GestureDetector(
       onTap: () => controller.changeTab(2),
-      child: SvgPicture.asset('assets/icons/camera_bottom_navbar.svg'),
+      child: SvgPicture.asset(
+        'assets/icons/camera_bottom_navbar.svg',
+        width: 120,
+        height: 120,
+      ),
     );
   }
 }
