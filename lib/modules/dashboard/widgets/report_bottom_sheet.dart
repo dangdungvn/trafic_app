@@ -58,12 +58,12 @@ class _ReportBottomSheetState extends State<ReportBottomSheet> {
               height: 1.2,
             ),
           ),
-          SizedBox(height: 20.h),
+          SizedBox(height: 12.h),
           const Divider(height: 1, color: Color(0xFFEEEEEE)),
           SizedBox(height: 20.h),
           // Reasons List
           ..._reasons.map((reason) => _buildReasonItem(reason)),
-          SizedBox(height: 20.h),
+          SizedBox(height: 12.h),
           const Divider(height: 1, color: Color(0xFFEEEEEE)),
           SizedBox(height: 20.h),
           // Buttons
@@ -119,8 +119,8 @@ class _ReportBottomSheetState extends State<ReportBottomSheet> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(13.r),
           border: isSelected
-              ? Border.all(color: AppTheme.primaryColor, width: 2)
-              : null,
+              ? Border.all(color: AppTheme.primaryColor, width: 1)
+              : Border.all(color: Colors.white, width: 1),
           boxShadow: isSelected
               ? null
               : [

@@ -34,7 +34,6 @@ class AppButton extends StatelessWidget {
       child: Container(
         width: width,
         height: height,
-        padding: EdgeInsets.symmetric(vertical: isLoading ? 9.h : 18.h),
         decoration: BoxDecoration(
           color: isPrimary ? AppTheme.primaryColor : const Color(0xFFEDEFFF),
           borderRadius: BorderRadius.circular(100.r),
@@ -48,10 +47,15 @@ class AppButton extends StatelessWidget {
                 ]
               : null,
         ),
-        child: Center(
-          child: isLoading
-              ? _buildLoading()
-              : Text(
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            // Invisible text to maintain size
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 18.h),
+              child: Opacity(
+                opacity: isLoading ? 0.0 : 1.0,
+                child: Text(
                   text,
                   textAlign: TextAlign.center,
                   style: isPrimary
@@ -66,6 +70,12 @@ class AppButton extends StatelessWidget {
                           color: AppTheme.primaryColor,
                         ),
                 ),
+              ),
+            ),
+            // Loading indicator
+            if (isLoading)
+              Positioned.fill(child: Center(child: _buildLoading())),
+          ],
         ),
       ),
     );
