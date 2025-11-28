@@ -59,11 +59,15 @@ class LoginController extends GetxController {
         ),
       );
 
-      // Save credentials for auto-login
-      await _storageService.saveCredentials(
-        usernameController.text.trim(),
-        passwordController.text,
-      );
+      // Save credentials for auto-login if rememberMe is checked
+      if (rememberMe.value) {
+        await _storageService.saveCredentials(
+          usernameController.text.trim(),
+          passwordController.text,
+        );
+      } else {
+        await _storageService.clearCredentials();
+      }
 
       // Navigate to home page on successful login
       Get.offAllNamed(Routes.HOME);
