@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 
 import '../../../theme/app_theme.dart';
 
@@ -69,7 +70,7 @@ class _DashboardSearchBarState extends State<DashboardSearchBar> {
               focusNode: _focusNode,
               cursorColor: AppTheme.primaryColor,
               decoration: InputDecoration(
-                hintText: "Tìm kiếm bài đăng theo địa điểm ...",
+                hintText: "Tìm kiếm bài đăng theo địa điểm ...".tr,
                 hintStyle: TextStyle(
                   fontSize: 14.sp,
                   color: AppTheme.subTextColor,

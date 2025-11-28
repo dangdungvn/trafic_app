@@ -141,7 +141,7 @@ class PostItem extends StatelessWidget {
                       borderRadius: BorderRadius.circular(6.r),
                     ),
                     child: Text(
-                      post.isReported.value ? "Đã báo cáo" : "Báo cáo",
+                      post.isReported.value ? "Đã báo cáo".tr : "Báo cáo".tr,
                       style: TextStyle(
                         fontSize: 10.sp,
                         fontWeight: FontWeight.w600,

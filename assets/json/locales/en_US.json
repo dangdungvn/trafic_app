@@ -20,5 +20,12 @@
   "username": "Username",
   "404_title": "Oops! Feature Not Ready",
   "404_subtitle": "We are working hard to complete this feature. Please come back later to experience the full version. Thank you for using the app!",
-  "go_home": "Go Home"
+  "go_home": "Go Home",
+  "home_bottom_navbar": "Home",
+  "map_bottom_navbar": "Map",
+  "discovery_bottom_navbar": "Discovery",
+  "chatbot_bottom_navbar": "Chatbot",
+  "Tìm kiếm bài đăng theo địa điểm ...":"Search posts by location ...",
+  "Đã báo cáo":"Reported",
+  "Báo cáo":"Report"
 }

@@ -20,5 +20,12 @@
   "username": "Tên đăng nhập",
   "404_title": "Oops! Chức năng chưa sẵn sàng",
   "404_subtitle": "Chúng tôi đang nỗ lực hoàn thiện tính năng này. Vui lòng quay lại sau để trải nghiệm phiên bản đầy đủ hơn. Cảm ơn bạn đã sử dụng ứng dụng!",
-  "go_home": "Quay về trang chủ"
+  "go_home": "Quay về trang chủ",
+  "home_bottom_navbar": "Trang chủ",
+  "map_bottom_navbar": "Bản đồ",
+  "discovery_bottom_navbar": "Tra cứu",
+  "chatbot_bottom_navbar": "Chatbot",
+  "Tìm kiếm bài đăng theo địa điểm ...":"Tìm kiếm bài đăng theo địa điểm ...",
+  "Đã báo cáo":"Đã báo cáo",
+  "Báo cáo":"Báo cáo"
 }

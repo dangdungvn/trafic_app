@@ -59,23 +59,23 @@ class HomeView extends GetView<HomeController> {
                 _buildNavItem(
                   0,
                   'assets/icons/home_bottom_navbar.svg',
-                  'Trang chủ',
+                  'home_bottom_navbar'.tr,
                 ),
                 _buildNavItem(
                   1,
                   'assets/icons/location_bottom_navbar.svg',
-                  'Bản đồ',
+                  'map_bottom_navbar'.tr,
                 ),
                 const SizedBox(width: 50), // Placeholder for center button
                 _buildNavItem(
                   3,
                   'assets/icons/discovery_bottom_navbar.svg',
-                  'Tra cứu',
+                  'discovery_bottom_navbar'.tr,
                 ),
                 _buildNavItem(
                   4,
                   'assets/icons/chatbot_bottom_navbar.svg',
-                  'Chatbot',
+                  'chatbot_bottom_navbar'.tr,
                 ),
               ],
             ),
