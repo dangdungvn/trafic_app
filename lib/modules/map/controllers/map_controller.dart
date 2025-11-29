@@ -7,6 +7,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:traffic_app/widgets/custom_alert.dart';
 
 class MapController extends GetxController {
   late GoogleMapController mapController;
@@ -108,10 +109,10 @@ class MapController extends GetxController {
           ),
         );
       } else {
-        Get.snackbar('Thông báo', 'Không tìm thấy địa điểm này');
+        CustomAlert.showWarning('Không tìm thấy địa điểm này');
       }
     } catch (e) {
-      Get.snackbar('Lỗi', 'Không thể tìm kiếm địa điểm: $e');
+      CustomAlert.showError('Không thể tìm kiếm địa điểm: $e');
     } finally {
       isLoading.value = false;
     }
@@ -144,7 +145,7 @@ class MapController extends GetxController {
       isLoading.value = true;
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        Get.snackbar('Error', 'Location services are disabled.');
+        CustomAlert.showError('Dịch vụ vị trí đã bị tắt');
         return;
       }
 
@@ -152,15 +153,14 @@ class MapController extends GetxController {
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          Get.snackbar('Error', 'Location permissions are denied');
+          CustomAlert.showError('Quyền truy cập vị trí bị từ chối');
           return;
         }
       }
 
       if (permission == LocationPermission.deniedForever) {
-        Get.snackbar(
-          'Error',
-          'Location permissions are permanently denied, we cannot request permissions.',
+        CustomAlert.showError(
+          'Quyền vị trí bị từ chối vĩnh viễn, vui lòng cấp quyền trong cài đặt',
         );
         return;
       }
@@ -175,7 +175,7 @@ class MapController extends GetxController {
         ),
       );
     } catch (e) {
-      Get.snackbar('Error', 'Could not get location: $e');
+      CustomAlert.showError('Không thể lấy vị trí: $e');
     } finally {
       isLoading.value = false;
     }
