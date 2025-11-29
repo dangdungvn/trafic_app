@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:traffic_app/widgets/custom_alert.dart';
 import '../widgets/report_bottom_sheet.dart';
 
 class Post {
@@ -106,29 +107,14 @@ class DashboardController extends GetxController {
     Get.bottomSheet(
       ReportBottomSheet(
         onReport: (reason) async {
-          // Simulate network request
           await Future.delayed(const Duration(seconds: 1));
 
           post.isReported.value = true;
           Get.back(); // Close bottom sheet
 
-          if (Get.context != null) {
-            ScaffoldMessenger.of(Get.context!).showSnackBar(
-              SnackBar(
-                content: Text(
-                  "Đã báo cáo bài viết: $reason",
-                  style: const TextStyle(color: Colors.white),
-                ),
-                backgroundColor: Colors.green,
-                behavior: SnackBarBehavior.floating,
-                margin: const EdgeInsets.all(10),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                duration: const Duration(seconds: 2),
-              ),
-            );
-          }
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            CustomAlert.showSuccess("Đã báo cáo bài viết: $reason");
+          });
         },
       ),
       isScrollControlled: true,
