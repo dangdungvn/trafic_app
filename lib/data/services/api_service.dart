@@ -41,7 +41,9 @@ class ApiService {
                 if (e.requestOptions.path.contains('/auth/login')) {
                   _storageService.removeToken();
                   _storageService.clearCredentials();
-                  Get.offAllNamed(Routes.LOGIN);
+                  if (Get.context != null) {
+                    Get.offAllNamed(Routes.LOGIN);
+                  }
                   return handler.next(e);
                 }
 
@@ -84,7 +86,9 @@ class ApiService {
             // Token expired or invalid and auto-login failed
             _storageService.removeToken();
             _storageService.clearCredentials();
-            Get.offAllNamed(Routes.LOGIN);
+            if (Get.context != null) {
+              Get.offAllNamed(Routes.LOGIN);
+            }
             // Get.snackbar('Phiên đăng nhập hết hạn', 'Vui lòng đăng nhập lại');
           }
           return handler.next(e);
