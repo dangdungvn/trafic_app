@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:traffic_app/widgets/custom_dialog.dart';
 import '../../../data/models/profile_request.dart';
@@ -16,15 +18,35 @@ class ProfileController extends GetxController {
 
   var isLoading = false.obs;
 
-  var selectedImagePath = ''.obs; 
+  var selectedImagePath = ''.obs;
   var currentAvatarUrl = ''.obs;
+
+  // Provinces data
+  var provinces = <Map<String, dynamic>>[].obs;
+  var selectedProvince = Rxn<Map<String, dynamic>>();
 
   final ImagePicker _picker = ImagePicker();
 
   @override
   void onInit() {
     super.onInit();
+    loadProvinces();
     loadUserProfile();
+  }
+
+  Future<void> loadProvinces() async {
+    try {
+      final String response = await rootBundle.loadString(
+        'assets/json/provinces.json',
+      );
+      final List<dynamic> data = json.decode(response);
+      final List<Map<String, dynamic>> mappedData = data
+          .map((e) => Map<String, dynamic>.from(e))
+          .toList();
+      provinces.assignAll(mappedData);
+    } catch (e) {
+      debugPrint('Error loading provinces: $e');
+    }
   }
 
   @override
@@ -38,21 +60,38 @@ class ProfileController extends GetxController {
 
   Future<void> loadUserProfile() async {
     try {
-      isLoading.value = true; 
+      isLoading.value = true;
 
       final user = await _userRepository.getProfile();
 
-      nameController.text = user.fullName ?? ""; 
+      nameController.text = user.fullName ?? "";
       emailController.text = user.email ?? "";
-      phoneController.text = user.phoneNumber ?? "";  
+      phoneController.text = user.phoneNumber ?? "";
       addressController.text = user.province ?? "";
 
+      // Set selected province
+      if (user.province != null && user.province!.isNotEmpty) {
+        // Wait for provinces to load if empty
+        if (provinces.isEmpty) {
+          await loadProvinces();
+        }
+
+        final province = provinces.firstWhere(
+          (element) => element['name'] == user.province?.trim(),
+          orElse: () => {},
+        );
+
+        if (province.isNotEmpty) {
+          selectedProvince.value = province;
+        }
+      }
+
       if (user.avatarUrl != null && user.avatarUrl!.isNotEmpty) {
-        currentAvatarUrl.value = "${user.avatarUrl}?t=${DateTime.now().millisecondsSinceEpoch}";
+        currentAvatarUrl.value =
+            "${user.avatarUrl}?t=${DateTime.now().millisecondsSinceEpoch}";
       } else {
         currentAvatarUrl.value = "";
       }
-
     } catch (e) {
       CustomDialog.show(
         title: 'Lỗi',
@@ -60,12 +99,14 @@ class ProfileController extends GetxController {
         type: DialogType.error,
       );
     } finally {
-      isLoading.value = false; 
+      isLoading.value = false;
     }
   }
 
   Future<void> saveProfile() async {
-    if (emailController.text.isEmpty) { 
+    FocusManager.instance.primaryFocus?.unfocus();
+
+    if (emailController.text.isEmpty) {
       CustomDialog.show(
         title: 'Thông báo',
         message: 'Không được để trống email!',
@@ -74,7 +115,7 @@ class ProfileController extends GetxController {
       return;
     }
 
-    if (nameController.text.isEmpty) { 
+    if (nameController.text.isEmpty) {
       CustomDialog.show(
         title: 'Thông báo',
         message: 'Không được để trống tên!',
@@ -83,15 +124,14 @@ class ProfileController extends GetxController {
       return;
     }
 
-    if (addressController.text.isEmpty) { 
+    if (selectedProvince.value == null) {
       CustomDialog.show(
         title: 'Thông báo',
-        message: 'Không được để trống địa chỉ!',
+        message: 'Vui lòng chọn tỉnh/thành phố!',
         type: DialogType.warning,
       );
       return;
     }
-
     try {
       isLoading.value = true;
 
@@ -99,9 +139,8 @@ class ProfileController extends GetxController {
         fullName: nameController.text.trim(),
         email: emailController.text.trim(),
         phoneNumber: phoneController.text.trim(),
-        province: addressController.text.trim(),
+        province: selectedProvince.value!['name'],
       );
-
       File? imageFile;
       if (selectedImagePath.value.isNotEmpty) {
         imageFile = File(selectedImagePath.value);
@@ -117,8 +156,7 @@ class ProfileController extends GetxController {
 
       selectedImagePath.value = '';
 
-      loadUserProfile(); 
-
+      loadUserProfile();
     } catch (e) {
       CustomDialog.show(
         title: 'Lỗi',
@@ -134,8 +172,8 @@ class ProfileController extends GetxController {
     try {
       final XFile? image = await _picker.pickImage(
         source: ImageSource.gallery,
-        imageQuality: 80, 
-      );      
+        imageQuality: 80,
+      );
       if (image != null) {
         selectedImagePath.value = image.path;
       }
