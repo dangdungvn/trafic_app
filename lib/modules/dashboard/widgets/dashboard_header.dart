@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/route_manager.dart';
+import 'package:get/utils.dart';
+import 'package:traffic_app/routes/app_pages.dart';
 
 class DashboardHeader extends StatelessWidget {
   const DashboardHeader({super.key});
@@ -34,15 +37,23 @@ class DashboardHeader extends StatelessWidget {
         ),
         SizedBox(width: 20.w),
         // Avatar
-        Container(
-          width: 36.w,
-          height: 36.w,
-          decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.grey,
-            image: DecorationImage(
-              image: NetworkImage("https://i.pravatar.cc/150?img=12"),
-              fit: BoxFit.cover,
+        GestureDetector(
+          onTap: () {
+            Get.toNamed(Routes.PROFILE);
+          },
+          child: Hero( 
+            tag: 'user_avatar', 
+            child: Container(
+              width: 36.w,
+              height: 36.w,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.grey,
+                image: DecorationImage(
+                  image: NetworkImage("https://i.pravatar.cc/300"), 
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
           ),
         ),
