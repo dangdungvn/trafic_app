@@ -3,6 +3,8 @@
   import '../models/signup_request.dart';
   import '../services/api_service.dart';
   import '../models/profile_request.dart';
+  import 'dart:convert'; // Để dùng jsonEncode
+  import 'package:http_parser/http_parser.dart'; // Để dùng MediaType
 
   class AuthRepository {
     final ApiService _apiService = ApiService();
@@ -80,10 +82,22 @@
     // 2. Cập nhật thông tin (PUT)
     Future<void> updateProfile(ProfileRequest user) async {
     try {
+      String jsonProfile = jsonEncode(user.toJson());
+
+      final formData = FormData.fromMap({
+        'profile': MultipartFile.fromString(
+          jsonProfile,
+          contentType: MediaType('application', 'json'), // Bắt buộc dòng này để Spring Boot hiểu đây là JSON
+        ),
+        
+        // Nếu sau này bạn làm chức năng upload ảnh thì thêm dòng này:
+        // 'avatar': await MultipartFile.fromFile(imagePath),
+      });
+
       // SỬA: Thêm .dio vào
       await _apiService.dio.put(
         '/users/profile', 
-        data: user.toJson(),
+        data: formData,
       );
       
       // PUT thường không cần return gì nếu thành công (void)

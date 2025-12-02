@@ -42,15 +42,19 @@ class DashboardHeader extends StatelessWidget {
             // Chuyển sang trang Profile
             Get.toNamed(Routes.PROFILE);
           },
-          child: Container(
-            width: 36.w,
-            height: 36.w,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.grey,
-              image: DecorationImage(
-                image: NetworkImage("https://i.pravatar.cc/150?img=12"),
-                fit: BoxFit.cover,
+          child: Hero( 
+            tag: 'user_avatar', 
+            child: Container(
+              width: 36.w,
+              height: 36.w,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.grey,
+                image: DecorationImage(
+                  // Để hiệu ứng đẹp nhất, ảnh ở 2 màn hình nên giống nhau
+                  image: NetworkImage("https://i.pravatar.cc/300"), 
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ),

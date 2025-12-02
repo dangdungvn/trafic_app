@@ -40,17 +40,21 @@ class ProfileView extends GetView<ProfileController> {
               Center(
                 child: Stack(
                   children: [
-                    Container(
-                      width: 100.w,
-                      height: 100.w,
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                          image: NetworkImage("https://i.pravatar.cc/300"),
-                          fit: BoxFit.cover,
+                    Hero( 
+                      tag: 'user_avatar', 
+                      child: Container(
+                        width: 100.w,
+                        height: 100.w,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                            image: NetworkImage("https://i.pravatar.cc/300"), 
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
                     ),
+                    
                     Positioned(
                       bottom: 0,
                       right: 0,
