@@ -23,15 +23,10 @@ class SignupRequest {
 
   Map<String, dynamic> toJson() {
     return {
-      // 'email': email ?? '',
       'password': password,
       'userName': userName,
       'fullName': fullName,
       'province': province,
-      // 'relativePhone': relativePhone ?? '',
-      // 'phoneNumber': phoneNumber ?? '',
-      // 'badge': badge ?? '',
-      // 'avatarUrl': avatarUrl ?? '',
     };
   }
 }

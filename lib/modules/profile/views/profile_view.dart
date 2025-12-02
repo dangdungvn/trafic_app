@@ -1,7 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import '../../../theme/app_theme.dart'; // Import theme
+import '../../../theme/app_theme.dart'; 
 import '../../../widgets/custom_text_field.dart';
 import '../../../widgets/primary_button.dart';
 import '../controllers/profile_controller.dart';
@@ -38,39 +39,62 @@ class ProfileView extends GetView<ProfileController> {
             children: [
               // 1. Avatar + Icon Edit
               Center(
-                child: Stack(
+                child: GestureDetector(
+                  onTap: controller.pickImage,
+                  child: Stack(
                   children: [
-                    Hero( 
-                      tag: 'user_avatar', 
-                      child: Container(
-                        width: 100.w,
-                        height: 100.w,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          image: DecorationImage(
-                            image: NetworkImage("https://i.pravatar.cc/300"), 
-                            fit: BoxFit.cover,
+                    Obx(() {
+                      ImageProvider imageProvider;
+                      
+                      // Logic chọn nguồn ảnh
+                      if (controller.selectedImagePath.value.isNotEmpty) {
+                        // 1. Có ảnh mới chọn từ máy -> Hiển thị ảnh File
+                        imageProvider = FileImage(File(controller.selectedImagePath.value));
+                      } else if (controller.currentAvatarUrl.value.isNotEmpty) {
+                        // 2. Không có ảnh mới, nhưng có link server -> Hiển thị ảnh Mạng
+                        imageProvider = NetworkImage(controller.currentAvatarUrl.value);
+                      } else {
+                        // 3. Mặc định
+                        imageProvider = const NetworkImage("https://i.pravatar.cc/300");
+                      }
+
+                      return Hero( 
+                        tag: 'user_avatar', 
+                        child: Container(
+                          width: 100.w,
+                          height: 100.w,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            image: DecorationImage(
+                              image: imageProvider, // Sử dụng biến ảnh động này
+                              fit: BoxFit.cover,
+                            ),
+                            border: Border.all(color: Colors.white, width: 2),
                           ),
                         ),
-                      ),
-                    ),
+                      );
+                    }),
                     
                     Positioned(
                       bottom: 0,
                       right: 0,
-                      child: Container(
-                        padding: EdgeInsets.all(6.w),
-                        decoration: BoxDecoration(
-                          color: AppTheme.primaryColor, 
-                          shape: BoxShape.rectangle,
-                          borderRadius: BorderRadius.circular(8.r),
-                          border: Border.all(color: Colors.white, width: 2), 
+                      child: GestureDetector(
+                        onTap: controller.pickImage, 
+                        child: Container(
+                          padding: EdgeInsets.all(6.w),
+                          decoration: BoxDecoration(
+                            color: AppTheme.primaryColor, 
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.circular(8.r),
+                            border: Border.all(color: Colors.white, width: 2), 
+                          ),
+                          child: Icon(Icons.edit, color: Colors.white, size: 14.sp),
                         ),
-                        child: Icon(Icons.edit, color: Colors.white, size: 14.sp),
                       ),
                     ),
                   ],
                 ),
+                )
               ),
               SizedBox(height: 30.h),
 
@@ -99,7 +123,6 @@ class ProfileView extends GetView<ProfileController> {
               ),
               SizedBox(height: 16.h),
 
-              // Tỉnh thành (Dùng AbsorbPointer + GestureDetector)
               GestureDetector(
                 onTap: () {
                   // Xử lý chọn tỉnh

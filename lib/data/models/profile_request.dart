@@ -38,7 +38,6 @@ class ProfileRequest {
       'email': email,
       'province': province,
       'phoneNumber': phoneNumber,
-      // 'avatarUrl': avatarUrl,  
     };
   }
 }

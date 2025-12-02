@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:traffic_app/data/repositories/auth_repository.dart';
 import 'package:traffic_app/widgets/custom_dialog.dart';
 import '../../../data/models/profile_request.dart';
+import 'package:image_picker/image_picker.dart';
+import '../../../data/repositories/user_repository.dart';
+import 'dart:io';
 
 class ProfileController extends GetxController {
-  final AuthRepository _authRepository = AuthRepository();
+  final UserRepository _userRepository = UserRepository();
 
   final nameController = TextEditingController();
   final emailController = TextEditingController();
@@ -13,6 +15,11 @@ class ProfileController extends GetxController {
   final addressController = TextEditingController();
 
   var isLoading = false.obs;
+
+  var selectedImagePath = ''.obs; 
+  var currentAvatarUrl = ''.obs;
+
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void onInit() {
@@ -31,14 +38,20 @@ class ProfileController extends GetxController {
 
   Future<void> loadUserProfile() async {
     try {
-      isLoading.value = true; // Bật xoay
+      isLoading.value = true; 
 
-      final user = await _authRepository.getProfile();
+      final user = await _userRepository.getProfile();
 
       nameController.text = user.fullName ?? ""; 
       emailController.text = user.email ?? "";
       phoneController.text = user.phoneNumber ?? "";  
       addressController.text = user.province ?? "";
+
+      if (user.avatarUrl != null && user.avatarUrl!.isNotEmpty) {
+        currentAvatarUrl.value = "${user.avatarUrl}?t=${DateTime.now().millisecondsSinceEpoch}";
+      } else {
+        currentAvatarUrl.value = "";
+      }
 
     } catch (e) {
       CustomDialog.show(
@@ -52,12 +65,28 @@ class ProfileController extends GetxController {
   }
 
   Future<void> saveProfile() async {
-    if (emailController.text.isEmpty ||
-        phoneController.text.isEmpty || 
-        addressController.text.isEmpty) { 
+    if (emailController.text.isEmpty) { 
       CustomDialog.show(
         title: 'Thông báo',
-        message: 'Họ tên không được để trống!',
+        message: 'Không được để trống email!',
+        type: DialogType.warning,
+      );
+      return;
+    }
+
+    if (nameController.text.isEmpty) { 
+      CustomDialog.show(
+        title: 'Thông báo',
+        message: 'Không được để trống tên!',
+        type: DialogType.warning,
+      );
+      return;
+    }
+
+    if (addressController.text.isEmpty) { 
+      CustomDialog.show(
+        title: 'Thông báo',
+        message: 'Không được để trống địa chỉ!',
         type: DialogType.warning,
       );
       return;
@@ -71,10 +100,14 @@ class ProfileController extends GetxController {
         email: emailController.text.trim(),
         phoneNumber: phoneController.text.trim(),
         province: addressController.text.trim(),
-        // Có thể thêm avatarUrl nếu sau này làm chức năng up ảnh
       );
 
-      await _authRepository.updateProfile(updatedUser);
+      File? imageFile;
+      if (selectedImagePath.value.isNotEmpty) {
+        imageFile = File(selectedImagePath.value);
+      }
+
+      await _userRepository.updateProfile(updatedUser, imageFile);
 
       CustomDialog.show(
         title: 'Thành công',
@@ -82,7 +115,8 @@ class ProfileController extends GetxController {
         type: DialogType.success,
       );
 
-      
+      selectedImagePath.value = '';
+
       loadUserProfile(); 
 
     } catch (e) {
@@ -93,6 +127,24 @@ class ProfileController extends GetxController {
       );
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> pickImage() async {
+    try {
+      final XFile? image = await _picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 80, 
+      );      
+      if (image != null) {
+        selectedImagePath.value = image.path;
+      }
+    } catch (e) {
+      CustomDialog.show(
+        title: 'Lỗi',
+        message: 'Không thể chọn ảnh: $e',
+        type: DialogType.error,
+      );
     }
   }
 }

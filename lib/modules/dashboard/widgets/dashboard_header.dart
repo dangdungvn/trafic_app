@@ -39,7 +39,6 @@ class DashboardHeader extends StatelessWidget {
         // Avatar
         GestureDetector(
           onTap: () {
-            // Chuyển sang trang Profile
             Get.toNamed(Routes.PROFILE);
           },
           child: Hero( 
@@ -51,7 +50,6 @@ class DashboardHeader extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: Colors.grey,
                 image: DecorationImage(
-                  // Để hiệu ứng đẹp nhất, ảnh ở 2 màn hình nên giống nhau
                   image: NetworkImage("https://i.pravatar.cc/300"), 
                   fit: BoxFit.cover,
                 ),
