@@ -2,12 +2,14 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import '../../../theme/app_theme.dart';
 import '../../../widgets/custom_dropdown.dart';
 import '../../../widgets/custom_text_field.dart';
 import '../../../widgets/primary_button.dart';
+import '../../../widgets/loading_widget.dart';
 import '../controllers/profile_controller.dart';
 
 class ProfileView extends GetView<ProfileController> {
@@ -104,8 +106,8 @@ class ProfileView extends GetView<ProfileController> {
                                     width: 2,
                                   ),
                                 ),
-                                child: const Center(
-                                  child: CircularProgressIndicator(),
+                                child: Center(
+                                  child: LoadingWidget(height: 40.h),
                                 ),
                               ),
                               errorWidget: (context, url, error) => Container(
@@ -236,19 +238,7 @@ class ProfileView extends GetView<ProfileController> {
                 ),
                 child: Row(
                   children: [
-                    Container(
-                      width: 50.w,
-                      height: 50.w,
-                      decoration: BoxDecoration(
-                        color: AppTheme.inputFillColor,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.stars,
-                        color: Colors.amber,
-                        size: 30,
-                      ),
-                    ),
+                    _buildMedalIcon(1500),
                     SizedBox(width: 16.w),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -291,6 +281,23 @@ class ProfileView extends GetView<ProfileController> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildMedalIcon(int score) {
+    String assetName;
+    if (score >= 1500) {
+      assetName = 'assets/icons/gold_medal.svg';
+    } else if (score >= 1000) {
+      assetName = 'assets/icons/silver_medal.svg';
+    } else {
+      assetName = 'assets/icons/bronze_medal.svg';
+    }
+
+    return SizedBox(
+      width: 50.w,
+      height: 50.w,
+      child: SvgPicture.asset(assetName),
     );
   }
 }
