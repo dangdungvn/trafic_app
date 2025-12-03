@@ -24,7 +24,7 @@ class ProfileView extends GetView<ProfileController> {
             onPressed: () => Get.back(),
           ),
           title: Text(
-            "Quản lý tài khoản",
+            "Quản lý tài khoản".tr,
             style: TextStyle(
               color: AppTheme.textColor, 
               fontSize: 20.sp,
@@ -101,7 +101,7 @@ class ProfileView extends GetView<ProfileController> {
               // 2. Các ô nhập liệu
               CustomTextField(
                 controller: controller.nameController,
-                hintText: "Họ và tên",
+                hintText: "full_name".tr,
                 prefixIcon: Icons.person_outline,
                 keyboardType: TextInputType.name,
               ),
@@ -117,7 +117,7 @@ class ProfileView extends GetView<ProfileController> {
 
               CustomTextField(
                 controller: controller.phoneController,
-                hintText: "Số điện thoại",
+                hintText: "phone_number".tr,
                 prefixIcon: Icons.phone_android,
                 keyboardType: TextInputType.phone,
               ),
@@ -126,12 +126,12 @@ class ProfileView extends GetView<ProfileController> {
               GestureDetector(
                 onTap: () {
                   // Xử lý chọn tỉnh
-                  print("Chọn tỉnh");
+                  print("province_city".tr);
                 },
                 child: AbsorbPointer(
                   child: CustomTextField(
                     controller: controller.addressController,
-                    hintText: "Tỉnh/thành phố sinh sống",
+                    hintText: "province_city".tr,
                     prefixIcon: Icons.location_on_outlined,
                   ),
                 ),
@@ -170,7 +170,7 @@ class ProfileView extends GetView<ProfileController> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Lái xe an toàn",
+                          "Lái xe an toàn".tr,
                           style: TextStyle(
                             fontSize: 16.sp, 
                             fontWeight: FontWeight.bold,
@@ -179,7 +179,7 @@ class ProfileView extends GetView<ProfileController> {
                         ),
                         SizedBox(height: 4.h),
                         Text(
-                          "Điểm số: 1500",
+                          "Điểm số: 1500".tr,
                           style: TextStyle(
                             fontSize: 14.sp, 
                             color: AppTheme.subTextColor, 
@@ -196,7 +196,7 @@ class ProfileView extends GetView<ProfileController> {
 
               // 4. Nút Lưu
               Obx(() => PrimaryButton(
-                text: controller.isLoading.value ? 'Đang lưu...' : 'Lưu thay đổi',
+                text: controller.isLoading.value ? 'Đang lưu...'.tr : 'Lưu thay đổi'.tr,
                 onPressed: controller.isLoading.value 
                     ? () {} 
                     : controller.saveProfile,
