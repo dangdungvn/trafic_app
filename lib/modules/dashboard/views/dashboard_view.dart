@@ -20,9 +20,9 @@ class DashboardView extends GetView<DashboardController> {
             SliverAppBar(
               backgroundColor: Colors.white,
               surfaceTintColor: Colors.transparent,
-              floating: true,
-              snap: true,
-              pinned: false,
+              floating: false,
+              snap: false,
+              pinned: true,
               elevation: 0,
               automaticallyImplyLeading: false,
               toolbarHeight: 60.h,
