@@ -281,7 +281,7 @@ class ProfileView extends GetView<ProfileController> {
               // 4. Nút Lưu
               Obx(
                 () => PrimaryButton(
-                  text: 'Lưu thay đổi',
+                  text: 'Lưu thay đổi'.tr,
                   onPressed: controller.saveProfile,
                   isLoading: controller.isLoading.value,
                 ),
