@@ -29,16 +29,23 @@ class ProfileController extends GetxController {
 
   // Flag để kiểm tra dữ liệu đã được load chưa
   var isDataLoaded = false.obs;
+  var isProvincesLoaded = false.obs;
 
   @override
   void onInit() {
     super.onInit();
-    loadProvinces();
-    // Gọi loadUserProfile() ngay khi controller được khởi tạo (từ HomeBinding)
-    loadUserProfile();
+    // Load provinces và profile song song, không block UI
+    _initData();
+  }
+
+  Future<void> _initData() async {
+    // Load cả 2 song song để tối ưu thời gian
+    await Future.wait([loadProvinces(), loadUserProfile()]);
   }
 
   Future<void> loadProvinces() async {
+    if (isProvincesLoaded.value) return;
+
     try {
       final String response = await rootBundle.loadString(
         'assets/json/provinces.json',
@@ -48,6 +55,7 @@ class ProfileController extends GetxController {
           .map((e) => Map<String, dynamic>.from(e))
           .toList();
       provinces.assignAll(mappedData);
+      isProvincesLoaded.value = true;
     } catch (e) {
       debugPrint('Error loading provinces: $e');
     }
@@ -83,7 +91,7 @@ class ProfileController extends GetxController {
       // Set selected province
       if (user.province != null && user.province!.isNotEmpty) {
         // Wait for provinces to load if empty
-        if (provinces.isEmpty) {
+        if (!isProvincesLoaded.value) {
           await loadProvinces();
         }
 

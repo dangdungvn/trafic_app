@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:traffic_app/widgets/loading_widget.dart';
 
 import '../../../routes/app_pages.dart';
 import '../../profile/controllers/profile_controller.dart';
@@ -48,27 +49,34 @@ class DashboardHeader extends StatelessWidget {
           },
           child: Hero(
             tag: 'user_avatar',
-            child: Obx(
-              () => Container(
+            child: Obx(() {
+              final avatarUrl = profileController.currentAvatarUrl.value;
+              final isLoading = profileController.isLoading.value;
+
+              return Container(
                 width: 36.w,
                 height: 36.w,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.grey,
-                  image: profileController.currentAvatarUrl.value.isNotEmpty
-                      ? DecorationImage(
-                          image: CachedNetworkImageProvider(
-                            profileController.currentAvatarUrl.value,
-                          ),
-                          fit: BoxFit.cover,
-                        )
-                      : null,
-                ),
-                child: profileController.currentAvatarUrl.value.isEmpty
-                    ? Icon(Icons.person, size: 20.sp, color: Colors.white)
-                    : null,
-              ),
-            ),
+                decoration: const BoxDecoration(shape: BoxShape.circle),
+                clipBehavior: Clip.antiAlias,
+                child: isLoading
+                    ? Center(child: LoadingWidget(width: 20.w))
+                    : (avatarUrl.isEmpty
+                          ? Icon(Icons.person, size: 20.sp, color: Colors.white)
+                          : CachedNetworkImage(
+                              imageUrl: avatarUrl,
+                              fit: BoxFit.cover,
+                              width: 36.w,
+                              height: 36.w,
+                              placeholder: (context, url) =>
+                                  Center(child: LoadingWidget(width: 20.w)),
+                              errorWidget: (context, url, error) => Icon(
+                                Icons.person,
+                                size: 20.sp,
+                                color: Colors.white,
+                              ),
+                            )),
+              );
+            }),
           ),
         ),
       ],
