@@ -27,10 +27,14 @@ class ProfileController extends GetxController {
 
   final ImagePicker _picker = ImagePicker();
 
+  // Flag để kiểm tra dữ liệu đã được load chưa
+  var isDataLoaded = false.obs;
+
   @override
   void onInit() {
     super.onInit();
     loadProvinces();
+    // Gọi loadUserProfile() ngay khi controller được khởi tạo (từ HomeBinding)
     loadUserProfile();
   }
 
@@ -58,7 +62,14 @@ class ProfileController extends GetxController {
     super.onClose();
   }
 
-  Future<void> loadUserProfile() async {
+  /// Load thông tin người dùng từ API
+  /// [forceRefresh] = true sẽ bắt buộc call API lại
+  Future<void> loadUserProfile({bool forceRefresh = false}) async {
+    // Nếu đã load dữ liệu và không yêu cầu refresh thì không call API nữa
+    if (isDataLoaded.value && !forceRefresh) {
+      return;
+    }
+
     try {
       isLoading.value = true;
 
@@ -92,6 +103,9 @@ class ProfileController extends GetxController {
       } else {
         currentAvatarUrl.value = "";
       }
+
+      // Đánh dấu đã load dữ liệu thành công
+      isDataLoaded.value = true;
     } catch (e) {
       CustomDialog.show(
         title: 'Lỗi',
@@ -156,7 +170,8 @@ class ProfileController extends GetxController {
 
       selectedImagePath.value = '';
 
-      loadUserProfile();
+      // Sau khi update profile, force refresh để lấy dữ liệu mới
+      loadUserProfile(forceRefresh: true);
     } catch (e) {
       CustomDialog.show(
         title: 'Lỗi',

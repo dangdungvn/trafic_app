@@ -1,15 +1,20 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/route_manager.dart';
+import 'package:get/get.dart';
 
 import '../../../routes/app_pages.dart';
+import '../../profile/controllers/profile_controller.dart';
 
 class DashboardHeader extends StatelessWidget {
   const DashboardHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Lấy ProfileController đã được đăng ký từ HomeBinding
+    final profileController = Get.find<ProfileController>();
+
     return Row(
       children: [
         // Logo placeholder
@@ -36,23 +41,32 @@ class DashboardHeader extends StatelessWidget {
           height: 40.w,
         ),
         SizedBox(width: 20.w),
-        // Avatar
+        // Avatar - hiển thị từ ProfileController
         GestureDetector(
           onTap: () {
             Get.toNamed(Routes.PROFILE);
           },
           child: Hero(
             tag: 'user_avatar',
-            child: Container(
-              width: 36.w,
-              height: 36.w,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.grey,
-                image: DecorationImage(
-                  image: NetworkImage("https://i.pravatar.cc/300"),
-                  fit: BoxFit.cover,
+            child: Obx(
+              () => Container(
+                width: 36.w,
+                height: 36.w,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.grey,
+                  image: profileController.currentAvatarUrl.value.isNotEmpty
+                      ? DecorationImage(
+                          image: CachedNetworkImageProvider(
+                            profileController.currentAvatarUrl.value,
+                          ),
+                          fit: BoxFit.cover,
+                        )
+                      : null,
                 ),
+                child: profileController.currentAvatarUrl.value.isEmpty
+                    ? Icon(Icons.person, size: 20.sp, color: Colors.white)
+                    : null,
               ),
             ),
           ),
