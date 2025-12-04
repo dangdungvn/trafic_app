@@ -31,7 +31,6 @@ class UserRepository {
   Future<void> updateProfile(ProfileRequest user, File? avatarFile) async {
     try {
       String jsonProfile = jsonEncode(user.toJson());
-      print("JSON Profile: $jsonProfile");
       final Map<String, dynamic> formDataMap = {
         'profile': MultipartFile.fromString(
           jsonProfile,
@@ -48,7 +47,6 @@ class UserRepository {
       }
 
       final formData = FormData.fromMap(formDataMap);
-      print("Form Data: $formData");
       await _apiService.dio.put('/users/profile', data: formData);
     } on DioException catch (e) {
       if (e.response != null && e.response!.data is Map) {

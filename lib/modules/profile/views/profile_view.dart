@@ -24,10 +24,6 @@ class ProfileView extends GetView<ProfileController> {
         appBar: AppBar(
           backgroundColor: AppTheme.backgroundColor,
           elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: AppTheme.textColor),
-            onPressed: () => Get.back(),
-          ),
           title: Text(
             "Quản lý tài khoản".tr,
             style: TextStyle(
