@@ -195,7 +195,8 @@ class ProfileController extends GetxController {
     try {
       final XFile? image = await _picker.pickImage(
         source: ImageSource.gallery,
-        imageQuality: 80,
+        imageQuality: 50,
+        maxWidth: 800,
       );
       if (image != null) {
         selectedImagePath.value = image.path;

@@ -7,6 +7,9 @@ import '../modules/signup/views/signup_screen.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/profile/views/profile_view.dart';
+import '../modules/camera/bindings/camera_binding.dart';
+import '../modules/camera/views/camera_view.dart';
+
 
 part 'app_routes.dart';
 
@@ -35,6 +38,11 @@ class AppPages {
       name: _Paths.PROFILE,
       page: () => const ProfileView(),
       // Không cần binding vì ProfileController đã được đăng ký permanent trong HomeBinding
+    ),
+    GetPage(
+      name: _Paths.CAMERA,
+      page: () => const CameraView(),
+      binding: CameraBinding(),
     ),
   ];
 }

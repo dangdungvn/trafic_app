@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:traffic_app/routes/app_pages.dart';
 import '../controllers/home_controller.dart';
 import '../../dashboard/views/dashboard_view.dart';
 import '../../map/views/map_view.dart';
-import '../../camera/views/camera_view.dart';
 import '../../discovery/views/discovery_view.dart';
 import '../../chatbot/views/chatbot_view.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -22,7 +22,7 @@ class HomeView extends GetView<HomeController> {
           children: const [
             DashboardView(),
             MapView(),
-            CameraView(),
+            // CameraView(),
             DiscoveryView(),
             ChatbotView(),
           ],
@@ -133,11 +133,14 @@ class HomeView extends GetView<HomeController> {
 
   Widget _buildCenterButton() {
     return GestureDetector(
-      onTap: () => controller.changeTab(2),
-      child: SvgPicture.asset(
-        'assets/icons/camera_bottom_navbar.svg',
-        width: 120.w,
-        height: 120.h,
+      onTap: () => Get.toNamed(Routes.CAMERA),
+      child: Hero(
+        tag: 'camera_hero_tag', 
+        child: SvgPicture.asset(
+          'assets/icons/camera_bottom_navbar.svg',
+          width: 120.w,
+          height: 120.h,
+        )
       ),
     );
   }
