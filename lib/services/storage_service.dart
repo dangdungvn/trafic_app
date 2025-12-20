@@ -39,4 +39,13 @@ class StorageService extends GetxService {
     await _prefs.remove('username');
     await _prefs.remove('password');
   }
+
+  // Province/Location storage
+  Future<void> setString(String key, String value) async {
+    await _prefs.setString(key, value);
+  }
+
+  String? getString(String key) {
+    return _prefs.getString(key);
+  }
 }
