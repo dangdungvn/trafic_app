@@ -7,8 +7,8 @@
     },
     "servers": [
         {
-            "url": "https://real-apparently-wombat.ngrok-free.app",
-            "description": "Ngrok Server"
+            "url": "http://35.192.42.207:8080",
+            "description": "Generated server url"
         }
     ],
     "security": [
@@ -17,6 +17,163 @@
         }
     ],
     "paths": {
+        "/users/profile": {
+            "get": {
+                "tags": [
+                    "user-controller"
+                ],
+                "operationId": "getMyProfile",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProfileResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "user-controller"
+                ],
+                "operationId": "updateProfile",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "profile": {
+                                        "$ref": "#/components/schemas/UpdateProfileRequest"
+                                    },
+                                    "avatar": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "required": [
+                                    "profile"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProfileResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/notifications/read/{notificationId}": {
+            "put": {
+                "tags": [
+                    "notification-controller"
+                ],
+                "operationId": "markAsRead",
+                "parameters": [
+                    {
+                        "name": "notificationId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/TrafficPost/{postId}": {
+            "put": {
+                "tags": [
+                    "traffic-post-controller"
+                ],
+                "operationId": "updatePost",
+                "parameters": [
+                    {
+                        "name": "postId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PostRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "traffic-post-controller"
+                ],
+                "operationId": "deletePost",
+                "parameters": [
+                    {
+                        "name": "postId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/follow/{followingId}": {
             "post": {
                 "tags": [
@@ -58,7 +215,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/UserRequest"
+                                "$ref": "#/components/schemas/SignupRequest"
                             }
                         }
                     },
@@ -108,12 +265,109 @@
                 }
             }
         },
+        "/api/notifications/device-token": {
+            "post": {
+                "tags": [
+                    "notification-controller"
+                ],
+                "operationId": "registerDeviceToken",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "notification-controller"
+                ],
+                "operationId": "removeDeviceToken",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/TrafficPost": {
             "get": {
                 "tags": [
                     "traffic-post-controller"
                 ],
-                "operationId": "findAllPost",
+                "operationId": "findPostByLocation",
+                "parameters": [
+                    {
+                        "name": "location",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 0
+                        }
+                    },
+                    {
+                        "name": "size",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 10
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -210,49 +464,81 @@
                     }
                 }
             }
+        },
+        "/api/notifications/{userId}": {
+            "get": {
+                "tags": [
+                    "notification-controller"
+                ],
+                "operationId": "getUserNotifications",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
         "schemas": {
-            "UserRequest": {
+            "UpdateProfileRequest": {
                 "type": "object",
                 "properties": {
-                    "email": {
-                        "type": "string"
-                    },
-                    "password": {
-                        "type": "string"
-                    },
-                    "userName": {
-                        "type": "string"
-                    },
                     "fullName": {
+                        "type": "string"
+                    },
+                    "email": {
                         "type": "string"
                     },
                     "province": {
                         "type": "string"
                     },
-                    "relativePhone": {
+                    "phoneNumber": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ProfileResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "username": {
+                        "type": "string"
+                    },
+                    "fullName": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "province": {
                         "type": "string"
                     },
                     "phoneNumber": {
                         "type": "string"
                     },
-                    "badge": {
-                        "type": "string"
-                    },
                     "avatarUrl": {
-                        "type": "string"
-                    }
-                }
-            },
-            "LoginRequest": {
-                "type": "object",
-                "properties": {
-                    "password": {
-                        "type": "string"
-                    },
-                    "username": {
                         "type": "string"
                     }
                 }
@@ -276,9 +562,6 @@
             "PostRequest": {
                 "type": "object",
                 "properties": {
-                    "userId": {
-                        "type": "string"
-                    },
                     "type": {
                         "type": "string"
                     },
@@ -288,12 +571,52 @@
                     "location": {
                         "$ref": "#/components/schemas/LocationRequest"
                     },
+                    "hashtags": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
                     "status": {
                         "type": "string"
                     },
                     "timestamp": {
                         "type": "string",
                         "format": "date-time"
+                    }
+                }
+            },
+            "SignupRequest": {
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    },
+                    "userName": {
+                        "type": "string"
+                    },
+                    "fullName": {
+                        "type": "string"
+                    },
+                    "province": {
+                        "type": "string"
+                    }
+                }
+            },
+            "LoginRequest": {
+                "type": "object",
+                "properties": {
+                    "password": {
+                        "type": "string"
+                    },
+                    "username": {
+                        "type": "string"
+                    },
+                    "deviceToken": {
+                        "type": "string"
                     }
                 }
             }

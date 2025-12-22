@@ -1,120 +1,144 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:traffic_app/widgets/custom_alert.dart';
+import '../../../data/models/traffic_post_model.dart';
+import '../../../data/repositories/traffic_post_repository.dart';
+import '../../../services/storage_service.dart';
 import '../widgets/report_bottom_sheet.dart';
-
-class Post {
-  final String id;
-  final String name;
-  final String avatarUrl;
-  final String content;
-  final String tags;
-  final String mapImageUrl;
-  RxInt likes;
-  RxBool isLiked;
-  RxBool isReported;
-
-  Post({
-    required this.id,
-    required this.name,
-    required this.avatarUrl,
-    required this.content,
-    required this.tags,
-    required this.mapImageUrl,
-    required int likes,
-    required bool isLiked,
-    bool isReported = false,
-  }) : likes = likes.obs,
-       isLiked = isLiked.obs,
-       isReported = isReported.obs;
-}
 
 class DashboardController extends GetxController {
   final TextEditingController searchController = TextEditingController();
+  final TrafficPostRepository _postRepository = TrafficPostRepository();
+  final StorageService _storageService = Get.find<StorageService>();
 
-  final posts = <Post>[
-    Post(
-      id: '1',
-      name: "Phan Văn Tùng",
-      avatarUrl: "https://i.pravatar.cc/150?img=3",
-      content:
-          "Kẹt xe nghiêm trọng trên đường Cộng Hòa hướng về trung tâm thành phố. Mọi người nên tìm lộ trình thay thế!",
-      tags: "#ketxe #giaothong",
-      mapImageUrl:
-          "https://media.istockphoto.com/id/148421596/vi/anh/k%E1%BA%B9t-xe-h%C3%A0ng-gh%E1%BA%BF.jpg?s=2048x2048&w=is&k=20&c=hE43uh9pW9-nujy4jEpO4zfHKOA9aQsP3Buit7V-J2U=",
-      likes: 23,
-      isLiked: true,
-    ),
-    Post(
-      id: '2',
-      name: "Nguyễn Thị Hương",
-      avatarUrl: "https://i.pravatar.cc/150?img=5",
-      content: "Đường Nguyễn Văn Linh đang thi công, di chuyển chậm.",
-      tags: "#thicong #canhbao",
-      mapImageUrl:
-          "https://media.istockphoto.com/id/148421596/vi/anh/k%E1%BA%B9t-xe-h%C3%A0ng-gh%E1%BA%BF.jpg?s=2048x2048&w=is&k=20&c=hE43uh9pW9-nujy4jEpO4zfHKOA9aQsP3Buit7V-J2U=",
-      likes: 15,
-      isLiked: false,
-    ),
-    Post(
-      id: '3',
-      name: "Nguyễn Thị Hương",
-      avatarUrl: "https://i.pravatar.cc/150?img=5",
-      content: "Đường Nguyễn Văn Linh đang thi công, di chuyển chậm.",
-      tags: "#thicong #canhbao",
-      mapImageUrl:
-          "https://media.istockphoto.com/id/148421596/vi/anh/k%E1%BA%B9t-xe-h%C3%A0ng-gh%E1%BA%BF.jpg?s=2048x2048&w=is&k=20&c=hE43uh9pW9-nujy4jEpO4zfHKOA9aQsP3Buit7V-J2U=",
-      likes: 15,
-      isLiked: false,
-    ),
-    Post(
-      id: '4',
-      name: "Nguyễn Thị Hương",
-      avatarUrl: "https://i.pravatar.cc/150?img=5",
-      content: "Đường Nguyễn Văn Linh đang thi công, di chuyển chậm.",
-      tags: "#thicong #canhbao",
-      mapImageUrl:
-          "https://media.istockphoto.com/id/148421596/vi/anh/k%E1%BA%B9t-xe-h%C3%A0ng-gh%E1%BA%BF.jpg?s=2048x2048&w=is&k=20&c=hE43uh9pW9-nujy4jEpO4zfHKOA9aQsP3Buit7V-J2U=",
-      likes: 15,
-      isLiked: false,
-    ),
-    Post(
-      id: '5',
-      name: "Nguyễn Thị Hương",
-      avatarUrl: "https://i.pravatar.cc/150?img=5",
-      content: "Đường Nguyễn Văn Linh đang thi công, di chuyển chậm.",
-      tags: "#thicong #canhbao",
-      mapImageUrl:
-          "https://media.istockphoto.com/id/148421596/vi/anh/k%E1%BA%B9t-xe-h%C3%A0ng-gh%E1%BA%BF.jpg?s=2048x2048&w=is&k=20&c=hE43uh9pW9-nujy4jEpO4zfHKOA9aQsP3Buit7V-J2U=",
-      likes: 15,
-      isLiked: false,
-    ),
-  ].obs;
+  // State management
+  final posts = <TrafficPostModel>[].obs;
+  final isLoading = false.obs;
+  final isLoadingMore = false.obs;
+  final hasMore = true.obs;
+  final errorMessage = ''.obs;
 
-  void toggleLike(Post post) {
-    if (post.isLiked.value) {
-      post.likes.value--;
-      post.isLiked.value = false;
+  // Pagination
+  int currentPage = 0;
+  final int pageSize = 10;
+  String currentLocation = '';
+
+  @override
+  void onInit() {
+    super.onInit();
+    _initializeLocation();
+  }
+
+  /// Khởi tạo location từ storage và load posts
+  void _initializeLocation() async {
+    // Lấy province từ user profile hoặc default
+    final prefs = _storageService;
+    currentLocation = prefs.getString('userProvince') ?? 'Hà Nội';
+
+    // Load posts lần đầu
+    await loadPosts(refresh: true);
+  }
+
+  /// Load danh sách bài viết
+  /// [refresh]: true nếu muốn load lại từ đầu (pull to refresh)
+  Future<void> loadPosts({bool refresh = false}) async {
+    if (refresh) {
+      currentPage = 0;
+      hasMore.value = true;
+      errorMessage.value = '';
+    }
+
+    if (!hasMore.value) return;
+
+    // Set loading state
+    if (refresh) {
+      isLoading.value = true;
+      posts.clear();
     } else {
-      post.likes.value++;
-      post.isLiked.value = true;
+      isLoadingMore.value = true;
+    }
+
+    try {
+      final newPosts = await _postRepository.getPosts(
+        location: currentLocation,
+        page: currentPage,
+        size: pageSize,
+      );
+
+      if (newPosts.isEmpty) {
+        hasMore.value = false;
+      } else {
+        if (refresh) {
+          posts.value = newPosts;
+        } else {
+          posts.addAll(newPosts);
+        }
+        currentPage++;
+      }
+
+      errorMessage.value = '';
+    } catch (e) {
+      errorMessage.value = e.toString();
+      if (refresh) {
+        CustomAlert.showError(e.toString());
+      }
+    } finally {
+      isLoading.value = false;
+      isLoadingMore.value = false;
     }
   }
 
-  void reportPost(Post post) {
-    if (post.isReported.value) return;
+  /// Load more khi scroll đến cuối danh sách
+  Future<void> loadMore() async {
+    if (!isLoadingMore.value && hasMore.value) {
+      await loadPosts(refresh: false);
+    }
+  }
 
+  /// Refresh toàn bộ danh sách
+  @override
+  Future<void> refresh() async {
+    await loadPosts(refresh: true);
+  }
+
+  /// Thay đổi location và load lại posts
+  void changeLocation(String location) {
+    if (location != currentLocation) {
+      currentLocation = location;
+      // Save to storage
+      _storageService.setString('userProvince', location);
+      loadPosts(refresh: true);
+    }
+  }
+
+  /// Toggle like/unlike post
+  void toggleLike(TrafficPostModel post) {
+    final index = posts.indexWhere((p) => p.id == post.id);
+    if (index != -1) {
+      final updatedPost = posts[index].copyWith(
+        likes: post.isLiked ? post.likes - 1 : post.likes + 1,
+        isLiked: !post.isLiked,
+      );
+      posts[index] = updatedPost;
+    }
+
+    // TODO: Call API to update like status on server
+  }
+
+  /// Report post
+  void reportPost(TrafficPostModel post) {
     Get.bottomSheet(
       ReportBottomSheet(
         onReport: (reason) async {
           await Future.delayed(const Duration(seconds: 1));
 
-          post.isReported.value = true;
-          Get.back(); // Close bottom sheet
+          Get.back();
 
           WidgetsBinding.instance.addPostFrameCallback((_) {
             CustomAlert.showSuccess("Đã báo cáo bài viết: $reason");
           });
+
+          // TODO: Call API to report post
         },
       ),
       isScrollControlled: true,

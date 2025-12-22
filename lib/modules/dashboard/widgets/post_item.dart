@@ -1,11 +1,12 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import '../controllers/dashboard_controller.dart';
+import '../../../data/models/traffic_post_model.dart';
 import 'like_icon.dart';
 
 class PostItem extends StatelessWidget {
-  final Post post;
+  final TrafficPostModel post;
   final VoidCallback onLike;
   final VoidCallback onReport;
 
@@ -41,11 +42,22 @@ class PostItem extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.grey[200],
               borderRadius: BorderRadius.circular(12.r),
-              image: DecorationImage(
-                image: NetworkImage(post.mapImageUrl),
-                fit: BoxFit.cover,
-              ),
+              image: post.imageUrls != null && post.imageUrls!.isNotEmpty
+                  ? DecorationImage(
+                      image: CachedNetworkImageProvider(post.imageUrls!.first),
+                      fit: BoxFit.cover,
+                    )
+                  : null,
             ),
+            child: post.imageUrls == null || post.imageUrls!.isEmpty
+                ? Center(
+                    child: Icon(
+                      Icons.location_on,
+                      size: 48.w,
+                      color: Colors.grey[400],
+                    ),
+                  )
+                : null,
           ),
           SizedBox(height: 12.h),
           // User Info
@@ -56,15 +68,21 @@ class PostItem extends StatelessWidget {
                 height: 40.w,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  image: DecorationImage(
-                    image: NetworkImage(post.avatarUrl),
-                    fit: BoxFit.cover,
-                  ),
+                  color: Colors.grey[300],
+                  image: post.avatarUrl != null
+                      ? DecorationImage(
+                          image: CachedNetworkImageProvider(post.avatarUrl!),
+                          fit: BoxFit.cover,
+                        )
+                      : null,
                 ),
+                child: post.avatarUrl == null
+                    ? Icon(Icons.person, size: 24.w, color: Colors.grey[600])
+                    : null,
               ),
               SizedBox(width: 12.w),
               Text(
-                post.name,
+                post.userName ?? 'Người dùng',
                 style: TextStyle(
                   fontSize: 15.2.sp,
                   fontWeight: FontWeight.w600,
@@ -85,13 +103,14 @@ class PostItem extends StatelessWidget {
               ),
               children: [
                 TextSpan(text: "${post.content} "),
-                TextSpan(
-                  text: post.tags,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF4D5DFA),
+                if (post.hashtags.isNotEmpty)
+                  TextSpan(
+                    text: post.hashtags.join(" "),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF4D5DFA),
+                    ),
                   ),
-                ),
               ],
             ),
           ),
@@ -104,51 +123,39 @@ class PostItem extends StatelessWidget {
                 onTap: onLike,
                 child: Row(
                   children: [
-                    Obx(() => LikeIcon(isLiked: post.isLiked.value)),
+                    LikeIcon(isLiked: post.isLiked),
                     SizedBox(width: 8.w),
-                    Obx(
-                      () => Text(
-                        post.likes.value.toString(),
-                        style: TextStyle(
-                          fontSize: 14.4.sp,
-                          fontWeight: FontWeight.w600,
-                          color: post.isLiked.value
-                              ? const Color(0xFF4D5DFA)
-                              : Colors.grey,
-                        ),
+                    Text(
+                      post.likes.toString(),
+                      style: TextStyle(
+                        fontSize: 14.4.sp,
+                        fontWeight: FontWeight.w600,
+                        color: post.isLiked
+                            ? const Color(0xFF4D5DFA)
+                            : Colors.grey,
                       ),
                     ),
                   ],
                 ),
               ),
               GestureDetector(
-                onTap: post.isReported.value ? null : onReport,
-                child: Obx(
-                  () => Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 10.w,
-                      vertical: 6.h,
-                    ),
-                    decoration: BoxDecoration(
-                      color: post.isReported.value
-                          ? Colors.green.withOpacity(0.1)
-                          : Colors.transparent,
-                      border: Border.all(
-                        color: post.isReported.value
-                            ? Colors.green
-                            : const Color(0xFFF75555),
-                      ),
-                      borderRadius: BorderRadius.circular(6.r),
-                    ),
-                    child: Text(
-                      post.isReported.value ? "Đã báo cáo".tr : "Báo cáo".tr,
-                      style: TextStyle(
-                        fontSize: 10.sp,
-                        fontWeight: FontWeight.w600,
-                        color: post.isReported.value
-                            ? Colors.green
-                            : const Color(0xFFF75555),
-                      ),
+                onTap: onReport,
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 10.w,
+                    vertical: 6.h,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    border: Border.all(color: const Color(0xFFF75555)),
+                    borderRadius: BorderRadius.circular(6.r),
+                  ),
+                  child: Text(
+                    "Báo cáo".tr,
+                    style: TextStyle(
+                      fontSize: 10.sp,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFFF75555),
                     ),
                   ),
                 ),
