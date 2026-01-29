@@ -38,7 +38,8 @@ class LoginController extends GetxController {
   }
 
   Future<void> login() async {
-    // Get.focusScope?.unfocus(); ẩn bàn phím
+    // 1. Ẩn bàn phím để tránh lỗi Focus/Controller khi đang xử lý
+    Get.focusScope?.unfocus();
 
     if (usernameController.text.isEmpty || passwordController.text.isEmpty) {
       CustomDialog.show(
@@ -52,6 +53,9 @@ class LoginController extends GetxController {
     isLoading.value = true;
 
     try {
+      // 2. Gọi hàm login
+      // Vì bên Repo đã "throw" lỗi nếu thất bại, nên ta chỉ cần await.
+      // Nếu dòng này chạy xong mà không văng lỗi -> nghĩa là Đăng nhập thành công.
       await _authRepository.login(
         LoginRequest(
           username: usernameController.text.trim(),
@@ -59,7 +63,9 @@ class LoginController extends GetxController {
         ),
       );
 
-      // Save credentials for auto-login if rememberMe is checked
+      // --- XỬ LÝ KHI THÀNH CÔNG ---
+      
+      // Lưu mật khẩu nếu cần
       if (rememberMe.value) {
         await _storageService.saveCredentials(
           usernameController.text.trim(),
@@ -69,16 +75,38 @@ class LoginController extends GetxController {
         await _storageService.clearCredentials();
       }
 
-      // Navigate to home page on successful login
+      // QUAN TRỌNG: Tắt loading TRƯỚC khi chuyển trang
+      // Để tránh việc Controller bị hủy mà isLoading vẫn cố update UI
+      isLoading.value = false;
+
+      // Chuyển sang trang chủ
       Get.offAllNamed(Routes.HOME);
+
     } catch (e) {
+      // --- XỬ LÝ KHI CÓ LỖI (Repo ném ra) ---
+      
+      // 1. Phải tắt loading ngay để người dùng bấm lại được (tránh bị đơ)
+      isLoading.value = false;
+      
+      // 2. Lấy thông báo lỗi
+      // Vì Repo của bạn throw String, nên e chính là chuỗi thông báo lỗi
+      String errorMessage = e.toString();
+      
+      // Xử lý chuỗi "Exception:" nếu có (cho đẹp)
+      if (errorMessage.startsWith("Exception: ")) {
+        errorMessage = errorMessage.replaceAll("Exception: ", "");
+      }
+
+      // 3. Hiện Dialog báo lỗi
       CustomDialog.show(
         title: 'Đăng nhập thất bại',
-        message: e.toString(),
+        message: errorMessage,
         type: DialogType.error,
       );
-    } finally {
-      isLoading.value = false;
     }
+    
+    // KHÔNG DÙNG FINALLY Ở ĐÂY
+    // Vì nếu đăng nhập thành công, ta đã chuyển trang (Get.offAllNamed).
+    // Nếu dùng finally, nó sẽ chạy sau khi chuyển trang -> Controller đã bị hủy -> Lỗi "TextEditingController disposed"
   }
 }
