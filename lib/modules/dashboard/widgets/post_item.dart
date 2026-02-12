@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+
 import '../../../data/models/traffic_post_model.dart';
 import 'like_icon.dart';
 
@@ -42,43 +43,82 @@ class PostItem extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.grey[200],
               borderRadius: BorderRadius.circular(12.r),
-              image: post.imageUrls != null && post.imageUrls!.isNotEmpty
-                  ? DecorationImage(
-                      image: CachedNetworkImageProvider(post.imageUrls!.first),
-                      fit: BoxFit.cover,
-                    )
-                  : null,
             ),
-            child: post.imageUrls == null || post.imageUrls!.isEmpty
-                ? Center(
-                    child: Icon(
-                      Icons.location_on,
-                      size: 48.w,
-                      color: Colors.grey[400],
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12.r),
+              child:
+                  post.fullImageUrls != null && post.fullImageUrls!.isNotEmpty
+                  ? CachedNetworkImage(
+                      imageUrl: post.fullImageUrls!.first,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Center(
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.grey[400],
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Center(
+                        child: Icon(
+                          Icons.broken_image,
+                          size: 48.w,
+                          color: Colors.grey[400],
+                        ),
+                      ),
+                    )
+                  : Center(
+                      child: Icon(
+                        Icons.location_on,
+                        size: 48.w,
+                        color: Colors.grey[400],
+                      ),
                     ),
-                  )
-                : null,
+            ),
           ),
           SizedBox(height: 12.h),
           // User Info
           Row(
             children: [
-              Container(
-                width: 40.w,
-                height: 40.w,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.grey[300],
-                  image: post.avatarUrl != null
-                      ? DecorationImage(
-                          image: CachedNetworkImageProvider(post.avatarUrl!),
-                          fit: BoxFit.cover,
-                        )
-                      : null,
-                ),
-                child: post.avatarUrl == null
-                    ? Icon(Icons.person, size: 24.w, color: Colors.grey[600])
-                    : null,
+              ClipOval(
+                child: post.fullAvatarUrl != null
+                    ? CachedNetworkImage(
+                        imageUrl: post.fullAvatarUrl!,
+                        width: 40.w,
+                        height: 40.w,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => Container(
+                          width: 40.w,
+                          height: 40.w,
+                          color: Colors.grey[300],
+                          child: Icon(
+                            Icons.person,
+                            size: 24.w,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => Container(
+                          width: 40.w,
+                          height: 40.w,
+                          color: Colors.grey[300],
+                          child: Icon(
+                            Icons.person,
+                            size: 24.w,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      )
+                    : Container(
+                        width: 40.w,
+                        height: 40.w,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.grey[300],
+                        ),
+                        child: Icon(
+                          Icons.person,
+                          size: 24.w,
+                          color: Colors.grey[600],
+                        ),
+                      ),
               ),
               SizedBox(width: 12.w),
               Text(

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../routes/app_pages.dart';
-import '../../../data/repositories/auth_repository.dart';
+
 import '../../../data/models/login_request.dart';
+import '../../../data/repositories/auth_repository.dart';
+import '../../../routes/app_pages.dart';
 import '../../../services/storage_service.dart';
 import '../../../widgets/custom_dialog.dart';
 
@@ -21,7 +22,21 @@ class LoginController extends GetxController {
   final passwordFocusNode = FocusNode();
 
   @override
+  void onInit() {
+    super.onInit();
+    // Clear focus and keyboard state on init to prevent keyboard event issues
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      usernameFocusNode.unfocus();
+      passwordFocusNode.unfocus();
+    });
+  }
+
+  @override
   void onClose() {
+    // Unfocus before disposing to clear keyboard state
+    usernameFocusNode.unfocus();
+    passwordFocusNode.unfocus();
+
     usernameController.dispose();
     passwordController.dispose();
     usernameFocusNode.dispose();
@@ -38,7 +53,9 @@ class LoginController extends GetxController {
   }
 
   Future<void> login() async {
-    // Get.focusScope?.unfocus(); ẩn bàn phím
+    // Unfocus all text fields to hide keyboard and clear keyboard state
+    usernameFocusNode.unfocus();
+    passwordFocusNode.unfocus();
 
     if (usernameController.text.isEmpty || passwordController.text.isEmpty) {
       CustomDialog.show(
