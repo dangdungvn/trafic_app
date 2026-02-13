@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../routes/app_pages.dart';
-import '../../../data/repositories/auth_repository.dart';
+
 import '../../../data/models/login_request.dart';
+import '../../../data/repositories/auth_repository.dart';
+import '../../../routes/app_pages.dart';
 import '../../../services/storage_service.dart';
 import '../../../widgets/custom_dialog.dart';
 
@@ -21,7 +22,25 @@ class LoginController extends GetxController {
   final passwordFocusNode = FocusNode();
 
   @override
+  void onInit() {
+    super.onInit();
+    // Clear focus and keyboard state on init to prevent keyboard event issues
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      usernameFocusNode.unfocus();
+      passwordFocusNode.unfocus();
+    });
+  }
+
+  @override
   void onClose() {
+    // Unfocus before disposing to clear keyboard state
+    usernameFocusNode.unfocus();
+    passwordFocusNode.unfocus();
+
+    usernameController.dispose();
+    passwordController.dispose();
+    usernameFocusNode.dispose();
+    passwordFocusNode.dispose();
     super.onClose();
   }
 
@@ -34,7 +53,9 @@ class LoginController extends GetxController {
   }
 
   Future<void> login() async {
-    Get.focusScope?.unfocus();
+    // Unfocus all text fields to hide keyboard and clear keyboard state
+    usernameFocusNode.unfocus();
+    passwordFocusNode.unfocus();
 
     if (usernameController.text.isEmpty || passwordController.text.isEmpty) {
       CustomDialog.show(
@@ -45,7 +66,6 @@ class LoginController extends GetxController {
       return;
     }
 
-    // Bắt đầu loading
     isLoading.value = true;
 
     try {
@@ -56,7 +76,7 @@ class LoginController extends GetxController {
         ),
       );
 
-      // --- XỬ LÝ THÀNH CÔNG ---
+      // Save credentials for auto-login if rememberMe is checked
       if (rememberMe.value) {
         await _storageService.saveCredentials(
           usernameController.text.trim(),
@@ -66,21 +86,16 @@ class LoginController extends GetxController {
         await _storageService.clearCredentials();
       }
 
-      isLoading.value = false;
-
-      // Chuyển trang
+      // Navigate to home page on successful login
       Get.offAllNamed(Routes.HOME);
-
     } catch (e) {
-      isLoading.value = false;
-
-      String errorMsg = e.toString().replaceAll("Exception:", "").trim();
-
       CustomDialog.show(
         title: 'Đăng nhập thất bại',
-        message: errorMsg,
+        message: e.toString(),
         type: DialogType.error,
       );
-    } 
+    } finally {
+      isLoading.value = false;
+    }
   }
 }

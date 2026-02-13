@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:firebase_core/firebase_core.dart';
-
 import 'data/models/login_request.dart';
 import 'data/repositories/auth_repository.dart';
 import 'modules/not_found/not_found_page.dart';
@@ -12,6 +11,9 @@ import 'services/assets_service.dart';
 import 'services/localization_service.dart';
 import 'services/storage_service.dart';
 import 'theme/app_theme.dart';
+
+// Global navigator key for showing dialogs without context
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -65,6 +67,7 @@ class MyApp extends StatelessWidget {
       splitScreenMode: true,
       builder: (context, child) {
         return GetMaterialApp(
+          navigatorKey: navigatorKey,
           title: 'Traffic App',
           debugShowCheckedModeBanner: false,
           theme: AppTheme.lightTheme,

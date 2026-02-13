@@ -45,12 +45,14 @@ class CustomAlert {
     required AlertType type,
     required Duration duration,
   }) {
-    final context = Get.context;
+    // Sử dụng root context để hiển thị alert ở toàn bộ app
+    final context = Get.overlayContext ?? Get.context;
     if (context == null) return;
 
     try {
-      ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(
+      final messenger = ScaffoldMessenger.of(context);
+      messenger.clearSnackBars();
+      messenger.showSnackBar(
         SnackBar(
           content: _AlertWidget(
             message: message,
@@ -60,11 +62,18 @@ class CustomAlert {
           backgroundColor: Colors.transparent,
           elevation: 0,
           behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.all(16),
+          margin: EdgeInsets.only(
+            top: MediaQuery.of(context).padding.top + 16,
+            left: 16,
+            right: 16,
+            bottom:
+                MediaQuery.of(context).size.height -
+                MediaQuery.of(context).padding.top -
+                100,
+          ),
           padding: EdgeInsets.zero,
           duration: duration,
           dismissDirection: DismissDirection.up,
-          // showCloseIcon: true,
         ),
       );
     } catch (e) {

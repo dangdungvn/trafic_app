@@ -1,17 +1,13 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
+import 'package:http_parser/http_parser.dart';
+
 import '../models/traffic_post_model.dart';
 import '../services/api_service.dart';
 
 class TrafficPostRepository {
   final ApiService _apiService = ApiService();
-
-  /// Lấy danh sách bài viết theo vị trí với pagination
-  ///
-  /// [location]: Tên địa điểm (province hoặc address)
-  /// [page]: Số trang (bắt đầu từ 0)
-  /// [size]: Số lượng bài viết mỗi trang (mặc định 10)
-  ///
-  /// Returns: List<TrafficPostModel> hoặc throw Exception
   Future<List<TrafficPostModel>> getPosts({
     required String location,
     int page = 0,
@@ -20,7 +16,10 @@ class TrafficPostRepository {
     try {
       final response = await _apiService.dio.get(
         '/TrafficPost',
-        queryParameters: {'location': location, 'page': page, 'size': size},
+        queryParameters: {
+          // 'location': location,
+          'page': page, 'size': size,
+        },
       );
       // Check response structure
       if (response.data == null) {
@@ -65,41 +64,61 @@ class TrafficPostRepository {
     }
   }
 
-  /// Tạo bài viết mới
+  /// Tạo bài viết mới với upload progress callback
   Future<TrafficPostModel> createPost({
-    required String userId,
     required String type,
     required String content,
     required double lat,
     required double lng,
     required String address,
+    List<String> hashtags = const [],
     String status = 'ACTIVE',
-    List<String>? filePaths,
+    String? filePath,
+    void Function(int sent, int total)? onSendProgress,
   }) async {
     try {
-      FormData formData = FormData.fromMap({
-        'TrafficPost': {
-          'userId': userId,
-          'type': type,
-          'content': content,
-          'location': {'lat': lat, 'lng': lng, 'address': address},
-          'status': status,
-          'timestamp': DateTime.now().toIso8601String(),
-        },
-      });
+      // Tạo JSON object cho TrafficPost
+      final trafficPostJson = {
+        'type': type,
+        'content': content,
+        'location': {'lat': lat, 'lng': lng, 'address': address},
+        'hashtags': hashtags,
+        'status': status,
+        'timestamp': DateTime.now().toIso8601String(),
+      };
 
-      // Add files if provided
-      if (filePaths != null && filePaths.isNotEmpty) {
-        for (var path in filePaths) {
-          formData.files.add(
-            MapEntry('file', await MultipartFile.fromFile(path)),
-          );
-        }
+      // Convert to JSON string
+      final trafficPostString = jsonEncode(trafficPostJson);
+
+      // Tạo FormData với Content-Type đúng theo API spec
+      final formData = FormData();
+
+      // Add TrafficPost as multipart với contentType = application/json
+      formData.files.add(
+        MapEntry(
+          'TrafficPost',
+          MultipartFile.fromString(
+            trafficPostString,
+            contentType: MediaType('application', 'json'),
+          ),
+        ),
+      );
+
+      // Add file if provided
+      if (filePath != null && filePath.isNotEmpty) {
+        final fileName = filePath.split('/').last;
+        formData.files.add(
+          MapEntry(
+            'file',
+            await MultipartFile.fromFile(filePath, filename: fileName),
+          ),
+        );
       }
 
       final response = await _apiService.dio.post(
         '/TrafficPost',
         data: formData,
+        onSendProgress: onSendProgress,
       );
 
       if (response.data['success'] == false) {

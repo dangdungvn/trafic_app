@@ -14,6 +14,9 @@ class AppButton extends StatelessWidget {
   final double? width;
   final double? height;
   final bool isLoading;
+  final IconData? icon;
+  final double? iconSize;
+  final EdgeInsetsGeometry? padding;
 
   const AppButton({
     super.key,
@@ -23,6 +26,9 @@ class AppButton extends StatelessWidget {
     this.width,
     this.height,
     this.isLoading = false,
+    this.icon,
+    this.iconSize,
+    this.padding,
   });
 
   @override
@@ -34,6 +40,7 @@ class AppButton extends StatelessWidget {
       child: Container(
         width: width,
         height: height,
+        padding: padding ?? EdgeInsets.symmetric(horizontal: 18.r),
         decoration: BoxDecoration(
           color: isPrimary ? AppTheme.primaryColor : const Color(0xFFEDEFFF),
           borderRadius: BorderRadius.circular(100.r),
@@ -55,20 +62,34 @@ class AppButton extends StatelessWidget {
               padding: EdgeInsets.symmetric(vertical: 18.h),
               child: Opacity(
                 opacity: isLoading ? 0.0 : 1.0,
-                child: Text(
-                  text,
-                  textAlign: TextAlign.center,
-                  style: isPrimary
-                      ? TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        )
-                      : TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w700,
-                          color: AppTheme.primaryColor,
-                        ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (icon != null) ...[
+                      Icon(
+                        icon,
+                        size: iconSize ?? 20.sp,
+                        color: isPrimary ? Colors.white : AppTheme.primaryColor,
+                      ),
+                      SizedBox(width: 8.w),
+                    ],
+                    Text(
+                      text,
+                      textAlign: TextAlign.center,
+                      style: isPrimary
+                          ? TextStyle(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            )
+                          : TextStyle(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w700,
+                              color: AppTheme.primaryColor,
+                            ),
+                    ),
+                  ],
                 ),
               ),
             ),

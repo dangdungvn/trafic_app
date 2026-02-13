@@ -5,22 +5,26 @@ import '../theme/app_theme.dart';
 
 class CustomTextField extends StatefulWidget {
   final String hintText;
-  final IconData prefixIcon;
+  final IconData? prefixIcon;
   final bool isPassword;
   final TextEditingController? controller;
   final FocusNode? focusNode;
   final TextInputType? keyboardType;
   final TextInputAction? textInputAction;
+  final int? maxLines;
+  final double? height;
 
   const CustomTextField({
     super.key,
     required this.hintText,
-    required this.prefixIcon,
+    this.prefixIcon,
     this.isPassword = false,
     this.controller,
     this.focusNode,
     this.keyboardType,
     this.textInputAction,
+    this.maxLines = 1,
+    this.height,
   });
 
   @override
@@ -57,68 +61,84 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 56.h,
-      decoration: BoxDecoration(
-        color: _isFocused
-            ? AppTheme.primaryColor.withOpacity(0.08)
-            : AppTheme.inputFillColor,
-        borderRadius: BorderRadius.circular(12.r),
-        border: _isFocused
-            ? Border.all(color: AppTheme.primaryColor, width: 1)
-            : null,
-      ),
-      padding: .symmetric(horizontal: 20.w),
-      child: Row(
-        children: [
-          Icon(
-            widget.prefixIcon,
-            color: _isFocused ? AppTheme.primaryColor : AppTheme.subTextColor,
-            size: 20.sp,
-          ),
-          SizedBox(width: 12.w),
-          Expanded(
-            child: TextField(
-              controller: widget.controller,
-              focusNode: _focusNode,
-              obscureText: widget.isPassword && _isObscure,
-              keyboardType: widget.keyboardType,
-              textInputAction: widget.textInputAction,
-              cursorColor: AppTheme.primaryColor,
-              style: TextStyle(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w600,
-                color: AppTheme.textColor,
-              ),
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                hintText: widget.hintText,
-                hintStyle: TextStyle(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w400,
-                  color: AppTheme.subTextColor,
-                ),
-                contentPadding: EdgeInsets.zero,
-                isDense: true,
-              ),
-            ),
-          ),
-          if (widget.isPassword)
-            IconButton(
-              icon: Icon(
-                _isObscure ? Icons.visibility_off : Icons.visibility,
+    return GestureDetector(
+      onTap: () {
+        _focusNode.requestFocus();
+      },
+      child: Container(
+        height: widget.height ?? 56.h,
+        decoration: BoxDecoration(
+          color: _isFocused
+              ? AppTheme.primaryColor.withOpacity(0.08)
+              : AppTheme.inputFillColor,
+          borderRadius: BorderRadius.circular(12.r),
+          border: _isFocused
+              ? Border.all(color: AppTheme.primaryColor, width: 1)
+              : null,
+        ),
+        padding: EdgeInsets.symmetric(
+          horizontal: 20.w,
+          vertical: widget.maxLines != 1 ? 12.h : 0,
+        ),
+        child: Row(
+          crossAxisAlignment: widget.maxLines != 1
+              ? CrossAxisAlignment.start
+              : CrossAxisAlignment.center,
+          children: [
+            if (widget.prefixIcon != null) ...[
+              Icon(
+                widget.prefixIcon,
                 color: _isFocused
                     ? AppTheme.primaryColor
                     : AppTheme.subTextColor,
                 size: 20.sp,
               ),
-              onPressed: () {
-                setState(() {
-                  _isObscure = !_isObscure;
-                });
-              },
+              SizedBox(width: 12.w),
+            ],
+            Expanded(
+              child: TextField(
+                controller: widget.controller,
+                focusNode: _focusNode,
+                obscureText: widget.isPassword && _isObscure,
+                keyboardType: widget.keyboardType,
+                textInputAction: widget.textInputAction,
+                maxLines: widget.maxLines,
+                cursorColor: AppTheme.primaryColor,
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w600,
+                  color: AppTheme.textColor,
+                ),
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: widget.hintText,
+                  hintStyle: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w400,
+                    color: AppTheme.subTextColor,
+                  ),
+                  contentPadding: EdgeInsets.zero,
+                  isDense: true,
+                ),
+              ),
             ),
-        ],
+            if (widget.isPassword)
+              IconButton(
+                icon: Icon(
+                  _isObscure ? Icons.visibility_off : Icons.visibility,
+                  color: _isFocused
+                      ? AppTheme.primaryColor
+                      : AppTheme.subTextColor,
+                  size: 20.sp,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _isObscure = !_isObscure;
+                  });
+                },
+              ),
+          ],
+        ),
       ),
     );
   }

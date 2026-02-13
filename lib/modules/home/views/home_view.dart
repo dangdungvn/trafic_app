@@ -1,146 +1,78 @@
+import 'package:adaptive_platform_ui/adaptive_platform_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:traffic_app/routes/app_pages.dart';
-import '../controllers/home_controller.dart';
-import '../../dashboard/views/dashboard_view.dart';
-import '../../map/views/map_view.dart';
-import '../../discovery/views/discovery_view.dart';
+
+import '../../../widgets/upload_progress_overlay.dart';
+import '../../camera/views/camera_view.dart';
 import '../../chatbot/views/chatbot_view.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../dashboard/views/dashboard_view.dart';
+import '../../discovery/views/discovery_view.dart';
+import '../../map/views/map_view.dart';
+import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBody: true,
-      body: Obx(
-        () => IndexedStack(
-          index: controller.currentIndex.value,
-          children: const [
-            DashboardView(),
-            MapView(),
-            // CameraView(),
-            DiscoveryView(),
-            ChatbotView(),
-          ],
-        ),
-      ),
-      bottomNavigationBar: _buildBottomNavigationBar(),
-    );
-  }
-
-  Widget _buildBottomNavigationBar() {
-    return SizedBox(
-      height: 100.h,
-      child: Stack(
-        alignment: Alignment.bottomCenter,
-        clipBehavior: Clip.none,
+    return Obx(
+      () => Stack(
         children: [
-          Container(
-            height: 80.h,
-            padding: EdgeInsets.only(top: 8.h, bottom: 16.h),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 12,
-                  offset: const Offset(0, -1),
-                ),
+          AdaptiveScaffold(
+            body: IndexedStack(
+              index: controller.currentIndex.value,
+              children: const [
+                DashboardView(),
+                MapView(),
+                CameraView(),
+                DiscoveryView(),
+                ChatbotView(),
               ],
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: _buildNavItem(
-                    0,
-                    'assets/icons/home_bottom_navbar.svg',
-                    'home_bottom_navbar'.tr,
-                  ),
+            bottomNavigationBar: AdaptiveBottomNavigationBar(
+              selectedIndex: controller.currentIndex.value,
+              onTap: (index) => controller.changeTab(index),
+              items: [
+                AdaptiveNavigationDestination(
+                  icon: 'house',
+                  label: 'home_bottom_navbar'.tr,
+                  selectedIcon: 'house.fill',
                 ),
-                Expanded(
-                  child: _buildNavItem(
-                    1,
-                    'assets/icons/location_bottom_navbar.svg',
-                    'map_bottom_navbar'.tr,
-                  ),
+                AdaptiveNavigationDestination(
+                  icon: 'location',
+                  label: 'map_bottom_navbar'.tr,
+                  selectedIcon: 'location.fill',
                 ),
-                SizedBox(width: 70.w), // Placeholder for center button
-                Expanded(
-                  child: _buildNavItem(
-                    3,
-                    'assets/icons/discovery_bottom_navbar.svg',
-                    'discovery_bottom_navbar'.tr,
-                  ),
+                AdaptiveNavigationDestination(
+                  icon: 'camera',
+                  label: '',
+                  selectedIcon: 'camera.fill',
                 ),
-                Expanded(
-                  child: _buildNavItem(
-                    4,
-                    'assets/icons/chatbot_bottom_navbar.svg',
-                    'chatbot_bottom_navbar'.tr,
-                  ),
+                AdaptiveNavigationDestination(
+                  icon: 'magnifyingglass',
+                  label: 'discovery_bottom_navbar'.tr,
+                  selectedIcon: 'magnifyingglass.fill',
+                ),
+                AdaptiveNavigationDestination(
+                  icon: 'bubble.left.and.bubble.right',
+                  label: 'chatbot_bottom_navbar'.tr,
+                  selectedIcon: 'bubble.left.and.bubble.right.fill',
                 ),
               ],
             ),
           ),
-          Positioned(bottom: 0.h, child: _buildCenterButton()),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNavItem(int index, String iconPath, String label) {
-    return Obx(() {
-      final isSelected = controller.currentIndex.value == index;
-      final color = isSelected
-          ? const Color(0xFF4D5DFA)
-          : const Color(0xFF9E9E9E);
-
-      return GestureDetector(
-        onTap: () => controller.changeTab(index),
-        behavior: HitTestBehavior.opaque,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SvgPicture.asset(
-              iconPath,
-              width: 24.w,
-              height: 24.h,
-              colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
-            ),
-            SizedBox(height: 4.h),
-            Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: 12.sp,
-                fontWeight: FontWeight.w600,
-                color: color,
+          // Upload Progress Overlay
+          if (controller.isUploading.value)
+            Positioned(
+              top: MediaQuery.of(context).padding.top + 8,
+              left: 0,
+              right: 0,
+              child: UploadProgressOverlay(
+                progress: controller.uploadProgress.value,
+                onCancel: controller.cancelUpload,
               ),
             ),
-          ],
-        ),
-      );
-    });
-  }
-
-  Widget _buildCenterButton() {
-    return GestureDetector(
-      onTap: () => Get.toNamed(Routes.CAMERA),
-      child: Hero(
-        tag: 'camera_hero_tag', 
-        child: SvgPicture.asset(
-          'assets/icons/camera_bottom_navbar.svg',
-          width: 120.w,
-          height: 120.h,
-        )
+        ],
       ),
     );
   }

@@ -48,19 +48,22 @@ class MapView extends GetView<MapController> {
                     ),
                   ],
                 ),
-                child: TextField(
-                  controller: controller.searchController,
-                  decoration: const InputDecoration(
-                    hintText: 'Tìm kiếm địa điểm...',
-                    border: InputBorder.none,
-                    icon: Icon(Icons.search, color: Colors.grey),
+                child: Material(
+                  type: MaterialType.transparency,
+                  child: TextField(
+                    controller: controller.searchController,
+                    decoration: const InputDecoration(
+                      hintText: 'Tìm kiếm địa điểm...',
+                      border: InputBorder.none,
+                      icon: Icon(Icons.search, color: Colors.grey),
+                    ),
+                    onChanged: (value) {
+                      controller.fetchSuggestions(value);
+                    },
+                    onSubmitted: (value) {
+                      controller.searchLocation(value);
+                    },
                   ),
-                  onChanged: (value) {
-                    controller.fetchSuggestions(value);
-                  },
-                  onSubmitted: (value) {
-                    controller.searchLocation(value);
-                  },
                 ),
               ),
               Obx(

@@ -1,4 +1,5 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 import 'location_model.dart';
 
 class TrafficPostModel {
@@ -36,17 +37,6 @@ class TrafficPostModel {
     // Handle nested user object
     final user = json['user'] as Map<String, dynamic>?;
 
-    // Handle avatar URL
-    String? avatarUrl =
-        user?['avatarUrl'] as String? ?? json['avatarUrl'] as String?;
-    if (avatarUrl != null && !avatarUrl.startsWith('http')) {
-      final baseUrl = dotenv.env['BASE_URL'] ?? 'http://35.192.42.207:8080';
-      // Encode filename to handle special characters and spaces
-      // Assuming avatars are stored in /Upload/AVATAR/ based on TRAFFICPOST pattern
-      // If the path is different, this needs to be adjusted
-      avatarUrl = '$baseUrl/Upload/AVATAR/${Uri.encodeComponent(avatarUrl)}';
-    }
-
     return TrafficPostModel(
       id: json['id']?.toString() ?? '',
       userId: user?['id']?.toString() ?? json['userId']?.toString() ?? '',
@@ -60,7 +50,7 @@ class TrafficPostModel {
           ? DateTime.parse(json['timestamp'] as String)
           : DateTime.now(),
       userName: user?['fullname'] as String? ?? json['userName'] as String?,
-      avatarUrl: avatarUrl,
+      avatarUrl: user?['avatarUrl'] as String? ?? json['avatarUrl'] as String?,
       imageUrls: json['images'] != null
           ? List<String>.from(json['images'] as List)
           : (json['imageUrls'] != null
@@ -90,6 +80,40 @@ class TrafficPostModel {
       'isLiked': isLiked,
       'hashtags': hashtags,
     };
+  }
+
+  /// Build full image URL from filename
+  String? getFullImageUrl(String? imageUrl) {
+    if (imageUrl == null || imageUrl.isEmpty) return null;
+
+    // Nếu đã là URL đầy đủ, return luôn
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+      return imageUrl;
+    }
+
+    // Thêm base URL
+    final baseUrl = dotenv.env['BASE_URL'] ?? '';
+    return '$baseUrl/uploads/$imageUrl';
+  }
+
+  /// Get full image URLs list
+  List<String>? get fullImageUrls {
+    if (imageUrls == null || imageUrls!.isEmpty) return null;
+    return imageUrls!.map((url) => getFullImageUrl(url) ?? url).toList();
+  }
+
+  /// Get full avatar URL
+  String? get fullAvatarUrl {
+    if (avatarUrl == null || avatarUrl?.isEmpty == true) return null;
+
+    // Nếu đã là URL đầy đủ, return luôn
+    if (avatarUrl!.startsWith('http://') || avatarUrl!.startsWith('https://')) {
+      return avatarUrl;
+    }
+
+    // Thêm base URL
+    final baseUrl = dotenv.env['BASE_URL'] ?? '';
+    return '$baseUrl/uploads/$avatarUrl';
   }
 
   TrafficPostModel copyWith({

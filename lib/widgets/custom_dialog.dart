@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
 
+import '../main.dart';
 import '../theme/app_theme.dart';
 
 enum DialogType { success, error, warning, info }
@@ -105,7 +105,7 @@ class CustomDialog extends StatelessWidget {
               height: 48.h,
               child: ElevatedButton(
                 onPressed: () {
-                  Get.back();
+                  navigatorKey.currentState?.pop();
                   onPressed?.call();
                 },
                 style: ElevatedButton.styleFrom(
@@ -138,15 +138,19 @@ class CustomDialog extends StatelessWidget {
     VoidCallback? onPressed,
     DialogType type = DialogType.info,
   }) {
-    Get.dialog(
-      CustomDialog(
-        title: title,
-        message: message,
-        buttonText: buttonText,
-        onPressed: onPressed,
-        type: type,
-      ),
-      barrierDismissible: false,
-    );
+    final context = navigatorKey.currentContext;
+    if (context != null) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => CustomDialog(
+          title: title,
+          message: message,
+          buttonText: buttonText,
+          onPressed: onPressed,
+          type: type,
+        ),
+      );
+    }
   }
 }
