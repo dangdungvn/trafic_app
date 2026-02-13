@@ -1,5 +1,5 @@
 import 'package:adaptive_platform_ui/adaptive_platform_ui.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
 import '../../../widgets/upload_progress_overlay.dart';
@@ -34,29 +34,49 @@ class HomeView extends GetView<HomeController> {
               onTap: (index) => controller.changeTab(index),
               items: [
                 AdaptiveNavigationDestination(
-                  icon: 'house',
+                  icon: PlatformInfo.isIOS26OrHigher()
+                      ? "house"
+                      : 'assets/icons/home_bottom_navbar.svg',
+                  selectedIcon: PlatformInfo.isIOS26OrHigher()
+                      ? "house.fill"
+                      : 'assets/icons/home_bottom_navbar.svg',
                   label: 'home_bottom_navbar'.tr,
-                  selectedIcon: 'house.fill',
                 ),
                 AdaptiveNavigationDestination(
-                  icon: 'location',
+                  icon: PlatformInfo.isIOS26OrHigher()
+                      ? "location"
+                      : 'assets/icons/location_bottom_navbar.svg',
+                  selectedIcon: PlatformInfo.isIOS26OrHigher()
+                      ? "location.fill"
+                      : 'assets/icons/location_bottom_navbar.svg',
                   label: 'map_bottom_navbar'.tr,
-                  selectedIcon: 'location.fill',
                 ),
                 AdaptiveNavigationDestination(
-                  icon: 'camera',
+                  icon: PlatformInfo.isIOS26OrHigher()
+                      ? "camera"
+                      : 'assets/icons/camera_bottom_navbar.svg',
+                  selectedIcon: PlatformInfo.isIOS26OrHigher()
+                      ? "camera.fill"
+                      : 'assets/icons/camera_bottom_navbar.svg',
                   label: '',
-                  selectedIcon: 'camera.fill',
                 ),
                 AdaptiveNavigationDestination(
-                  icon: 'magnifyingglass',
+                  icon: PlatformInfo.isIOS26OrHigher()
+                      ? "magnifyingglass"
+                      : 'assets/icons/discovery_bottom_navbar.svg',
+                  selectedIcon: PlatformInfo.isIOS26OrHigher()
+                      ? "magnifyingglass"
+                      : 'assets/icons/discovery_bottom_navbar.svg',
                   label: 'discovery_bottom_navbar'.tr,
-                  selectedIcon: 'magnifyingglass.fill',
                 ),
                 AdaptiveNavigationDestination(
-                  icon: 'bubble.left.and.bubble.right',
+                  icon: PlatformInfo.isIOS26OrHigher()
+                      ? "bubble.left.and.bubble.right"
+                      : 'assets/icons/chatbot_bottom_navbar.svg',
+                  selectedIcon: PlatformInfo.isIOS26OrHigher()
+                      ? "bubble.left.and.bubble.right.fill"
+                      : 'assets/icons/chatbot_bottom_navbar.svg',
                   label: 'chatbot_bottom_navbar'.tr,
-                  selectedIcon: 'bubble.left.and.bubble.right.fill',
                 ),
               ],
             ),
