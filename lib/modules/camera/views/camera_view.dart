@@ -26,6 +26,7 @@ class CameraView extends GetView<CameraController> {
               // _buildHeader(),
               Expanded(
                 child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -42,7 +43,7 @@ class CameraView extends GetView<CameraController> {
                         padding: EdgeInsets.symmetric(horizontal: 24.w),
                         child: _buildInfoChips(),
                       ),
-                      SizedBox(height: 24.h),
+                      SizedBox(height: 70.h),
                     ],
                   ),
                 ),
