@@ -1,6 +1,5 @@
 import 'package:adaptive_platform_ui/adaptive_platform_ui.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../widgets/upload_progress_overlay.dart';
@@ -37,62 +36,46 @@ class HomeView extends GetView<HomeController> {
                 AdaptiveNavigationDestination(
                   icon: PlatformInfo.isIOS26OrHigher()
                       ? "house"
-                      : SvgPicture.asset('assets/icons/home_bottom_navbar.svg'),
+                      : Icons.home_outlined,
                   selectedIcon: PlatformInfo.isIOS26OrHigher()
                       ? "house.fill"
-                      : SvgPicture.asset('assets/icons/home_bottom_navbar.svg'),
+                      : Icons.home,
                   label: 'home_bottom_navbar'.tr,
                 ),
                 AdaptiveNavigationDestination(
                   icon: PlatformInfo.isIOS26OrHigher()
                       ? "location"
-                      : SvgPicture.asset(
-                          'assets/icons/location_bottom_navbar.svg',
-                        ),
+                      : Icons.location_on_outlined,
                   selectedIcon: PlatformInfo.isIOS26OrHigher()
                       ? "location.fill"
-                      : SvgPicture.asset(
-                          'assets/icons/location_bottom_navbar.svg',
-                        ),
+                      : Icons.location_on,
                   label: 'map_bottom_navbar'.tr,
                 ),
                 AdaptiveNavigationDestination(
                   icon: PlatformInfo.isIOS26OrHigher()
                       ? "camera"
-                      : SvgPicture.asset(
-                          'assets/icons/camera_bottom_navbar.svg',
-                        ),
+                      : Icons.camera_alt_outlined,
                   selectedIcon: PlatformInfo.isIOS26OrHigher()
                       ? "camera.fill"
-                      : SvgPicture.asset(
-                          'assets/icons/camera_bottom_navbar.svg',
-                        ),
+                      : Icons.camera_alt,
                   label: '',
                 ),
                 AdaptiveNavigationDestination(
                   icon: PlatformInfo.isIOS26OrHigher()
                       ? "magnifyingglass"
-                      : SvgPicture.asset(
-                          'assets/icons/discovery_bottom_navbar.svg',
-                        ),
+                      : Icons.search_outlined,
                   selectedIcon: PlatformInfo.isIOS26OrHigher()
                       ? "magnifyingglass"
-                      : SvgPicture.asset(
-                          'assets/icons/discovery_bottom_navbar.svg',
-                        ),
+                      : Icons.search,
                   label: 'discovery_bottom_navbar'.tr,
                 ),
                 AdaptiveNavigationDestination(
                   icon: PlatformInfo.isIOS26OrHigher()
                       ? "bubble.left.and.bubble.right"
-                      : SvgPicture.asset(
-                          'assets/icons/chatbot_bottom_navbar.svg',
-                        ),
+                      : Icons.chat_bubble_outline,
                   selectedIcon: PlatformInfo.isIOS26OrHigher()
                       ? "bubble.left.and.bubble.right.fill"
-                      : SvgPicture.asset(
-                          'assets/icons/chatbot_bottom_navbar.svg',
-                        ),
+                      : Icons.chat_bubble,
                   label: 'chatbot_bottom_navbar'.tr,
                 ),
               ],
