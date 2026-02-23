@@ -28,7 +28,11 @@ class UserRepository {
   }
 
   // 2. Cập nhật thông tin (PUT)
-  Future<void> updateProfile(ProfileRequest user, File? avatarFile) async {
+  Future<void> updateProfile(
+    ProfileRequest user,
+    File? avatarFile, {
+    void Function(int sent, int total)? onSendProgress,
+  }) async {
     try {
       String jsonProfile = jsonEncode(user.toJson());
       final Map<String, dynamic> formDataMap = {
@@ -47,7 +51,11 @@ class UserRepository {
       }
 
       final formData = FormData.fromMap(formDataMap);
-      await _apiService.dio.put('/users/profile', data: formData);
+      await _apiService.dio.put(
+        '/users/profile',
+        data: formData,
+        onSendProgress: onSendProgress,
+      );
     } on DioException catch (e) {
       if (e.response != null && e.response!.data is Map) {
         throw e.response!.data['message'] ?? 'Cập nhật thất bại';

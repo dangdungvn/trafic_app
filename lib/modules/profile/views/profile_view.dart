@@ -1,15 +1,17 @@
 import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+
 import '../../../theme/app_theme.dart';
 import '../../../widgets/custom_dropdown.dart';
 import '../../../widgets/custom_text_field.dart';
-import '../../../widgets/primary_button.dart';
 import '../../../widgets/loading_widget.dart';
+import '../../../widgets/primary_button.dart';
 import '../controllers/profile_controller.dart';
 
 class ProfileView extends GetView<ProfileController> {
@@ -265,12 +267,9 @@ class ProfileView extends GetView<ProfileController> {
               SizedBox(height: 40.h),
 
               // 4. Nút Lưu
-              Obx(
-                () => PrimaryButton(
-                  text: 'Lưu thay đổi'.tr,
-                  onPressed: controller.saveProfile,
-                  isLoading: controller.isLoading.value,
-                ),
+              PrimaryButton(
+                text: 'Lưu thay đổi'.tr,
+                onPressed: controller.saveProfile,
               ),
               SizedBox(height: 20.h),
             ],

@@ -8,6 +8,7 @@ class HomeController extends GetxController {
   // Upload Progress State
   var isUploading = false.obs;
   var uploadProgress = 0.0.obs;
+  var uploadLabel = 'Đăng bài viết'.obs;
 
   void changeTab(int index) {
     currentIndex.value = index;
@@ -18,7 +19,8 @@ class HomeController extends GetxController {
   }
 
   // Upload Progress Methods
-  void startUpload() {
+  void startUpload({String label = 'Đăng bài viết'}) {
+    uploadLabel.value = label;
     isUploading.value = true;
     uploadProgress.value = 0.0;
   }

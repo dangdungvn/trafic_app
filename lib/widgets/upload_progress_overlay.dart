@@ -5,11 +5,13 @@ import '../theme/app_theme.dart';
 
 class UploadProgressOverlay extends StatelessWidget {
   final double progress; // 0.0 to 1.0
+  final String label;
   final VoidCallback? onCancel;
 
   const UploadProgressOverlay({
     super.key,
     required this.progress,
+    this.label = 'Đăng bài viết',
     this.onCancel,
   });
 
@@ -53,7 +55,7 @@ class UploadProgressOverlay extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Đăng bài viết',
+                      label,
                       style: TextStyle(
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w600,
