@@ -25,8 +25,11 @@ class AuthRepository {
         _apiService.setToken(token);
       }
     } on DioException catch (e) {
-      if (e.response != null && e.response!.data is Map) {
-        throw e.response!.data['message'] ?? 'Đăng ký thất bại';
+      if (e.response != null) {
+        if (e.response!.data is Map) {
+          throw e.response!.data['message'] ?? 'Đăng ký thất bại';
+        }
+        throw 'Đăng ký thất bại';
       }
       throw 'Lỗi kết nối mạng';
     } catch (e) {
@@ -53,8 +56,11 @@ class AuthRepository {
 
       return loginResponse;
     } on DioException catch (e) {
-      if (e.response != null && e.response!.data is Map) {
-        throw e.response!.data['message'] ?? 'Đăng nhập thất bại';
+      if (e.response != null) {
+        if (e.response!.data is Map) {
+          throw e.response!.data['message'] ?? 'Đăng nhập thất bại';
+        }
+        throw 'Đăng nhập thất bại';
       }
       throw 'Lỗi kết nối mạng';
     } catch (e) {
