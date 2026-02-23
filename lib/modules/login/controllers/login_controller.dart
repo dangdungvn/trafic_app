@@ -69,11 +69,19 @@ class LoginController extends GetxController {
     isLoading.value = true;
 
     try {
-      await _authRepository.login(
+      final loginResponse = await _authRepository.login(
         LoginRequest(
           username: usernameController.text.trim(),
           password: passwordController.text,
         ),
+      );
+
+      // Save user information
+      await _storageService.saveUserInfo(
+        username: loginResponse.username,
+        fullName: loginResponse.fullName,
+        province: loginResponse.province,
+        relativePhone: loginResponse.relativePhone,
       );
 
       // Save credentials for auto-login if rememberMe is checked

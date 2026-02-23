@@ -33,12 +33,21 @@ void main() async {
   if (credentials != null) {
     try {
       final authRepository = AuthRepository();
-      await authRepository.login(
+      final loginResponse = await authRepository.login(
         LoginRequest(
-          username: credentials['username']!,
-          password: credentials['password']!,
+          username: credentials['username'] ?? '',
+          password: credentials['password'] ?? '',
         ),
       );
+
+      // Save user information
+      await storageService.saveUserInfo(
+        username: loginResponse.username,
+        fullName: loginResponse.fullName,
+        province: loginResponse.province,
+        relativePhone: loginResponse.relativePhone,
+      );
+
       initialRoute = Routes.HOME;
     } catch (e) {
       // Login failed, stay at LOGIN
