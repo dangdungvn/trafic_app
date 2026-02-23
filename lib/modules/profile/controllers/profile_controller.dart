@@ -1,12 +1,16 @@
 import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:traffic_app/widgets/custom_dialog.dart';
-import '../../../data/models/profile_request.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:traffic_app/widgets/custom_alert.dart';
+import 'package:traffic_app/widgets/custom_dialog.dart';
+
+import '../../../data/models/profile_request.dart';
 import '../../../data/repositories/user_repository.dart';
-import 'dart:io';
+import '../../home/controllers/home_controller.dart';
 
 class ProfileController extends GetxController {
   final UserRepository _userRepository = UserRepository();
@@ -116,8 +120,8 @@ class ProfileController extends GetxController {
       isDataLoaded.value = true;
     } catch (e) {
       CustomDialog.show(
-        title: 'Lỗi',
-        message: 'Không thể tải thông tin cá nhân: $e',
+        title: 'profile_load_error_title'.tr,
+        message: '${'profile_load_error_message'.tr}: $e',
         type: DialogType.error,
       );
     } finally {
@@ -130,8 +134,8 @@ class ProfileController extends GetxController {
 
     if (emailController.text.isEmpty) {
       CustomDialog.show(
-        title: 'Thông báo',
-        message: 'Không được để trống email!',
+        title: 'profile_notice_title'.tr,
+        message: 'profile_email_empty'.tr,
         type: DialogType.warning,
       );
       return;
@@ -139,8 +143,8 @@ class ProfileController extends GetxController {
 
     if (nameController.text.isEmpty) {
       CustomDialog.show(
-        title: 'Thông báo',
-        message: 'Không được để trống tên!',
+        title: 'profile_notice_title'.tr,
+        message: 'profile_name_empty'.tr,
         type: DialogType.warning,
       );
       return;
@@ -148,14 +152,16 @@ class ProfileController extends GetxController {
 
     if (selectedProvince.value == null) {
       CustomDialog.show(
-        title: 'Thông báo',
-        message: 'Vui lòng chọn tỉnh/thành phố!',
+        title: 'profile_notice_title'.tr,
+        message: 'profile_province_empty'.tr,
         type: DialogType.warning,
       );
       return;
     }
     try {
-      isLoading.value = true;
+      final homeController = Get.find<HomeController>();
+      homeController.startUpload(label: 'profile_upload_label'.tr);
+      Get.back(); // Quay về home ngay lập tức, không đợi API
 
       final updatedUser = ProfileRequest(
         fullName: nameController.text.trim(),
@@ -168,26 +174,24 @@ class ProfileController extends GetxController {
         imageFile = File(selectedImagePath.value);
       }
 
-      await _userRepository.updateProfile(updatedUser, imageFile);
-
-      CustomDialog.show(
-        title: 'Thành công',
-        message: 'Cập nhật thông tin thành công',
-        type: DialogType.success,
+      await _userRepository.updateProfile(
+        updatedUser,
+        imageFile,
+        onSendProgress: (sent, total) {
+          if (total > 0) homeController.updateUploadProgress(sent / total);
+        },
       );
 
+      homeController.completeUpload();
       selectedImagePath.value = '';
+
+      CustomAlert.showSuccess('profile_update_success'.tr);
 
       // Sau khi update profile, force refresh để lấy dữ liệu mới
       loadUserProfile(forceRefresh: true);
     } catch (e) {
-      CustomDialog.show(
-        title: 'Lỗi',
-        message: 'Cập nhật thông tin thất bại: $e',
-        type: DialogType.error,
-      );
-    } finally {
-      isLoading.value = false;
+      Get.find<HomeController>().cancelUpload();
+      CustomAlert.showError('${'profile_update_error'.tr}: $e');
     }
   }
 
@@ -203,8 +207,8 @@ class ProfileController extends GetxController {
       }
     } catch (e) {
       CustomDialog.show(
-        title: 'Lỗi',
-        message: 'Không thể chọn ảnh: $e',
+        title: 'profile_load_error_title'.tr,
+        message: '${'profile_pick_image_error'.tr}: $e',
         type: DialogType.error,
       );
     }

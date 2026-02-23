@@ -45,5 +45,15 @@
   "camera_pick_from_gallery": "Chọn từ thư viện",
   "camera_content_placeholder": "Nội dung bài viết ...",
   "camera_time_label": "Thời gian:",
-  "camera_location_label": "Địa điểm:"
+  "camera_location_label": "Địa điểm:",
+  "profile_notice_title": "Thông báo",
+  "profile_load_error_title": "Lỗi",
+  "profile_email_empty": "Không được để trống email!",
+  "profile_name_empty": "Không được để trống tên!",
+  "profile_province_empty": "Vui lòng chọn tỉnh/thành phố!",
+  "profile_upload_label": "Cập nhật hồ sơ",
+  "profile_update_success": "Cập nhật thông tin thành công",
+  "profile_update_error": "Cập nhật thông tin thất bại",
+  "profile_load_error_message": "Không thể tải thông tin cá nhân",
+  "profile_pick_image_error": "Không thể chọn ảnh"
 }

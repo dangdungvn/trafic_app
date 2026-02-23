@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 
 import '../../../data/repositories/traffic_post_repository.dart';
 import '../../../widgets/custom_alert.dart';
+import '../../dashboard/controllers/dashboard_controller.dart';
 import '../../home/controllers/home_controller.dart';
 
 class CameraController extends GetxController {
@@ -206,6 +207,12 @@ class CameraController extends GetxController {
         )
         .then((post) {
           homeController.completeUpload();
+          // Nếu đang ở tab home (index 0), chèn bài viết vừa đăng lên đầu danh sách
+          // mà không rebuild lại toàn bộ trang — chỉ RxList thay đổi → chỉ ListView rebuild
+          final dashboardController = Get.find<DashboardController>();
+          if (homeController.currentIndex.value == 0) {
+            dashboardController.prependPost(post);
+          }
           CustomAlert.showSuccess('camera_post_success'.tr);
         })
         .catchError((error) {

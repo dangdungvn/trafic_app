@@ -90,6 +90,7 @@ class HomeView extends GetView<HomeController> {
               right: 0,
               child: UploadProgressOverlay(
                 progress: controller.uploadProgress.value,
+                label: controller.uploadLabel.value,
                 onCancel: controller.cancelUpload,
               ),
             ),

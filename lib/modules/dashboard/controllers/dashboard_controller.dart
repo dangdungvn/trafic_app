@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:traffic_app/widgets/custom_alert.dart';
+
 import '../../../data/models/traffic_post_model.dart';
 import '../../../data/repositories/traffic_post_repository.dart';
 import '../../../services/storage_service.dart';
@@ -17,6 +18,9 @@ class DashboardController extends GetxController {
   final isLoadingMore = false.obs;
   final hasMore = true.obs;
   final errorMessage = ''.obs;
+
+  // Animation: id của bài viết mới nhất vừa được prepend
+  final newPostId = RxnString();
 
   // Pagination
   int currentPage = 0;
@@ -109,6 +113,17 @@ class DashboardController extends GetxController {
       _storageService.setString('userProvince', location);
       loadPosts(refresh: true);
     }
+  }
+
+  /// Thêm bài viết mới lên đầu danh sách (không rebuild toàn trang)
+  void prependPost(TrafficPostModel post) {
+    newPostId.value = post.id;
+    posts.insert(0, post);
+  }
+
+  /// Xóa newPostId sau khi animation kết thúc
+  void clearNewPostId() {
+    newPostId.value = null;
   }
 
   /// Toggle like/unlike post

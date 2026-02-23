@@ -45,5 +45,15 @@
   "camera_pick_from_gallery": "Pick from gallery",
   "camera_content_placeholder": "Post content ...",
   "camera_time_label": "Time:",
-  "camera_location_label": "Location:"
+  "camera_location_label": "Location:",
+  "profile_notice_title": "Notice",
+  "profile_load_error_title": "Error",
+  "profile_email_empty": "Email cannot be empty!",
+  "profile_name_empty": "Name cannot be empty!",
+  "profile_province_empty": "Please select a province/city!",
+  "profile_upload_label": "Updating profile",
+  "profile_update_success": "Profile updated successfully",
+  "profile_update_error": "Failed to update profile",
+  "profile_load_error_message": "Cannot load profile information",
+  "profile_pick_image_error": "Cannot pick image"
 }

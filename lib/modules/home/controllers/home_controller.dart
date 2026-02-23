@@ -1,16 +1,28 @@
 import 'package:get/get.dart';
 import 'package:traffic_app/routes/app_pages.dart';
 
+import '../../map/controllers/map_controller.dart';
+
 class HomeController extends GetxController {
   // Bottom Navigation State
   var currentIndex = 0.obs;
+  bool _mapTabVisited = false;
 
   // Upload Progress State
   var isUploading = false.obs;
   var uploadProgress = 0.0.obs;
+  var uploadLabel = 'Đăng bài viết'.obs;
 
   void changeTab(int index) {
     currentIndex.value = index;
+    if (index == 1 && !_mapTabVisited) {
+      _mapTabVisited = true;
+      Future.delayed(const Duration(milliseconds: 200), () {
+        if (Get.isRegistered<MapController>()) {
+          Get.find<MapController>().toggleMapType();
+        }
+      });
+    }
   }
 
   void goToEditProfile() {
@@ -18,7 +30,8 @@ class HomeController extends GetxController {
   }
 
   // Upload Progress Methods
-  void startUpload() {
+  void startUpload({String label = 'Đăng bài viết'}) {
+    uploadLabel.value = label;
     isUploading.value = true;
     uploadProgress.value = 0.0;
   }

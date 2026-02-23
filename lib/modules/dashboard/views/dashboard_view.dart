@@ -130,17 +130,25 @@ class DashboardView extends GetView<DashboardController> {
                             index,
                           ) {
                             final post = controller.posts[index];
+                            final isNew = controller.newPostId.value == post.id;
+                            final child = RepaintBoundary(
+                              key: ValueKey(post.id),
+                              child: PostItem(
+                                key: ValueKey(post.id),
+                                post: post,
+                                onLike: () => controller.toggleLike(post),
+                                onReport: () => controller.reportPost(post),
+                              ),
+                            );
                             return Padding(
                               padding: EdgeInsets.only(bottom: 20.h),
-                              child: RepaintBoundary(
-                                key: ValueKey(post.id),
-                                child: PostItem(
-                                  key: ValueKey(post.id),
-                                  post: post,
-                                  onLike: () => controller.toggleLike(post),
-                                  onReport: () => controller.reportPost(post),
-                                ),
-                              ),
+                              child: isNew
+                                  ? _NewPostAnimator(
+                                      key: ValueKey('anim_${post.id}'),
+                                      dashController: controller,
+                                      child: child,
+                                    )
+                                  : child,
                             );
                           }, childCount: controller.posts.length),
                         ),
@@ -169,6 +177,63 @@ class DashboardView extends GetView<DashboardController> {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Widget bọc bài viết mới: slide xuống từ trên + fade in khi vừa được đăng
+class _NewPostAnimator extends StatefulWidget {
+  final Widget child;
+  final DashboardController dashController;
+
+  const _NewPostAnimator({
+    super.key,
+    required this.child,
+    required this.dashController,
+  });
+
+  @override
+  State<_NewPostAnimator> createState() => _NewPostAnimatorState();
+}
+
+class _NewPostAnimatorState extends State<_NewPostAnimator>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _anim;
+  late final Animation<Offset> _slide;
+  late final Animation<double> _fade;
+
+  @override
+  void initState() {
+    super.initState();
+    _anim = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+    _slide = Tween<Offset>(
+      begin: const Offset(0, -0.25),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _anim, curve: Curves.easeOutCubic));
+    _fade = CurvedAnimation(parent: _anim, curve: Curves.easeIn);
+
+    _anim.forward();
+    _anim.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        widget.dashController.clearNewPostId();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _anim.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: _fade,
+      child: SlideTransition(position: _slide, child: widget.child),
     );
   }
 }
