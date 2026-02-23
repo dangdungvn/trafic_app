@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 
+import '../../../services/assets_service.dart';
 import '../controllers/dashboard_controller.dart';
 import '../widgets/post_item_shimmer.dart';
 import '../widgets/widgets.dart';
@@ -82,10 +84,29 @@ class DashboardView extends GetView<DashboardController> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(
-                                  Icons.article_outlined,
-                                  size: 64.w,
-                                  color: Colors.grey[400],
+                                SizedBox(
+                                  height: 260.h,
+                                  child:
+                                      AssetsService
+                                              .to
+                                              .notFoundComposition
+                                              .value !=
+                                          null
+                                      ? Lottie(
+                                          composition: AssetsService
+                                              .to
+                                              .notFoundComposition
+                                              .value!,
+                                          fit: BoxFit.contain,
+                                          repeat: true,
+                                        )
+                                      : Lottie.asset(
+                                          'assets/animations/404_not_found.json',
+                                          fit: BoxFit.contain,
+                                          repeat: true,
+                                          renderCache:
+                                              RenderCache.drawingCommands,
+                                        ),
                                 ),
                                 SizedBox(height: 16.h),
                                 Text(

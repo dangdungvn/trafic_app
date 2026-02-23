@@ -4,6 +4,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 class StorageService extends GetxService {
   late SharedPreferences _prefs;
 
+  // Getter để dễ dàng truy cập từ bất kỳ đâu trong app
+  static StorageService get to => Get.find<StorageService>();
+
   Future<StorageService> init() async {
     _prefs = await SharedPreferences.getInstance();
     return this;
@@ -47,5 +50,37 @@ class StorageService extends GetxService {
 
   String? getString(String key) {
     return _prefs.getString(key);
+  }
+
+  // User information storage
+  Future<void> saveUserInfo({
+    String? username,
+    String? fullName,
+    String? province,
+    String? relativePhone,
+  }) async {
+    if (username != null) await _prefs.setString('user_username', username);
+    if (fullName != null) await _prefs.setString('user_fullName', fullName);
+    if (province != null) await _prefs.setString('user_province', province);
+    if (relativePhone != null) {
+      await _prefs.setString('user_relativePhone', relativePhone);
+    } else {
+      await _prefs.remove('user_relativePhone');
+    }
+  }
+
+  String? getUsername() => _prefs.getString('user_username');
+
+  String? getFullName() => _prefs.getString('user_fullName');
+
+  String? getProvince() => _prefs.getString('user_province');
+
+  String? getRelativePhone() => _prefs.getString('user_relativePhone');
+
+  Future<void> clearUserInfo() async {
+    await _prefs.remove('user_username');
+    await _prefs.remove('user_fullName');
+    await _prefs.remove('user_province');
+    await _prefs.remove('user_relativePhone');
   }
 }
