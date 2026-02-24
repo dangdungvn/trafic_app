@@ -55,5 +55,9 @@
   "profile_update_success": "Profile updated successfully",
   "profile_update_error": "Failed to update profile",
   "profile_load_error_message": "Cannot load profile information",
-  "profile_pick_image_error": "Cannot pick image"
+  "profile_pick_image_error": "Cannot pick image",
+  "dashboard_no_posts": "No posts yet",
+  "dashboard_pull_up_load": "Pull up to load more",
+  "dashboard_load_failed": "Load failed! Tap to retry",
+  "dashboard_release_to_load": "Release to load more"
 }

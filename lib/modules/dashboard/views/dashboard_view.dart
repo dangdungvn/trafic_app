@@ -97,7 +97,7 @@ class DashboardView extends GetView<DashboardController> {
                         ),
                         SizedBox(height: 16.h),
                         Text(
-                          'Chưa có bài viết nào',
+                          'dashboard_no_posts'.tr,
                           style: TextStyle(
                             fontSize: 16.sp,
                             color: Colors.grey[600],
@@ -118,7 +118,7 @@ class DashboardView extends GetView<DashboardController> {
                       Widget body;
                       if (mode == LoadStatus.idle) {
                         body = Text(
-                          'Kéo lên để tải thêm',
+                          'dashboard_pull_up_load'.tr,
                           style: TextStyle(
                             fontSize: 13.sp,
                             color: Colors.grey[500],
@@ -128,7 +128,7 @@ class DashboardView extends GetView<DashboardController> {
                         body = Center(child: LoadingWidget());
                       } else if (mode == LoadStatus.failed) {
                         body = Text(
-                          'Tải thất bại! Nhấn để thử lại',
+                          'dashboard_load_failed'.tr,
                           style: TextStyle(
                             fontSize: 13.sp,
                             color: Colors.grey[500],
@@ -136,7 +136,7 @@ class DashboardView extends GetView<DashboardController> {
                         );
                       } else if (mode == LoadStatus.canLoading) {
                         body = Text(
-                          'Thả ra để tải thêm',
+                          'dashboard_release_to_load'.tr,
                           style: TextStyle(
                             fontSize: 13.sp,
                             color: Colors.grey[500],
