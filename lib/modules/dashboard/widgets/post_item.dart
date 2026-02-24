@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 import '../../../data/models/traffic_post_model.dart';
+import '../../../widgets/loading_widget.dart';
 import 'like_icon.dart';
 
 class PostItem extends StatelessWidget {
@@ -51,12 +52,8 @@ class PostItem extends StatelessWidget {
                   ? CachedNetworkImage(
                       imageUrl: post.fullImageUrls!.first,
                       fit: BoxFit.cover,
-                      placeholder: (context, url) => Center(
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.grey[400],
-                        ),
-                      ),
+                      placeholder: (context, url) =>
+                          const Center(child: LoadingWidget()),
                       errorWidget: (context, url, error) => Center(
                         child: Icon(
                           Icons.broken_image,
@@ -89,11 +86,7 @@ class PostItem extends StatelessWidget {
                           width: 40.w,
                           height: 40.w,
                           color: Colors.grey[300],
-                          child: Icon(
-                            Icons.person,
-                            size: 24.w,
-                            color: Colors.grey[600],
-                          ),
+                          child: LoadingWidget(width: 40.w, height: 40.w),
                         ),
                         errorWidget: (context, url, error) => Container(
                           width: 40.w,

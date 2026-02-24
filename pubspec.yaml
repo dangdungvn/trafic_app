@@ -60,6 +60,7 @@ dependencies:
   adaptive_platform_ui: ^0.1.101
   intl: ^0.20.2
   iconly: ^1.0.1
+  pull_to_refresh_flutter3: ^2.0.2
 
 dev_dependencies:
   flutter_test:

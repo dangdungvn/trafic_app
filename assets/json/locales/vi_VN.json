@@ -55,5 +55,9 @@
   "profile_update_success": "Cập nhật thông tin thành công",
   "profile_update_error": "Cập nhật thông tin thất bại",
   "profile_load_error_message": "Không thể tải thông tin cá nhân",
-  "profile_pick_image_error": "Không thể chọn ảnh"
+  "profile_pick_image_error": "Không thể chọn ảnh",
+  "dashboard_no_posts": "Chưa có bài viết nào",
+  "dashboard_pull_up_load": "Kéo lên để tải thêm",
+  "dashboard_load_failed": "Tải thất bại! Nhấn để thử lại",
+  "dashboard_release_to_load": "Thả ra để tải thêm"
 }

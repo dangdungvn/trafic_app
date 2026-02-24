@@ -11,6 +11,7 @@ class AssetsService extends GetxService {
   final Rx<LottieComposition?> loadingComposition = Rx<LottieComposition?>(
     null,
   );
+  final Rx<LottieComposition?> closeComposition = Rx<LottieComposition?>(null);
 
   Future<void> init() async {
     // Preload critical animations
@@ -20,6 +21,9 @@ class AssetsService extends GetxService {
       ).load();
       loadingComposition.value = await AssetLottie(
         'assets/animations/Loading.json',
+      ).load();
+      closeComposition.value = await AssetLottie(
+        'assets/animations/Close.json',
       ).load();
     } catch (e) {
       debugPrint('Error preloading assets: $e');
