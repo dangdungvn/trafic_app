@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:traffic_app/routes/app_pages.dart';
 
+import '../../dashboard/controllers/dashboard_controller.dart';
 import '../../map/controllers/map_controller.dart';
 
 class HomeController extends GetxController {
@@ -14,6 +15,12 @@ class HomeController extends GetxController {
   var uploadLabel = 'Đăng bài viết'.obs;
 
   void changeTab(int index) {
+    if (index == 0 && currentIndex.value == 0) {
+      if (Get.isRegistered<DashboardController>()) {
+        Get.find<DashboardController>().scrollToTop();
+      }
+      return;
+    }
     currentIndex.value = index;
     if (index == 1 && !_mapTabVisited) {
       _mapTabVisited = true;
