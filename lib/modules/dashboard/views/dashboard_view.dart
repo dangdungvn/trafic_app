@@ -175,9 +175,7 @@ class DashboardView extends GetView<DashboardController> {
                   onRefresh: controller.refresh,
                   onLoading: controller.loadMore,
                   child: ListView.builder(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 24.w,
-                    ).copyWith(bottom: 16.h),
+                    padding: EdgeInsets.symmetric(horizontal: 24.w),
                     itemCount: controller.posts.length,
                     itemBuilder: (context, index) {
                       final post = controller.posts[index];
