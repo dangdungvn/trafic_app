@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
 import 'package:traffic_app/widgets/custom_alert.dart';
 
 import '../../../data/models/traffic_post_model.dart';
@@ -11,6 +12,8 @@ class DashboardController extends GetxController {
   final TextEditingController searchController = TextEditingController();
   final TrafficPostRepository _postRepository = TrafficPostRepository();
   final StorageService _storageService = Get.find<StorageService>();
+
+  final refreshController = RefreshController(initialRefresh: false);
 
   // State management
   final posts = <TrafficPostModel>[].obs;
@@ -71,11 +74,18 @@ class DashboardController extends GetxController {
 
       if (newPosts.isEmpty) {
         hasMore.value = false;
+        if (refresh) {
+          refreshController.refreshCompleted();
+        } else {
+          refreshController.loadNoData();
+        }
       } else {
         if (refresh) {
           posts.value = newPosts;
+          refreshController.refreshCompleted();
         } else {
           posts.addAll(newPosts);
+          refreshController.loadComplete();
         }
         currentPage++;
       }
@@ -84,7 +94,10 @@ class DashboardController extends GetxController {
     } catch (e) {
       errorMessage.value = e.toString();
       if (refresh) {
+        refreshController.refreshFailed();
         CustomAlert.showError(e.toString());
+      } else {
+        refreshController.loadFailed();
       }
     } finally {
       isLoading.value = false;
@@ -96,12 +109,15 @@ class DashboardController extends GetxController {
   Future<void> loadMore() async {
     if (!isLoadingMore.value && hasMore.value) {
       await loadPosts(refresh: false);
+    } else if (!hasMore.value) {
+      refreshController.loadNoData();
     }
   }
 
   /// Refresh toàn bộ danh sách
   @override
   Future<void> refresh() async {
+    refreshController.resetNoData();
     await loadPosts(refresh: true);
   }
 
@@ -164,6 +180,7 @@ class DashboardController extends GetxController {
   @override
   void onClose() {
     searchController.dispose();
+    refreshController.dispose();
     super.onClose();
   }
 }
