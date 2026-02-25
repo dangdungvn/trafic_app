@@ -14,6 +14,7 @@ class DashboardController extends GetxController {
   final StorageService _storageService = Get.find<StorageService>();
 
   final refreshController = RefreshController(initialRefresh: false);
+  final ScrollController scrollController = ScrollController();
 
   // State management
   final posts = <TrafficPostModel>[].obs;
@@ -29,6 +30,24 @@ class DashboardController extends GetxController {
   int currentPage = 0;
   final int pageSize = 10;
   String currentLocation = '';
+
+  void scrollToTop() {
+    if (scrollController.hasClients) {
+      scrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeOutCubic,
+      );
+    }
+  }
+
+  @override
+  void onClose() {
+    scrollController.dispose();
+    searchController.dispose();
+    refreshController.dispose();
+    super.onClose();
+  }
 
   @override
   void onInit() {
@@ -176,6 +195,7 @@ class DashboardController extends GetxController {
       backgroundColor: Colors.transparent,
     );
   }
+<<<<<<< HEAD
 
   @override
   void onClose() {
@@ -184,3 +204,6 @@ class DashboardController extends GetxController {
     super.onClose();
   }
 }
+=======
+}
+>>>>>>> 9d37ab72f9052ab2675d4450d460d2374b5a2e14

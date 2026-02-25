@@ -110,6 +110,7 @@ class DashboardView extends GetView<DashboardController> {
 
                 return SmartRefresher(
                   controller: controller.refreshController,
+                  scrollController: controller.scrollController,
                   enablePullDown: true,
                   enablePullUp: true,
                   header: const WaterDropHeader(),

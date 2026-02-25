@@ -26,7 +26,9 @@ class ApiService {
       InterceptorsWrapper(
         onRequest: (options, handler) {
           final token = _storageService.getToken();
-          if (token != null && token.isNotEmpty) {
+          final isAuthEndpoint = options.path.contains('/auth/login') ||
+              options.path.contains('/auth/register');
+          if (token != null && token.isNotEmpty && !isAuthEndpoint) {
             options.headers['Authorization'] = 'Bearer $token';
           }
           return handler.next(options);

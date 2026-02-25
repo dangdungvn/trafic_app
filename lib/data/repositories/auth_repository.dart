@@ -62,7 +62,7 @@ class AuthRepository {
       final loginResponse = LoginResponse.fromJson(response.data['data']);
 
       // Save token
-      _apiService.setToken(loginResponse.token);
+      _apiService.setToken(loginResponse.token ?? '');
 
       return loginResponse;
     } on DioException catch (e) {
