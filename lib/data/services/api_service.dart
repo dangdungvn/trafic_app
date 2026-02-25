@@ -33,6 +33,10 @@ class ApiService {
         },
         onError: (DioException e, handler) async {
           if (e.response?.statusCode == 401) {
+            if (e.requestOptions.path.contains('/auth/login') || Get.currentRoute == Routes.LOGIN) {
+                return handler.next(e);
+            }
+
             // Try to login again
             final credentials = _storageService.getCredentials();
             if (credentials != null) {
