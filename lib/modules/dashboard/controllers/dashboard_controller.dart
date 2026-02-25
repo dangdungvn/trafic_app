@@ -161,18 +161,34 @@ class DashboardController extends GetxController {
     newPostId.value = null;
   }
 
-  /// Toggle like/unlike post
-  void toggleLike(TrafficPostModel post) {
+  /// Toggle like/unlike post với Optimistic Update
+  /// - Cập nhật UI ngay lập tức (không chờ API)
+  /// - Gọi API ở nền
+  /// - Nếu API lỗi: rollback lại trạng thái cũ
+  Future<void> toggleLike(TrafficPostModel post) async {
     final index = posts.indexWhere((p) => p.id == post.id);
-    if (index != -1) {
-      final updatedPost = posts[index].copyWith(
-        likes: post.isLiked ? post.likes - 1 : post.likes + 1,
-        isLiked: !post.isLiked,
-      );
-      posts[index] = updatedPost;
-    }
+    if (index == -1 || post.id == null) return;
 
-    // TODO: Call API to update like status on server
+    final currentIsLiked = post.isLiked ?? false;
+    final currentLikes = post.likes ?? 0;
+
+    // Optimistic update: cập nhật UI ngay
+    posts[index] = post.copyWith(
+      isLiked: !currentIsLiked,
+      likes: currentIsLiked ? currentLikes - 1 : currentLikes + 1,
+    );
+
+    try {
+      await _postRepository.likePost(post.id!);
+    } catch (_) {
+      // Rollback nếu API thất bại
+      if (index < posts.length) {
+        posts[index] = post.copyWith(
+          isLiked: currentIsLiked,
+          likes: currentLikes,
+        );
+      }
+    }
   }
 
   /// Report post

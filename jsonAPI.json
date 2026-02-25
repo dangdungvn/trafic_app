@@ -7,7 +7,7 @@
     },
     "servers": [
         {
-            "url": "http://35.192.42.207:8080",
+            "url": "http://161.248.4.176:8080",
             "description": "Generated server url"
         }
     ],
@@ -342,7 +342,7 @@
                     {
                         "name": "location",
                         "in": "query",
-                        "required": true,
+                        "required": false,
                         "schema": {
                             "type": "string"
                         }
@@ -410,6 +410,76 @@
                             }
                         }
                     }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/TrafficPost/{postId}/like": {
+            "post": {
+                "tags": [
+                    "traffic-post-controller"
+                ],
+                "operationId": "likePost",
+                "parameters": [
+                    {
+                        "name": "postId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/PostReport/{postId}/report": {
+            "post": {
+                "tags": [
+                    "report-controller"
+                ],
+                "operationId": "reportPost",
+                "parameters": [
+                    {
+                        "name": "postId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ReportPostRequest"
+                            }
+                        }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "200": {
@@ -540,6 +610,9 @@
                     },
                     "avatarUrl": {
                         "type": "string"
+                    },
+                    "relativePhone": {
+                        "type": "string"
                     }
                 }
             },
@@ -616,6 +689,14 @@
                         "type": "string"
                     },
                     "deviceToken": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ReportPostRequest": {
+                "type": "object",
+                "properties": {
+                    "reason": {
                         "type": "string"
                     }
                 }

@@ -136,9 +136,9 @@ class PostItem extends StatelessWidget {
               ),
               children: [
                 TextSpan(text: "${post.content} "),
-                if (post.hashtags.isNotEmpty)
+                if (post.hashtags?.isNotEmpty ?? false)
                   TextSpan(
-                    text: post.hashtags.join(" "),
+                    text: post.hashtags?.join(" ") ?? '',
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       color: const Color(0xFF4D5DFA),
@@ -156,14 +156,14 @@ class PostItem extends StatelessWidget {
                 onTap: onLike,
                 child: Row(
                   children: [
-                    LikeIcon(isLiked: post.isLiked),
+                    LikeIcon(isLiked: post.isLiked ?? false),
                     SizedBox(width: 8.w),
                     Text(
-                      post.likes.toString(),
+                      (post.likes ?? 0).toString(),
                       style: TextStyle(
                         fontSize: 14.4.sp,
                         fontWeight: FontWeight.w600,
-                        color: post.isLiked
+                        color: (post.isLiked ?? false)
                             ? const Color(0xFF4D5DFA)
                             : Colors.grey,
                       ),
