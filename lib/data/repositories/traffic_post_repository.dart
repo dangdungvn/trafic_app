@@ -174,6 +174,20 @@ class TrafficPostRepository {
     }
   }
 
+  /// Like / Unlike bài viết (toggle - cùng 1 endpoint)
+  Future<void> likePost(String postId) async {
+    try {
+      await _apiService.dio.post('/TrafficPost/$postId/like');
+    } on DioException catch (e) {
+      if (e.response != null && e.response!.data is Map) {
+        throw e.response!.data['message'] ?? 'Không thể thực hiện hành động';
+      }
+      throw 'Lỗi kết nối mạng';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
   /// Xóa bài viết
   Future<void> deletePost(String postId) async {
     try {

@@ -3,34 +3,34 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'location_model.dart';
 
 class TrafficPostModel {
-  final String id;
-  final String userId;
-  final String type;
-  final String content;
-  final LocationModel location;
-  final String status;
-  final DateTime timestamp;
+  final String? id;
+  final String? userId;
+  final String? type;
+  final String? content;
+  final LocationModel? location;
+  final String? status;
+  final DateTime? timestamp;
   final String? userName;
   final String? avatarUrl;
   final List<String>? imageUrls;
-  final int likes;
-  final bool isLiked;
-  final List<String> hashtags;
+  final int? likes;
+  final bool? isLiked;
+  final List<String>? hashtags;
 
   TrafficPostModel({
-    required this.id,
-    required this.userId,
-    required this.type,
-    required this.content,
-    required this.location,
-    required this.status,
-    required this.timestamp,
+    this.id,
+    this.userId,
+    this.type,
+    this.content,
+    this.location,
+    this.status,
+    this.timestamp,
     this.userName,
     this.avatarUrl,
     this.imageUrls,
-    this.likes = 0,
-    this.isLiked = false,
-    this.hashtags = const [],
+    this.likes,
+    this.isLiked,
+    this.hashtags,
   });
 
   factory TrafficPostModel.fromJson(Map<String, dynamic> json) {
@@ -38,17 +38,17 @@ class TrafficPostModel {
     final user = json['user'] as Map<String, dynamic>?;
 
     return TrafficPostModel(
-      id: json['id']?.toString() ?? '',
-      userId: user?['id']?.toString() ?? json['userId']?.toString() ?? '',
-      type: json['type'] as String? ?? '',
-      content: json['content'] as String? ?? '',
-      location: LocationModel.fromJson(
-        json['location'] as Map<String, dynamic>,
-      ),
-      status: json['status'] as String? ?? '',
+      id: json['id']?.toString(),
+      userId: user?['id']?.toString() ?? json['userId']?.toString(),
+      type: json['type'] as String?,
+      content: json['content'] as String?,
+      location: json['location'] != null
+          ? LocationModel.fromJson(json['location'] as Map<String, dynamic>)
+          : null,
+      status: json['status'] as String?,
       timestamp: json['timestamp'] != null
           ? DateTime.parse(json['timestamp'] as String)
-          : DateTime.now(),
+          : null,
       userName: user?['fullname'] as String? ?? json['userName'] as String?,
       avatarUrl: user?['avatarUrl'] as String? ?? json['avatarUrl'] as String?,
       imageUrls: json['images'] != null
@@ -56,29 +56,30 @@ class TrafficPostModel {
           : (json['imageUrls'] != null
                 ? List<String>.from(json['imageUrls'] as List)
                 : null),
-      likes: json['likeTotal'] as int? ?? json['likes'] as int? ?? 0,
-      isLiked: json['isLiked'] as bool? ?? false,
+      likes: json['likeTotal'] as int? ?? json['likes'] as int?,
+      isLiked:
+          json['isLikedByCurrentUser'] as bool? ?? json['isLiked'] as bool?,
       hashtags: json['hashtags'] != null
           ? List<String>.from(json['hashtags'] as List)
-          : [],
+          : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'userId': userId,
-      'type': type,
-      'content': content,
-      'location': location.toJson(),
-      'status': status,
-      'timestamp': timestamp.toIso8601String(),
+      if (id != null) 'id': id,
+      if (userId != null) 'userId': userId,
+      if (type != null) 'type': type,
+      if (content != null) 'content': content,
+      if (location != null) 'location': location!.toJson(),
+      if (status != null) 'status': status,
+      if (timestamp != null) 'timestamp': timestamp!.toIso8601String(),
       if (userName != null) 'userName': userName,
       if (avatarUrl != null) 'avatarUrl': avatarUrl,
       if (imageUrls != null) 'imageUrls': imageUrls,
-      'likes': likes,
-      'isLiked': isLiked,
-      'hashtags': hashtags,
+      if (likes != null) 'likes': likes,
+      if (isLiked != null) 'isLiked': isLiked,
+      if (hashtags != null) 'hashtags': hashtags,
     };
   }
 
