@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -60,8 +61,8 @@ class SignupController extends GetxController {
         passwordController.text.isEmpty ||
         selectedProvince.value == null) {
       CustomDialog.show(
-        title: 'Thông báo',
-        message: 'Vui lòng điền đầy đủ thông tin',
+        title: 'notice_title'.tr,
+        message: 'signup_fill_info'.tr,
         type: DialogType.warning,
       );
       return;
@@ -69,8 +70,8 @@ class SignupController extends GetxController {
 
     if (passwordController.text != confirmPasswordController.text) {
       CustomDialog.show(
-        title: 'Thông báo',
-        message: 'Mật khẩu không khớp',
+        title: 'notice_title'.tr,
+        message: 'signup_password_mismatch'.tr,
         type: DialogType.warning,
       );
       return;
@@ -88,14 +89,14 @@ class SignupController extends GetxController {
       await _authRepository.signup(request);
 
       CustomDialog.show(
-        title: 'Thành công',
-        message: 'Đăng ký tài khoản thành công',
+        title: 'signup_success_title'.tr,
+        message: 'signup_success_message'.tr,
         type: DialogType.success,
         onPressed: () => Get.offNamed(Routes.LOGIN),
       );
     } catch (e) {
       CustomDialog.show(
-        title: 'Lỗi',
+        title: 'error_title'.tr,
         message: e.toString(),
         type: DialogType.error,
       );
