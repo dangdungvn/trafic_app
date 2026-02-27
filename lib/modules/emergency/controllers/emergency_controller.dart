@@ -5,7 +5,6 @@ import '../../../services/storage_service.dart';
 import '../../../widgets/custom_alert.dart';
 
 class EmergencyController extends GetxController {
-  // 0: Gọi cho người thân, 1: Gọi cứu thương
   var selectedOption = 0.obs;
 
   void selectOption(int index) {
@@ -14,11 +13,14 @@ class EmergencyController extends GetxController {
 
   Future<void> onContinue() async {
     if (selectedOption.value == 0) {
-      // 1. GỌI CHO NGƯỜI THÂN
-      // Gọi trực tiếp hàm getRelativePhone() từ StorageService
-      final String relativePhone = StorageService.to.getRelativePhone() ?? '';
+      final String relativePhone = (StorageService.to.getRelativePhone() ?? '').trim();
 
-      await _makePhoneCall(relativePhone);
+      if (relativePhone.isEmpty) {
+        CustomAlert.showWarning('emergency_notification_mesg_1'.tr);
+          await _makePhoneCall(''); 
+      } else {
+        await _makePhoneCall(relativePhone);
+      }
     } else {
       // 2. GỌI CỨU THƯƠNG (Mặc định là 115)
       await _makePhoneCall('115');
@@ -27,22 +29,20 @@ class EmergencyController extends GetxController {
 
   // Hàm xử lý gọi điện dùng chung
   Future<void> _makePhoneCall(String phoneNumber) async {
-    // Tạo đường dẫn URL cho trình gọi điện (scheme: tel)
     final Uri launchUri = Uri(
       scheme: 'tel',
       path: phoneNumber,
     );
 
     try {
-      // Kiểm tra xem thiết bị có hỗ trợ mở trình gọi điện không
       if (await canLaunchUrl(launchUri)) {
         // mode: LaunchMode.externalApplication giúp ép HĐH mở app Điện thoại 
         await launchUrl(launchUri, mode: LaunchMode.externalApplication);
       } else {
-        CustomAlert.showError('Thiết bị của bạn không hỗ trợ tính năng gọi điện.');
+        CustomAlert.showError('emergency_notification_mesg_2'.tr);
       }
     } catch (e) {
-      CustomAlert.showError('Không thể mở trình gọi điện: $e');
+      CustomAlert.showError('emergency_notification_mesg_3'.tr);
     }
   }
 }

@@ -84,5 +84,8 @@
   "map_police_checkpoint_title": "Chốt CSGT",
   "map_police_checkpoint_desc": "Kiểm tra nồng độ cồn tại ngã tư.",
   "map_accident_title": "Tai nạn nhẹ",
-  "map_accident_desc": "Va chạm giữa 2 xe máy, di chuyển chậm."
+  "map_accident_desc": "Va chạm giữa 2 xe máy, di chuyển chậm.",
+  "emergency_notification_mesg_1": "Bạn chưa thiết lập số người thân. Vui lòng tự bấm số!",
+  "emergency_notification_mesg_2": "Thiết bị của bạn không được hỗ trợ.",
+  "emergency_notification_mesg_3": "Không thể mở trình gọi điện."
 }

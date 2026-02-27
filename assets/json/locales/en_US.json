@@ -84,5 +84,8 @@
   "map_police_checkpoint_title": "Police checkpoint",
   "map_police_checkpoint_desc": "Alcohol level check at the intersection.",
   "map_accident_title": "Minor accident",
-  "map_accident_desc": "Collision between 2 motorcycles, moving slowly."
+  "map_accident_desc": "Collision between 2 motorcycles, moving slowly.",
+  "emergency_notification_mesg_1": "You haven't set up a relative's phone number yet, please enter it yourself!",
+  "emergency_notification_mesg_2": "Your device is not supported.",
+  "emergency_notification_mesg_3": "Unable to open the dialer."
 }
