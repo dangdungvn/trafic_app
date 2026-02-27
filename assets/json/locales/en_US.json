@@ -3,6 +3,7 @@
   "full_name": "Full Name",
   "email": "Email",
   "phone_number": "Phone Number",
+  "relative_phone": "Relative's Phone Number",
   "province_city": "Province/City",
   "password": "Password",
   "confirm_password": "Confirm Password",
@@ -59,5 +60,11 @@
   "dashboard_no_posts": "No posts yet",
   "dashboard_pull_up_load": "Pull up to load more",
   "dashboard_load_failed": "Load failed! Tap to retry",
-  "dashboard_release_to_load": "Release to load more"
+  "dashboard_release_to_load": "Release to load more",
+  "emergency_title_1": "Emergency Assistance",
+  "emergency_title_2": "Choose assistance method",
+  "emergency_method_1": "Call a trusted contact",
+  "emergency_hint": "Call a trusted contact for help",
+  "emergency_method_2": "Call emergency services",
+  "emergency_button": "Continue"
 }

@@ -211,15 +211,4 @@ class DashboardController extends GetxController {
       backgroundColor: Colors.transparent,
     );
   }
-<<<<<<< HEAD
-
-  @override
-  void onClose() {
-    searchController.dispose();
-    refreshController.dispose();
-    super.onClose();
-  }
 }
-=======
-}
->>>>>>> 9d37ab72f9052ab2675d4450d460d2374b5a2e14

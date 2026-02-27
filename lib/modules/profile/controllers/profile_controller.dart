@@ -11,6 +11,7 @@ import 'package:traffic_app/widgets/custom_dialog.dart';
 import '../../../data/models/profile_request.dart';
 import '../../../data/repositories/user_repository.dart';
 import '../../home/controllers/home_controller.dart';
+import '../../../services/storage_service.dart';
 
 class ProfileController extends GetxController {
   final UserRepository _userRepository = UserRepository();
@@ -19,6 +20,7 @@ class ProfileController extends GetxController {
   final emailController = TextEditingController();
   final phoneController = TextEditingController();
   final addressController = TextEditingController();
+  final relativePhoneController = TextEditingController();
 
   var isLoading = false.obs;
 
@@ -71,6 +73,7 @@ class ProfileController extends GetxController {
     emailController.dispose();
     phoneController.dispose();
     addressController.dispose();
+    relativePhoneController.dispose();
     super.onClose();
   }
 
@@ -91,6 +94,13 @@ class ProfileController extends GetxController {
       emailController.text = user.email ?? "";
       phoneController.text = user.phoneNumber ?? "";
       addressController.text = user.province ?? "";
+      relativePhoneController.text = user.relativePhone ?? "";
+
+      StorageService.to.saveUserInfo(
+        fullName: user.fullName,
+        province: user.province,
+        relativePhone: user.relativePhone,
+      );
 
       // Set selected province
       if (user.province != null && user.province!.isNotEmpty) {
@@ -168,6 +178,7 @@ class ProfileController extends GetxController {
         email: emailController.text.trim(),
         phoneNumber: phoneController.text.trim(),
         province: selectedProvince.value!['name'],
+        relativePhone: relativePhoneController.text.trim(),
       );
       File? imageFile;
       if (selectedImagePath.value.isNotEmpty) {

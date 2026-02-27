@@ -3,6 +3,7 @@
   "full_name": "Họ và tên",
   "email": "Email",
   "phone_number": "Số điện thoại",
+  "relative_phone": "Số điện thoại người thân",
   "province_city": "Tỉnh/Thành phố",
   "password": "Mật khẩu",
   "confirm_password": "Nhập lại mật khẩu",
@@ -59,5 +60,11 @@
   "dashboard_no_posts": "Chưa có bài viết nào",
   "dashboard_pull_up_load": "Kéo lên để tải thêm",
   "dashboard_load_failed": "Tải thất bại! Nhấn để thử lại",
-  "dashboard_release_to_load": "Thả ra để tải thêm"
+  "dashboard_release_to_load": "Thả ra để tải thêm",
+  "emergency_title_1": "Trợ giúp khẩn cấp",
+  "emergency_title_2": "Chọn phương thức trợ giúp",
+  "emergency_method_1": "Gọi cho người thân",
+  "emergency_hint": "Gọi đến danh bạ khẩn cấp",
+  "emergency_method_2": "Gọi cứu thương",
+  "emergency_button": "Tiếp tục"
 }

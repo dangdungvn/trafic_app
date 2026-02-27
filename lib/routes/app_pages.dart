@@ -9,6 +9,8 @@ import '../modules/home/views/home_view.dart';
 import '../modules/profile/views/profile_view.dart';
 import '../modules/camera/bindings/camera_binding.dart';
 import '../modules/camera/views/camera_view.dart';
+import '../modules/emergency/bindings/emergency_binding.dart';
+import '../modules/emergency/views/emergency_screen.dart';
 
 
 part 'app_routes.dart';
@@ -43,6 +45,11 @@ class AppPages {
       name: _Paths.CAMERA,
       page: () => const CameraView(),
       binding: CameraBinding(),
+    ),
+    GetPage(
+      name: _Paths.EMERGENCY,
+      page: () => const EmergencyScreen(),
+      binding: EmergencyBinding(),
     ),
   ];
 }
