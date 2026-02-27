@@ -59,8 +59,8 @@ class LoginController extends GetxController {
 
     if (usernameController.text.isEmpty || passwordController.text.isEmpty) {
       CustomDialog.show(
-        title: 'Thông báo',
-        message: 'Vui lòng điền đầy đủ thông tin đăng nhập',
+        title: 'notice_title'.tr,
+        message: 'login_fill_info'.tr,
         type: DialogType.warning,
       );
       return;
@@ -98,7 +98,7 @@ class LoginController extends GetxController {
       Get.offAllNamed(Routes.HOME);
     } catch (e) {
       CustomDialog.show(
-        title: 'Đăng nhập thất bại',
+        title: 'login_failed_title'.tr,
         message: e.toString(),
         type: DialogType.error,
       );

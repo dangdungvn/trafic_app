@@ -193,18 +193,26 @@ class DashboardController extends GetxController {
 
   /// Report post
   void reportPost(TrafficPostModel post) {
+    if (post.id == null) return;
+
     Get.bottomSheet(
       ReportBottomSheet(
         onReport: (reason) async {
-          await Future.delayed(const Duration(seconds: 1));
+          try {
+            await _postRepository.reportPost(postId: post.id!, reason: reason);
 
-          Get.back();
+            Get.back();
 
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            CustomAlert.showSuccess("Đã báo cáo bài viết: $reason");
-          });
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              CustomAlert.showSuccess('dashboard_report_success'.tr);
+            });
+          } catch (e) {
+            Get.back();
 
-          // TODO: Call API to report post
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              CustomAlert.showError(e.toString());
+            });
+          }
         },
       ),
       isScrollControlled: true,

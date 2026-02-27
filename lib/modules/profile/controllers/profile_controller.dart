@@ -130,7 +130,7 @@ class ProfileController extends GetxController {
       isDataLoaded.value = true;
     } catch (e) {
       CustomDialog.show(
-        title: 'profile_load_error_title'.tr,
+        title: 'error_title'.tr,
         message: '${'profile_load_error_message'.tr}: $e',
         type: DialogType.error,
       );
@@ -144,7 +144,7 @@ class ProfileController extends GetxController {
 
     if (emailController.text.isEmpty) {
       CustomDialog.show(
-        title: 'profile_notice_title'.tr,
+        title: 'notice_title'.tr,
         message: 'profile_email_empty'.tr,
         type: DialogType.warning,
       );
@@ -153,7 +153,7 @@ class ProfileController extends GetxController {
 
     if (nameController.text.isEmpty) {
       CustomDialog.show(
-        title: 'profile_notice_title'.tr,
+        title: 'notice_title'.tr,
         message: 'profile_name_empty'.tr,
         type: DialogType.warning,
       );
@@ -162,7 +162,7 @@ class ProfileController extends GetxController {
 
     if (selectedProvince.value == null) {
       CustomDialog.show(
-        title: 'profile_notice_title'.tr,
+        title: 'notice_title'.tr,
         message: 'profile_province_empty'.tr,
         type: DialogType.warning,
       );
@@ -218,8 +218,8 @@ class ProfileController extends GetxController {
       }
     } catch (e) {
       CustomDialog.show(
-        title: 'profile_load_error_title'.tr,
-        message: '${'profile_pick_image_error'.tr}: $e',
+        title: 'error_title'.tr,
+        message: '${'cannot_pick_image'.tr}: $e',
         type: DialogType.error,
       );
     }

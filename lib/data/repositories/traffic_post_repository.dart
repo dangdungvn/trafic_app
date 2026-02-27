@@ -174,6 +174,26 @@ class TrafficPostRepository {
     }
   }
 
+  /// Báo cáo bài viết
+  Future<void> reportPost({
+    required String postId,
+    required String reason,
+  }) async {
+    try {
+      await _apiService.dio.post(
+        '/PostReport/$postId/report',
+        data: {'reason': reason},
+      );
+    } on DioException catch (e) {
+      if (e.response != null && e.response!.data is Map) {
+        throw e.response!.data['message'] ?? 'Không thể báo cáo bài viết';
+      }
+      throw 'Lỗi kết nối mạng';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
   /// Like / Unlike bài viết (toggle - cùng 1 endpoint)
   Future<void> likePost(String postId) async {
     try {
