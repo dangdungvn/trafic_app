@@ -36,10 +36,16 @@ class DashboardHeader extends StatelessWidget {
         ),
         SizedBox(width: 20.w),
         // Map marker
-        SvgPicture.asset(
-          'assets/icons/warning_appbar.svg',
-          width: 40.w,
-          height: 40.w,
+        // Nút Cứu hộ khẩn cấp
+        GestureDetector(
+          onTap: () {
+            Get.toNamed(Routes.EMERGENCY);
+          },
+          child: SvgPicture.asset(
+            'assets/icons/warning_appbar.svg',
+            width: 40.w,
+            height: 40.w,
+          ),
         ),
         SizedBox(width: 20.w),
         // Avatar - hiển thị từ ProfileController

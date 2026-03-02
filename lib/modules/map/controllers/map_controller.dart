@@ -1,12 +1,13 @@
 import 'dart:async';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:traffic_app/widgets/custom_alert.dart';
 
 class MapController extends GetxController {
@@ -109,10 +110,10 @@ class MapController extends GetxController {
           ),
         );
       } else {
-        CustomAlert.showWarning('Không tìm thấy địa điểm này');
+        CustomAlert.showWarning('map_location_not_found'.tr);
       }
     } catch (e) {
-      CustomAlert.showError('Không thể tìm kiếm địa điểm: $e');
+      CustomAlert.showError('${'map_cannot_search'.tr}: $e');
     } finally {
       isLoading.value = false;
     }
@@ -145,7 +146,7 @@ class MapController extends GetxController {
       isLoading.value = true;
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        CustomAlert.showError('Dịch vụ vị trí đã bị tắt');
+        CustomAlert.showError('map_location_service_disabled'.tr);
         return;
       }
 
@@ -153,15 +154,13 @@ class MapController extends GetxController {
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          CustomAlert.showError('Quyền truy cập vị trí bị từ chối');
+          CustomAlert.showError('map_location_permission_denied'.tr);
           return;
         }
       }
 
       if (permission == LocationPermission.deniedForever) {
-        CustomAlert.showError(
-          'Quyền vị trí bị từ chối vĩnh viễn, vui lòng cấp quyền trong cài đặt',
-        );
+        CustomAlert.showError('map_location_permission_denied_forever'.tr);
         return;
       }
 
@@ -175,7 +174,7 @@ class MapController extends GetxController {
         ),
       );
     } catch (e) {
-      CustomAlert.showError('Không thể lấy vị trí: $e');
+      CustomAlert.showError('${'cannot_get_location'.tr}: $e');
     } finally {
       isLoading.value = false;
     }
@@ -187,11 +186,11 @@ class MapController extends GetxController {
         markerId: const MarkerId('traffic_jam_1'),
         position: const LatLng(21.029511, 105.805817),
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-        infoWindow: const InfoWindow(title: 'Tắc đường nghiêm trọng'),
+        infoWindow: InfoWindow(title: 'map_traffic_jam_title'.tr),
         onTap: () {
           _showMarkerDetails(
-            'Tắc đường nghiêm trọng',
-            'Khu vực Cầu Giấy đang tắc nghẽn do giờ cao điểm.',
+            'map_traffic_jam_title'.tr,
+            'map_traffic_jam_desc'.tr,
           );
         },
       ),
@@ -199,21 +198,21 @@ class MapController extends GetxController {
         markerId: const MarkerId('police_1'),
         position: const LatLng(21.027511, 105.803817),
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-        infoWindow: const InfoWindow(title: 'Chốt CSGT'),
+        infoWindow: InfoWindow(title: 'map_police_checkpoint_title'.tr),
         onTap: () {
-          _showMarkerDetails('Chốt CSGT', 'Kiểm tra nồng độ cồn tại ngã tư.');
+          _showMarkerDetails(
+            'map_police_checkpoint_title'.tr,
+            'map_police_checkpoint_desc'.tr,
+          );
         },
       ),
       Marker(
         markerId: const MarkerId('accident_1'),
         position: const LatLng(21.028011, 105.806817),
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
-        infoWindow: const InfoWindow(title: 'Tai nạn nhẹ'),
+        infoWindow: InfoWindow(title: 'map_accident_title'.tr),
         onTap: () {
-          _showMarkerDetails(
-            'Tai nạn nhẹ',
-            'Va chạm giữa 2 xe máy, di chuyển chậm.',
-          );
+          _showMarkerDetails('map_accident_title'.tr, 'map_accident_desc'.tr);
         },
       ),
     ]);
@@ -265,7 +264,7 @@ class MapController extends GetxController {
                   backgroundColor: const Color(0xFF4D5DFA),
                   foregroundColor: Colors.white,
                 ),
-                child: const Text('Đóng'),
+                child: Text('map_close'.tr),
               ),
             ),
           ],

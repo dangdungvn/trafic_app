@@ -11,6 +11,7 @@ import 'package:traffic_app/widgets/custom_dialog.dart';
 import '../../../data/models/profile_request.dart';
 import '../../../data/repositories/user_repository.dart';
 import '../../home/controllers/home_controller.dart';
+import '../../../services/storage_service.dart';
 
 class ProfileController extends GetxController {
   final UserRepository _userRepository = UserRepository();
@@ -19,6 +20,7 @@ class ProfileController extends GetxController {
   final emailController = TextEditingController();
   final phoneController = TextEditingController();
   final addressController = TextEditingController();
+  final relativePhoneController = TextEditingController();
 
   var isLoading = false.obs;
 
@@ -71,6 +73,7 @@ class ProfileController extends GetxController {
     emailController.dispose();
     phoneController.dispose();
     addressController.dispose();
+    relativePhoneController.dispose();
     super.onClose();
   }
 
@@ -91,6 +94,13 @@ class ProfileController extends GetxController {
       emailController.text = user.email ?? "";
       phoneController.text = user.phoneNumber ?? "";
       addressController.text = user.province ?? "";
+      relativePhoneController.text = user.relativePhone ?? "";
+
+      StorageService.to.saveUserInfo(
+        fullName: user.fullName,
+        province: user.province,
+        relativePhone: user.relativePhone,
+      );
 
       // Set selected province
       if (user.province != null && user.province!.isNotEmpty) {
@@ -120,7 +130,7 @@ class ProfileController extends GetxController {
       isDataLoaded.value = true;
     } catch (e) {
       CustomDialog.show(
-        title: 'profile_load_error_title'.tr,
+        title: 'error_title'.tr,
         message: '${'profile_load_error_message'.tr}: $e',
         type: DialogType.error,
       );
@@ -134,7 +144,7 @@ class ProfileController extends GetxController {
 
     if (emailController.text.isEmpty) {
       CustomDialog.show(
-        title: 'profile_notice_title'.tr,
+        title: 'notice_title'.tr,
         message: 'profile_email_empty'.tr,
         type: DialogType.warning,
       );
@@ -143,7 +153,7 @@ class ProfileController extends GetxController {
 
     if (nameController.text.isEmpty) {
       CustomDialog.show(
-        title: 'profile_notice_title'.tr,
+        title: 'notice_title'.tr,
         message: 'profile_name_empty'.tr,
         type: DialogType.warning,
       );
@@ -152,7 +162,7 @@ class ProfileController extends GetxController {
 
     if (selectedProvince.value == null) {
       CustomDialog.show(
-        title: 'profile_notice_title'.tr,
+        title: 'notice_title'.tr,
         message: 'profile_province_empty'.tr,
         type: DialogType.warning,
       );
@@ -168,6 +178,7 @@ class ProfileController extends GetxController {
         email: emailController.text.trim(),
         phoneNumber: phoneController.text.trim(),
         province: selectedProvince.value!['name'],
+        relativePhone: relativePhoneController.text.trim(),
       );
       File? imageFile;
       if (selectedImagePath.value.isNotEmpty) {
@@ -207,8 +218,8 @@ class ProfileController extends GetxController {
       }
     } catch (e) {
       CustomDialog.show(
-        title: 'profile_load_error_title'.tr,
-        message: '${'profile_pick_image_error'.tr}: $e',
+        title: 'error_title'.tr,
+        message: '${'cannot_pick_image'.tr}: $e',
         type: DialogType.error,
       );
     }

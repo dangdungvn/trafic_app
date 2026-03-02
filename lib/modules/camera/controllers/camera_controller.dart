@@ -94,7 +94,7 @@ class CameraController extends GetxController {
             '${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)}';
       }
     } catch (e) {
-      location.value = 'camera_cannot_get_location'.tr;
+      location.value = 'cannot_get_location'.tr;
       debugPrint('Error getting location: $e');
     }
   }
@@ -129,7 +129,7 @@ class CameraController extends GetxController {
         _updateTime();
       }
     } catch (e) {
-      CustomAlert.showError('${'camera_cannot_pick_image'.tr}: $e');
+      CustomAlert.showError('${'cannot_pick_image'.tr}: $e');
     }
   }
 

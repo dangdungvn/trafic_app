@@ -161,49 +161,62 @@ class DashboardController extends GetxController {
     newPostId.value = null;
   }
 
-  /// Toggle like/unlike post
-  void toggleLike(TrafficPostModel post) {
+  /// Toggle like/unlike post với Optimistic Update
+  /// - Cập nhật UI ngay lập tức (không chờ API)
+  /// - Gọi API ở nền
+  /// - Nếu API lỗi: rollback lại trạng thái cũ
+  Future<void> toggleLike(TrafficPostModel post) async {
     final index = posts.indexWhere((p) => p.id == post.id);
-    if (index != -1) {
-      final updatedPost = posts[index].copyWith(
-        likes: post.isLiked ? post.likes - 1 : post.likes + 1,
-        isLiked: !post.isLiked,
-      );
-      posts[index] = updatedPost;
-    }
+    if (index == -1 || post.id == null) return;
 
-    // TODO: Call API to update like status on server
+    final currentIsLiked = post.isLiked ?? false;
+    final currentLikes = post.likes ?? 0;
+
+    // Optimistic update: cập nhật UI ngay
+    posts[index] = post.copyWith(
+      isLiked: !currentIsLiked,
+      likes: currentIsLiked ? currentLikes - 1 : currentLikes + 1,
+    );
+
+    try {
+      await _postRepository.likePost(post.id!);
+    } catch (_) {
+      // Rollback nếu API thất bại
+      if (index < posts.length) {
+        posts[index] = post.copyWith(
+          isLiked: currentIsLiked,
+          likes: currentLikes,
+        );
+      }
+    }
   }
 
   /// Report post
   void reportPost(TrafficPostModel post) {
+    if (post.id == null) return;
+
     Get.bottomSheet(
       ReportBottomSheet(
         onReport: (reason) async {
-          await Future.delayed(const Duration(seconds: 1));
+          try {
+            await _postRepository.reportPost(postId: post.id!, reason: reason);
 
-          Get.back();
+            Get.back();
 
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            CustomAlert.showSuccess("Đã báo cáo bài viết: $reason");
-          });
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              CustomAlert.showSuccess('dashboard_report_success'.tr);
+            });
+          } catch (e) {
+            Get.back();
 
-          // TODO: Call API to report post
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              CustomAlert.showError(e.toString());
+            });
+          }
         },
       ),
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
     );
   }
-<<<<<<< HEAD
-
-  @override
-  void onClose() {
-    searchController.dispose();
-    refreshController.dispose();
-    super.onClose();
-  }
 }
-=======
-}
->>>>>>> 9d37ab72f9052ab2675d4450d460d2374b5a2e14
