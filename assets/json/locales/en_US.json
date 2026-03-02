@@ -60,12 +60,15 @@
   "dashboard_pull_up_load": "Pull up to load more",
   "dashboard_load_failed": "Load failed! Tap to retry",
   "dashboard_release_to_load": "Release to load more",
+<<<<<<< HEAD
   "emergency_title_1": "Emergency Assistance",
   "emergency_title_2": "Choose assistance method",
   "emergency_method_1": "Call a trusted contact",
   "emergency_hint": "Call a trusted contact for help",
   "emergency_method_2": "Call emergency services",
   "emergency_button": "Continue",
+=======
+>>>>>>> 17c98c30992e774e2bd5e9c47f50d7dbc6c7aa74
   "dashboard_report_success": "Report sent successfully",
   "login_fill_info": "Please fill in all login information",
   "login_failed_title": "Login failed",
@@ -84,8 +87,13 @@
   "map_police_checkpoint_title": "Police checkpoint",
   "map_police_checkpoint_desc": "Alcohol level check at the intersection.",
   "map_accident_title": "Minor accident",
+<<<<<<< HEAD
   "map_accident_desc": "Collision between 2 motorcycles, moving slowly.",
   "emergency_notification_mesg_1": "You haven't set up a relative's phone number yet, please enter it yourself!",
   "emergency_notification_mesg_2": "Your device is not supported.",
   "emergency_notification_mesg_3": "Unable to open the dialer."
 }
+=======
+  "map_accident_desc": "Collision between 2 motorcycles, moving slowly."
+}
+>>>>>>> 17c98c30992e774e2bd5e9c47f50d7dbc6c7aa74
