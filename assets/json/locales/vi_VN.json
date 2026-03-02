@@ -87,5 +87,8 @@
   "map_accident_desc": "Va chạm giữa 2 xe máy, di chuyển chậm.",
   "emergency_notification_mesg_1": "Bạn chưa thiết lập số người thân. Vui lòng tự bấm số!",
   "emergency_notification_mesg_2": "Thiết bị của bạn không được hỗ trợ.",
-  "emergency_notification_mesg_3": "Không thể mở trình gọi điện."
+  "emergency_notification_mesg_3": "Không thể mở trình gọi điện.",
+  "discovery_notification_mesg_1": "Không thể mở trang tra cứu.",
+  "discovery_notification_mesg_2": "Vui lòng kiểm tra kết nối internet",
+  "traffic_fine_lookup": "Tra cứu phạt nguội"
 }
