@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-
+import 'package:firebase_core/firebase_core.dart';
 import 'data/models/login_request.dart';
 import 'data/repositories/auth_repository.dart';
 import 'modules/not_found/not_found_page.dart';
@@ -17,6 +17,7 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   await dotenv.load(fileName: ".env");
   await LocalizationService.init();
 
@@ -52,6 +53,8 @@ void main() async {
     } catch (e) {
       // Login failed, stay at LOGIN
       debugPrint("Auto login failed: $e");
+      // Nếu lỗi thì xóa credentials đi để lần sau không tự login sai nữa
+      await storageService.clearCredentials();
     }
   }
 

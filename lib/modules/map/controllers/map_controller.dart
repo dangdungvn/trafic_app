@@ -273,3 +273,4 @@ class MapController extends GetxController {
     );
   }
 }
+

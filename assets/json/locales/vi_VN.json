@@ -3,6 +3,7 @@
   "full_name": "Họ và tên",
   "email": "Email",
   "phone_number": "Số điện thoại",
+  "relative_phone": "Số điện thoại người thân",
   "province_city": "Tỉnh/Thành phố",
   "password": "Mật khẩu",
   "confirm_password": "Nhập lại mật khẩu",
@@ -59,6 +60,12 @@
   "dashboard_pull_up_load": "Kéo lên để tải thêm",
   "dashboard_load_failed": "Tải thất bại! Nhấn để thử lại",
   "dashboard_release_to_load": "Thả ra để tải thêm",
+  "emergency_title_1": "Trợ giúp khẩn cấp",
+  "emergency_title_2": "Chọn phương thức trợ giúp",
+  "emergency_method_1": "Gọi cho người thân",
+  "emergency_hint": "Gọi đến danh bạ khẩn cấp",
+  "emergency_method_2": "Gọi cứu thương",
+  "emergency_button": "Tiếp tục",
   "dashboard_report_success": "Đã gửi báo cáo thành công",
   "login_fill_info": "Vui lòng điền đầy đủ thông tin đăng nhập",
   "login_failed_title": "Đăng nhập thất bại",
@@ -77,5 +84,8 @@
   "map_police_checkpoint_title": "Chốt CSGT",
   "map_police_checkpoint_desc": "Kiểm tra nồng độ cồn tại ngã tư.",
   "map_accident_title": "Tai nạn nhẹ",
-  "map_accident_desc": "Va chạm giữa 2 xe máy, di chuyển chậm."
+  "map_accident_desc": "Va chạm giữa 2 xe máy, di chuyển chậm.",
+  "emergency_notification_mesg_1": "Bạn chưa thiết lập số người thân. Vui lòng tự bấm số!",
+  "emergency_notification_mesg_2": "Thiết bị của bạn không được hỗ trợ.",
+  "emergency_notification_mesg_3": "Không thể mở trình gọi điện."
 }
