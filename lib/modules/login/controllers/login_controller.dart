@@ -82,6 +82,7 @@ class LoginController extends GetxController {
         fullName: loginResponse.fullName,
         province: loginResponse.province,
         relativePhone: loginResponse.relativePhone,
+        phoneNumber: loginResponse.phoneNumber,
       );
 
       // Save credentials for auto-login if rememberMe is checked

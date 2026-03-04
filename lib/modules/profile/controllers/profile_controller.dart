@@ -193,12 +193,20 @@ class ProfileController extends GetxController {
         },
       );
 
+      // Lưu thông tin user mới vào cache ngay sau khi update thành công
+      await StorageService.to.saveUserInfo(
+        fullName: updatedUser.fullName,
+        province: updatedUser.province,
+        relativePhone: updatedUser.relativePhone,
+        phoneNumber: updatedUser.phoneNumber,
+      );
+
       homeController.completeUpload();
       selectedImagePath.value = '';
 
       CustomAlert.showSuccess('profile_update_success'.tr);
 
-      // Sau khi update profile, force refresh để lấy dữ liệu mới
+      // Sau khi update profile, force refresh để lấy dữ liệu mới (bao gồm avatar URL mới nếu có)
       loadUserProfile(forceRefresh: true);
     } catch (e) {
       Get.find<HomeController>().cancelUpload();

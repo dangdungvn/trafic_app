@@ -4,6 +4,7 @@ class LoginResponse {
   final String? fullName;
   final String? province;
   final String? relativePhone;
+  final String? phoneNumber;
 
   LoginResponse({
     this.token,
@@ -11,6 +12,7 @@ class LoginResponse {
     this.fullName,
     this.province,
     this.relativePhone,
+    this.phoneNumber,
   });
 
   factory LoginResponse.fromJson(Map<String, dynamic> json) {
@@ -20,6 +22,7 @@ class LoginResponse {
       fullName: json['fullName'] as String?,
       province: json['province'] as String?,
       relativePhone: json['relativePhone'] as String?,
+      phoneNumber: json['phoneNumber'] as String?,
     );
   }
 
@@ -30,6 +33,7 @@ class LoginResponse {
       'fullName': fullName,
       'province': province,
       'relativePhone': relativePhone,
+      'phoneNumber': phoneNumber,
     };
   }
 }
