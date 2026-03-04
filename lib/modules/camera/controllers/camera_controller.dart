@@ -8,12 +8,13 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 import '../../../data/repositories/traffic_post_repository.dart';
+import '../../../services/image_picker_service.dart';
 import '../../../widgets/custom_alert.dart';
 import '../../dashboard/controllers/dashboard_controller.dart';
 import '../../home/controllers/home_controller.dart';
 
 class CameraController extends GetxController {
-  final ImagePicker _picker = ImagePicker();
+  ImagePicker get _picker => ImagePickerService.to.picker;
   final TrafficPostRepository _repository = TrafficPostRepository();
 
   final hasImage = false.obs;

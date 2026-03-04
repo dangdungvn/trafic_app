@@ -8,6 +8,7 @@ import 'data/repositories/auth_repository.dart';
 import 'modules/not_found/not_found_page.dart';
 import 'routes/app_pages.dart';
 import 'services/assets_service.dart';
+import 'services/image_picker_service.dart';
 import 'services/localization_service.dart';
 import 'services/storage_service.dart';
 import 'theme/app_theme.dart';
@@ -26,6 +27,9 @@ void main() async {
 
   // Initialize AssetsService
   await Get.putAsync(() => AssetsService().init().then((_) => AssetsService()));
+
+  // Initialize ImagePickerService (warms up the picker platform channel)
+  await Get.putAsync(() => ImagePickerService().init());
 
   // Check auto login
   String initialRoute = AppPages.INITIAL;

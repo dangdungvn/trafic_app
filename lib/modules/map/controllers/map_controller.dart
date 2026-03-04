@@ -308,13 +308,13 @@ class MapController extends GetxController {
     final p = postRx.value;
     final userId = int.tryParse(p.userId ?? '');
     if (userId == null) return;
-    final wasFollowing = p.userFollow ?? false;
-    postRx.value = p.copyWith(userFollow: !wasFollowing);
+    final wasFollowing = p.isFollowedByCurrentUser ?? false;
+    postRx.value = p.copyWith(isFollowedByCurrentUser: !wasFollowing);
     _syncToTaggedPosts(postRx.value);
     try {
       await _followRepository.followUser(userId);
     } catch (_) {
-      postRx.value = p.copyWith(userFollow: wasFollowing);
+      postRx.value = p.copyWith(isFollowedByCurrentUser: wasFollowing);
       _syncToTaggedPosts(postRx.value);
     }
   }

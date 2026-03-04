@@ -27,7 +27,7 @@ class PostItem extends StatelessWidget {
   /// 1. API trả về follow == false
   /// 2. Không phải bài viết của chính mình
   bool get _showFollowBadge {
-    if (post.userFollow == true) return false;
+    if (post.isFollowedByCurrentUser == true) return false;
     final postUserId = int.tryParse(post.userId ?? '');
     if (postUserId != null && postUserId == currentUserId) return false;
     return true;

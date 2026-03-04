@@ -311,6 +311,30 @@
                         }
                     },
                     {
+                        "name": "content",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "hashtag",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "username",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
                         "name": "page",
                         "in": "query",
                         "required": false,
@@ -918,6 +942,9 @@
                         "format": "int32"
                     },
                     "isLikedByCurrentUser": {
+                        "type": "boolean"
+                    },
+                    "isFollowedByCurrentUser": {
                         "type": "boolean"
                     },
                     "hashtags": {

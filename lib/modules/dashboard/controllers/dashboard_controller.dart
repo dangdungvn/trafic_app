@@ -204,17 +204,17 @@ class DashboardController extends GetxController {
     final userId = int.tryParse(post.userId!);
     if (userId == null) return;
 
-    final currentFollow = post.userFollow ?? false;
+    final currentFollow = post.isFollowedByCurrentUser ?? false;
 
     // Optimistic update: cập nhật UI ngay
-    posts[index] = post.copyWith(userFollow: !currentFollow);
+    posts[index] = post.copyWith(isFollowedByCurrentUser: !currentFollow);
 
     try {
       await _followRepository.followUser(userId);
     } catch (_) {
       // Rollback nếu API thất bại
       if (index < posts.length) {
-        posts[index] = post.copyWith(userFollow: currentFollow);
+        posts[index] = post.copyWith(isFollowedByCurrentUser: currentFollow);
       }
     }
   }
