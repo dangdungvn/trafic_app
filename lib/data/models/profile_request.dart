@@ -6,6 +6,7 @@ class ProfileRequest {
   String? province;
   String? phoneNumber; 
   String? avatarUrl;
+  String? relativePhone;
   int? roleId;
 
   ProfileRequest({
@@ -16,6 +17,7 @@ class ProfileRequest {
     this.province,
     this.phoneNumber,
     this.avatarUrl,
+    this.relativePhone,
     this.roleId,
   });
 
@@ -28,16 +30,28 @@ class ProfileRequest {
       province: json['province'],
       phoneNumber: json['phoneNumber'], 
       avatarUrl: json['avatarUrl'],
+      relativePhone: json['relativePhone'],
       roleId: json['roleId'],
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {
+    final Map<String, dynamic> data = {
       'fullName': fullName,
       'email': email,
       'province': province,
-      'phoneNumber': phoneNumber,
     };
+
+    // 2. Kiểm tra an toàn: Chỉ đóng gói SĐT nếu nó không rỗng
+    if (phoneNumber != null && phoneNumber!.trim().isNotEmpty) {
+      data['phoneNumber'] = phoneNumber;
+    }
+
+    // 3. Tương tự với SĐT người thân
+    if (relativePhone != null && relativePhone!.trim().isNotEmpty) {
+      data['relativePhone'] = relativePhone;
+    }
+
+    return data;
   }
 }

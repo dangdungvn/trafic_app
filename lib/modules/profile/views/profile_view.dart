@@ -201,6 +201,14 @@ class ProfileView extends GetView<ProfileController> {
               ),
               SizedBox(height: 16.h),
 
+              CustomTextField(
+                controller: controller.relativePhoneController,
+                hintText: "relative_phone".tr,
+                prefixIcon: Icons.phone_in_talk,
+                keyboardType: TextInputType.phone,
+              ),
+              SizedBox(height: 16.h),
+              
               Obx(
                 () => CustomDropdown<Map<String, dynamic>>(
                   key: ValueKey(
