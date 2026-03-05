@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../main.dart';
 import '../theme/app_theme.dart';
+import 'primary_button.dart';
 
 enum DialogType { success, error, warning, info }
 
@@ -29,165 +30,193 @@ class CustomDialog extends StatelessWidget {
   Color get _color {
     switch (type) {
       case DialogType.success:
-        return const Color(0xFF4CAF50);
+        return AppTheme.successColor;
       case DialogType.error:
-        return const Color(0xFFF44336);
+        return AppTheme.errorColor;
       case DialogType.warning:
-        return const Color(0xFFFF9800);
+        return AppTheme.warningColor;
       case DialogType.info:
         return AppTheme.primaryColor;
+    }
+  }
+
+  List<Color> get _gradientColors {
+    switch (type) {
+      case DialogType.success:
+        return [AppTheme.successColor, AppTheme.successLightColor];
+      case DialogType.error:
+        return [AppTheme.errorColor, AppTheme.errorLightColor];
+      case DialogType.warning:
+        return [AppTheme.warningColor, AppTheme.warningLightColor];
+      case DialogType.info:
+        return [AppTheme.primaryColor, AppTheme.primaryLightColor];
+    }
+  }
+
+  Color get _dotColor {
+    switch (type) {
+      case DialogType.success:
+        return AppTheme.successDotColor;
+      case DialogType.error:
+        return AppTheme.errorDotColor;
+      case DialogType.warning:
+        return AppTheme.warningDotColor;
+      case DialogType.info:
+        return AppTheme.primaryDotColor;
+    }
+  }
+
+  Color get _cancelBgColor {
+    switch (type) {
+      case DialogType.success:
+        return AppTheme.successBgColor;
+      case DialogType.error:
+        return AppTheme.errorBgColor;
+      case DialogType.warning:
+        return AppTheme.warningBgColor;
+      case DialogType.info:
+        return AppTheme.primaryBgColor;
     }
   }
 
   IconData get _icon {
     switch (type) {
       case DialogType.success:
-        return Icons.check_circle_outline;
+        return Icons.check_rounded;
       case DialogType.error:
-        return Icons.error_outline;
+        return Icons.close_rounded;
       case DialogType.warning:
         return Icons.warning_amber_rounded;
       case DialogType.info:
-        return Icons.info_outline;
+        return Icons.info_outline_rounded;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24.r)),
       elevation: 0,
       backgroundColor: Colors.transparent,
       child: Container(
-        padding: EdgeInsets.all(20.w),
+        padding: EdgeInsets.fromLTRB(32.w, 40.h, 32.w, 32.h),
         decoration: BoxDecoration(
           color: Colors.white,
-          shape: BoxShape.rectangle,
-          borderRadius: BorderRadius.circular(20.r),
+          borderRadius: BorderRadius.circular(24.r),
           boxShadow: [
             BoxShadow(
-              color: Colors.black26,
-              blurRadius: 10.0,
-              offset: const Offset(0.0, 10.0),
+              color: _color.withOpacity(0.18),
+              blurRadius: 32,
+              offset: const Offset(0, 10),
             ),
           ],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              padding: EdgeInsets.all(16.w),
-              decoration: BoxDecoration(
-                color: _color.withOpacity(0.1),
-                shape: BoxShape.circle,
+            // Icon header with decorative dots
+            SizedBox(
+              width: 186.w,
+              height: 180.h,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  // Main gradient circle
+                  Container(
+                    width: 141.w,
+                    height: 141.w,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        begin: Alignment.bottomRight,
+                        end: Alignment.topLeft,
+                        colors: _gradientColors,
+                      ),
+                    ),
+                    child: Icon(_icon, color: Colors.white, size: 58.sp),
+                  ),
+                  // Decorative dots (match Figma positions)
+                  Positioned(top: 20, right: 0, child: _dot(15.w, _dotColor)),
+                  Positioned(top: 0, left: 10, child: _dot(20.w, _dotColor)),
+                  Positioned(bottom: 0, left: 5, child: _dot(10.w, _dotColor)),
+                  Positioned(bottom: 3, right: 2, child: _dot(5.w, _dotColor)),
+                  Positioned(top: 2, right: 82, child: _dot(5.w, _dotColor)),
+                  Positioned(bottom: 27, left: 59, child: _dot(7.w, _dotColor)),
+                  Positioned(
+                    bottom: 10,
+                    right: 59,
+                    child: _dot(2.w, _dotColor),
+                  ),
+                  Positioned(top: 108, right: 2, child: _dot(5.w, _dotColor)),
+                  Positioned(top: 74, left: 0, child: _dot(2.w, _dotColor)),
+                ],
               ),
-              child: Icon(_icon, size: 40.sp, color: _color),
             ),
-            SizedBox(height: 20.h),
+            SizedBox(height: 4.h),
+
+            // Title
             Text(
               title,
               style: TextStyle(
-                fontSize: 20.sp,
+                fontSize: 24.sp,
                 fontWeight: FontWeight.w700,
-                color: AppTheme.textColor,
+                color: _color,
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 12.h),
+            SizedBox(height: 16.h),
+
+            // Message
             Text(
               message,
               style: TextStyle(
-                fontSize: 14.sp,
+                fontSize: 16.sp,
                 fontWeight: FontWeight.w400,
-                color: AppTheme.subTextColor,
+                color: AppTheme.textColor,
+                height: 1.4,
+                letterSpacing: 0.2,
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 24.h),
-            if (cancelText != null)
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        onCancel?.call();
-                      },
-                      style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: Color(0xFFEEEEEE)),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.r),
-                        ),
-                        minimumSize: Size(double.infinity, 48.h),
-                      ),
-                      child: Text(
-                        cancelText!,
-                        style: TextStyle(
-                          fontSize: 15.sp,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFF9E9E9E),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 12.w),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        onPressed?.call();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: _color,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.r),
-                        ),
-                        elevation: 0,
-                        minimumSize: Size(double.infinity, 48.h),
-                      ),
-                      child: Text(
-                        buttonText,
-                        style: TextStyle(
-                          fontSize: 15.sp,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              )
-            else
-              SizedBox(
-                width: double.infinity,
-                height: 48.h,
-                child: ElevatedButton(
+            SizedBox(height: 32.h),
+
+            // Buttons
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                PrimaryButton(
+                  text: buttonText,
+                  color: _color,
                   onPressed: () {
-                    navigatorKey.currentState?.pop();
+                    Navigator.of(context).pop();
                     onPressed?.call();
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _color,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: Text(
-                    buttonText,
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
                 ),
-              ),
+                if (cancelText != null) ...[
+                  SizedBox(height: 12.h),
+                  PrimaryButton(
+                    text: cancelText!,
+                    color: _cancelBgColor,
+                    textColor: _color,
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      onCancel?.call();
+                    },
+                  ),
+                ],
+              ],
+            ),
           ],
         ),
       ),
     );
   }
+
+  Widget _dot(double size, Color color) => Container(
+    width: size,
+    height: size,
+    decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+  );
 
   static void show({
     required String title,

@@ -12,6 +12,8 @@ class PrimaryButton extends StatelessWidget {
   final bool isLoading;
   final Widget? child;
   final bool isCircle;
+  final Color? color;
+  final Color? textColor;
 
   const PrimaryButton({
     super.key,
@@ -22,6 +24,8 @@ class PrimaryButton extends StatelessWidget {
     this.isLoading = false,
     this.child,
     this.isCircle = false,
+    this.color,
+    this.textColor,
   });
 
   @override
@@ -32,12 +36,12 @@ class PrimaryButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppTheme.primaryColor,
+          backgroundColor: color ?? AppTheme.primaryColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(isCircle ? 999.r : 100.r),
           ),
           elevation: 4,
-          shadowColor: AppTheme.primaryColor.withOpacity(0.25),
+          shadowColor: (color ?? AppTheme.primaryColor).withOpacity(0.25),
           padding: EdgeInsets.zero,
         ),
         child: isLoading
@@ -48,7 +52,7 @@ class PrimaryButton extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w700,
-                      color: Colors.white,
+                      color: textColor ?? Colors.white,
                     ),
                   )),
       ),

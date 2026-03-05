@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../theme/app_theme.dart';
+
 enum AlertType { success, error, warning, info }
 
 class CustomAlert {
@@ -187,13 +189,13 @@ class _AlertWidget extends StatelessWidget {
   Color _getBackgroundColor() {
     switch (type) {
       case AlertType.success:
-        return const Color(0xFFEAF7F0); // Light green
+        return AppTheme.successAlertBgColor;
       case AlertType.error:
-        return const Color(0xFFFDEDEF); // Light red (from Figma)
+        return AppTheme.errorAlertBgColor;
       case AlertType.warning:
-        return const Color(0xFFFFF3CD); // Light yellow
+        return AppTheme.warningAlertBgColor;
       case AlertType.info:
-        return const Color(0xFFE3F2FD); // Light blue
+        return AppTheme.infoAlertBgColor;
     }
   }
 
@@ -213,26 +215,26 @@ class _AlertWidget extends StatelessWidget {
   Color _getIconColor() {
     switch (type) {
       case AlertType.success:
-        return const Color(0xFF4CAF50); // Green
+        return AppTheme.successAlertIconColor;
       case AlertType.error:
-        return const Color(0xFFE53B4C); // Red (from Figma)
+        return AppTheme.errorAlertIconColor;
       case AlertType.warning:
-        return const Color(0xFFF57C00); // Orange
+        return AppTheme.warningColor;
       case AlertType.info:
-        return const Color(0xFF2196F3); // Blue
+        return AppTheme.infoAlertIconColor;
     }
   }
 
   Color _getTextColor() {
     switch (type) {
       case AlertType.success:
-        return const Color(0xFF2E7D32); // Dark green
+        return AppTheme.successAlertTextColor;
       case AlertType.error:
-        return const Color(0xFFCB1B2C); // Dark red (from Figma)
+        return AppTheme.errorAlertTextColor;
       case AlertType.warning:
-        return const Color(0xFFE65100); // Dark orange
+        return AppTheme.warningAlertTextColor;
       case AlertType.info:
-        return const Color(0xFF1565C0); // Dark blue
+        return AppTheme.infoAlertTextColor;
     }
   }
 }
