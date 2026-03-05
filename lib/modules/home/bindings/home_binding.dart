@@ -23,7 +23,6 @@ class HomeBinding extends Bindings {
     Get.put<SosStreamService>(SosStreamService(), permanent: true);
 
     // ProfileController được đăng ký permanent để giữ dữ liệu khi navigate
-    // API profile sẽ được gọi ngay khi vào Home/Dashboard
     Get.put<ProfileController>(ProfileController(), permanent: true);
   }
 }
