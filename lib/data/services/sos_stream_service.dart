@@ -55,6 +55,7 @@ class SosStreamService extends GetxService with WidgetsBindingObserver {
     super.onInit();
     WidgetsBinding.instance.addObserver(this);
     _listenConnectivity();
+    debugPrint('[SOS-SSE] Service khởi động');
     connect();
   }
 
@@ -75,14 +76,19 @@ class SosStreamService extends GetxService with WidgetsBindingObserver {
     if (state == AppLifecycleState.resumed) {
       // App về foreground
       _appInForeground = true;
+      debugPrint(
+        '[SOS-SSE] App về foreground — status: ${connectionStatus.value}',
+      );
       if (connectionStatus.value != SosConnectionStatus.connected &&
           _hasNetwork) {
+        debugPrint('[SOS-SSE] Reconnect sau khi về foreground');
         _scheduleReconnect(immediately: true);
       }
     } else if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.detached) {
       // App vào background - ngắt kết nối để tiết kiệm pin
       _appInForeground = false;
+      debugPrint('[SOS-SSE] App vào background — ngắt kết nối');
       _disconnect();
       connectionStatus.value = SosConnectionStatus.disconnected;
     }
@@ -99,12 +105,14 @@ class SosStreamService extends GetxService with WidgetsBindingObserver {
       if (!_hasNetwork && hasNet) {
         // Vừa có lại mạng
         _hasNetwork = true;
+        debugPrint('[SOS-SSE] Có lại mạng (${results.last}) — reconnect');
         if (_appInForeground) {
           _scheduleReconnect(immediately: true);
         }
       } else if (_hasNetwork && !hasNet) {
         // Vừa mất mạng
         _hasNetwork = false;
+        debugPrint('[SOS-SSE] Mất mạng — ngắt kết nối');
         _disconnect();
         _reconnectTimer?.cancel();
         connectionStatus.value = SosConnectionStatus.noNetwork;
@@ -143,10 +151,15 @@ class SosStreamService extends GetxService with WidgetsBindingObserver {
         ? SosConnectionStatus.reconnecting
         : SosConnectionStatus.connecting;
 
+    debugPrint(
+      '[SOS-SSE] Bắt đầu kết nối${_retryCount > 0 ? " (retry #$_retryCount)" : ""}',
+    );
+
     try {
       final baseUrl = dotenv.env['BASE_URL'] ?? '';
       final token = StorageService.to.getToken() ?? '';
       final uri = Uri.parse('$baseUrl/sos/stream');
+      debugPrint('[SOS-SSE] → GET $uri');
 
       _httpClient = HttpClient();
       final request = await _httpClient!.getUrl(uri);
@@ -158,6 +171,7 @@ class SosStreamService extends GetxService with WidgetsBindingObserver {
 
       // Token hết hạn
       if (response.statusCode == 401) {
+        debugPrint('[SOS-SSE] 401 Unauthorized — thử refresh token');
         _httpClient?.close(force: true);
         _isConnecting = false;
         await _handleUnauthorized();
@@ -169,6 +183,9 @@ class SosStreamService extends GetxService with WidgetsBindingObserver {
       }
 
       // Kết nối thành công
+      debugPrint(
+        '[SOS-SSE] ✅ Kết nối thành công — HTTP ${response.statusCode}',
+      );
       _retryCount = 0;
       _isConnecting = false;
       connectionStatus.value = SosConnectionStatus.connected;
@@ -223,12 +240,16 @@ class SosStreamService extends GetxService with WidgetsBindingObserver {
       // Update or add to list
       final idx = sosList.indexWhere((s) => s.sosId == sos.sosId);
       if (idx >= 0) {
+        debugPrint(
+          '[SOS-SSE] 🔄 Cập nhật SOS: ${sos.sosId} — status: ${sos.status}',
+        );
         sosList[idx] = sos;
       } else {
+        debugPrint('[SOS-SSE] 🆕 SOS mới: ${sos.sosId} — ${sos.address}');
         sosList.insert(0, sos);
       }
-    } catch (_) {
-      // Bỏ qua event không parse được
+    } catch (e) {
+      debugPrint('[SOS-SSE] ⚠️ Không parse được SSE event: $e\nRaw: $dataLine');
     }
   }
 
@@ -241,6 +262,7 @@ class SosStreamService extends GetxService with WidgetsBindingObserver {
 
     final errMsg = error.toString();
     lastError.value = errMsg;
+    debugPrint('[SOS-SSE] ❌ Lỗi stream: $errMsg');
 
     if (!_hasNetwork) {
       connectionStatus.value = SosConnectionStatus.noNetwork;
@@ -257,6 +279,7 @@ class SosStreamService extends GetxService with WidgetsBindingObserver {
     _isConnecting = false;
 
     if (_disposed) return;
+    debugPrint('[SOS-SSE] Stream đóng bởi server — thử reconnect');
     if (!_hasNetwork) {
       connectionStatus.value = SosConnectionStatus.noNetwork;
       return;
@@ -292,6 +315,7 @@ class SosStreamService extends GetxService with WidgetsBindingObserver {
         : _baseDelay * (1 << _retryCount.clamp(0, 6)); // tối đa ~128s
 
     _retryCount++;
+    debugPrint('[SOS-SSE] ⏳ Retry #$_retryCount sau ${delay.inSeconds}s');
     _reconnectTimer = Timer(delay, () {
       if (!_disposed && _hasNetwork && _appInForeground) {
         _startSse();
@@ -334,15 +358,19 @@ class SosStreamService extends GetxService with WidgetsBindingObserver {
         final json = jsonDecode(body) as Map<String, dynamic>;
         if (json['success'] == true && json['data'] != null) {
           await storage.setToken(json['data'] as String);
+          debugPrint('[SOS-SSE] ✅ Token mới đã lấy — reconnect stream');
           // Token mới đã lưu, thử lại stream
           _retryCount = 0;
           _scheduleReconnect(immediately: true);
           return;
         }
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[SOS-SSE] ❌ Re-login thất bại: $e');
+    }
 
     // Re-login thất bại → về màn login
+    debugPrint('[SOS-SSE] Re-login thất bại — về màn login');
     await storage.removeToken();
     await storage.clearCredentials();
     Get.offAllNamed('/login');
