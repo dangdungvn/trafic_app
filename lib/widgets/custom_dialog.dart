@@ -12,6 +12,8 @@ class CustomDialog extends StatelessWidget {
   final String buttonText;
   final VoidCallback? onPressed;
   final DialogType type;
+  final String? cancelText;
+  final VoidCallback? onCancel;
 
   const CustomDialog({
     super.key,
@@ -20,6 +22,8 @@ class CustomDialog extends StatelessWidget {
     this.buttonText = 'OK',
     this.onPressed,
     this.type = DialogType.info,
+    this.cancelText,
+    this.onCancel,
   });
 
   Color get _color {
@@ -100,31 +104,85 @@ class CustomDialog extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 24.h),
-            SizedBox(
-              width: double.infinity,
-              height: 48.h,
-              child: ElevatedButton(
-                onPressed: () {
-                  navigatorKey.currentState?.pop();
-                  onPressed?.call();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _color,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.r),
+            if (cancelText != null)
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        onCancel?.call();
+                      },
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: Color(0xFFEEEEEE)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                        minimumSize: Size(double.infinity, 48.h),
+                      ),
+                      child: Text(
+                        cancelText!,
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF9E9E9E),
+                        ),
+                      ),
+                    ),
                   ),
-                  elevation: 0,
-                ),
-                child: Text(
-                  buttonText,
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
+                  SizedBox(width: 12.w),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        onPressed?.call();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _color,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                        elevation: 0,
+                        minimumSize: Size(double.infinity, 48.h),
+                      ),
+                      child: Text(
+                        buttonText,
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            else
+              SizedBox(
+                width: double.infinity,
+                height: 48.h,
+                child: ElevatedButton(
+                  onPressed: () {
+                    navigatorKey.currentState?.pop();
+                    onPressed?.call();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _color,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    buttonText,
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
-            ),
           ],
         ),
       ),
@@ -152,5 +210,29 @@ class CustomDialog extends StatelessWidget {
         ),
       );
     }
+  }
+
+  static void showConfirm({
+    required BuildContext context,
+    required String title,
+    required String message,
+    String confirmText = 'Xác nhận',
+    String cancelText = 'Hủy',
+    VoidCallback? onConfirm,
+    VoidCallback? onCancel,
+    DialogType type = DialogType.warning,
+  }) {
+    showDialog(
+      context: context,
+      builder: (_) => CustomDialog(
+        title: title,
+        message: message,
+        buttonText: confirmText,
+        cancelText: cancelText,
+        onPressed: onConfirm,
+        onCancel: onCancel,
+        type: type,
+      ),
+    );
   }
 }

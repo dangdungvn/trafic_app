@@ -12,7 +12,10 @@ class CustomTextField extends StatefulWidget {
   final TextInputType? keyboardType;
   final TextInputAction? textInputAction;
   final int? maxLines;
+  final int? minLines;
   final double? height;
+  final ValueChanged<String>? onSubmitted;
+  final BorderRadius? borderRadius;
 
   const CustomTextField({
     super.key,
@@ -24,7 +27,10 @@ class CustomTextField extends StatefulWidget {
     this.keyboardType,
     this.textInputAction,
     this.maxLines = 1,
+    this.minLines,
     this.height,
+    this.onSubmitted,
+    this.borderRadius,
   });
 
   @override
@@ -66,12 +72,12 @@ class _CustomTextFieldState extends State<CustomTextField> {
         _focusNode.requestFocus();
       },
       child: Container(
-        height: widget.height ?? 56.h,
+        height: widget.maxLines == 1 ? (widget.height ?? 56.h) : widget.height,
         decoration: BoxDecoration(
           color: _isFocused
               ? AppTheme.primaryColor.withOpacity(0.08)
               : AppTheme.inputFillColor,
-          borderRadius: BorderRadius.circular(12.r),
+          borderRadius: widget.borderRadius ?? BorderRadius.circular(12.r),
           border: _isFocused
               ? Border.all(color: AppTheme.primaryColor, width: 1)
               : null,
@@ -103,6 +109,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 keyboardType: widget.keyboardType,
                 textInputAction: widget.textInputAction,
                 maxLines: widget.maxLines,
+                minLines: widget.minLines,
+                onSubmitted: widget.onSubmitted,
                 cursorColor: AppTheme.primaryColor,
                 style: TextStyle(
                   fontSize: 14.sp,
