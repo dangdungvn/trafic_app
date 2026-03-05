@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 
 import '../../routes/app_pages.dart';
 import '../../services/storage_service.dart';
+import 'network_check_interceptor.dart';
 
 class ApiService {
   static final ApiService _instance = ApiService._internal();
@@ -23,6 +24,9 @@ class ApiService {
       ),
     );
 
+    // Kiểm tra mạng trước mọi request — tự chờ và retry khi có lại mạng
+    _dio.interceptors.add(NetworkCheckInterceptor());
+
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
@@ -37,8 +41,9 @@ class ApiService {
         },
         onError: (DioException e, handler) async {
           if (e.response?.statusCode == 401) {
-            if (e.requestOptions.path.contains('/auth/login') || Get.currentRoute == Routes.LOGIN) {
-                return handler.next(e);
+            if (e.requestOptions.path.contains('/auth/login') ||
+                Get.currentRoute == Routes.LOGIN) {
+              return handler.next(e);
             }
 
             // Try to login again

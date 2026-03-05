@@ -44,6 +44,10 @@ class SosStreamService extends GetxService with WidgetsBindingObserver {
   static const Duration _baseDelay = Duration(seconds: 2);
 
   Timer? _reconnectTimer;
+  Timer? _watchdogTimer;
+  Timer? _networkPollingTimer;
+  static const Duration _watchdogTimeout = Duration(seconds: 15);
+  static const Duration _networkPollingInterval = Duration(seconds: 4);
 
   // ─── Getter shortcut ──────────────────────────────────────────────────────
   static SosStreamService get to => Get.find<SosStreamService>();
@@ -105,17 +109,28 @@ class SosStreamService extends GetxService with WidgetsBindingObserver {
       if (!_hasNetwork && hasNet) {
         // Vừa có lại mạng
         _hasNetwork = true;
-        debugPrint('[SOS-SSE] Có lại mạng (${results.last}) — reconnect');
+        _retryCount = 0;
+        debugPrint('[SOS-SSE] ✅ [Event] Có lại mạng (${results.last})');
         if (_appInForeground) {
-          _scheduleReconnect(immediately: true);
+          _networkPollingTimer?.cancel();
+          _networkPollingTimer = null;
+          _isConnecting = false; // đảm bảo không bị block
+          _reconnectTimer?.cancel();
+          _reconnectTimer = null;
+          debugPrint('[SOS-SSE] → Gọi _startSse() từ connectivity event');
+          _startSse();
         }
       } else if (_hasNetwork && !hasNet) {
         // Vừa mất mạng
         _hasNetwork = false;
-        debugPrint('[SOS-SSE] Mất mạng — ngắt kết nối');
+        debugPrint('[SOS-SSE] ⚠️ [Event] Mất mạng');
         _disconnect();
-        _reconnectTimer?.cancel();
         connectionStatus.value = SosConnectionStatus.noNetwork;
+        _startNetworkPolling();
+      } else {
+        debugPrint(
+          '[SOS-SSE] [Event] connectivity thay đổi: $results (không xử lý)',
+        );
       }
     });
   }
@@ -190,6 +205,9 @@ class SosStreamService extends GetxService with WidgetsBindingObserver {
       _isConnecting = false;
       connectionStatus.value = SosConnectionStatus.connected;
       lastError.value = '';
+      _networkPollingTimer?.cancel(); // dừng polling khi đã connected
+      _networkPollingTimer = null;
+      _resetWatchdog();
 
       // Parse SSE stream
       _sseSubscription = response
@@ -210,6 +228,7 @@ class SosStreamService extends GetxService with WidgetsBindingObserver {
   String _sseBuffer = '';
 
   void _onSseLine(String line) {
+    _resetWatchdog(); // reset mỗi khi nhận bất kỳ line nào
     if (line.isEmpty) {
       // Blank line = end of event, parse buffer
       if (_sseBuffer.isNotEmpty) {
@@ -233,6 +252,8 @@ class SosStreamService extends GetxService with WidgetsBindingObserver {
       }
     }
     if (dataLine == null || dataLine.isEmpty) return;
+    // Bỏ qua plain-text messages từ server (vd: "SSE connection established")
+    if (!dataLine.startsWith('{')) return;
 
     try {
       final json = jsonDecode(dataLine) as Map<String, dynamic>;
@@ -291,13 +312,59 @@ class SosStreamService extends GetxService with WidgetsBindingObserver {
   }
 
   void _disconnect() {
+    _watchdogTimer?.cancel();
+    _watchdogTimer = null;
     _reconnectTimer?.cancel();
+    _reconnectTimer = null;
+    _networkPollingTimer?.cancel();
+    _networkPollingTimer = null;
     _sseSubscription?.cancel();
     _sseSubscription = null;
     _httpClient?.close(force: true);
     _httpClient = null;
     _isConnecting = false;
     _sseBuffer = '';
+  }
+
+  // ─── Watchdog: force reconnect nếu im lặng quá lâu ─────────────────────
+  // ─── Network polling: fallback cho onConnectivityChanged không tin cậy ───
+
+  void _startNetworkPolling() {
+    _networkPollingTimer?.cancel();
+    debugPrint(
+      '[SOS-SSE] 🔄 Bắt đầu polling mạng mỗi ${_networkPollingInterval.inSeconds}s',
+    );
+    _networkPollingTimer = Timer.periodic(_networkPollingInterval, (_) async {
+      if (_disposed || !_appInForeground) return;
+      final results = await Connectivity().checkConnectivity();
+      final hasNet = results.any((r) => r != ConnectivityResult.none);
+      debugPrint(
+        '[SOS-SSE] [Polling] check: $results — hasNet=$hasNet _hasNetwork=$_hasNetwork',
+      );
+      if (hasNet && !_hasNetwork) {
+        _networkPollingTimer?.cancel();
+        _networkPollingTimer = null;
+        _hasNetwork = true;
+        _retryCount = 0;
+        _isConnecting = false; // đảm bảo không bị block
+        debugPrint(
+          '[SOS-SSE] ✅ [Polling] Có lại mạng — gọi _startSse() trực tiếp',
+        );
+        _startSse();
+      }
+    });
+  }
+
+  void _resetWatchdog() {
+    _watchdogTimer?.cancel();
+    _watchdogTimer = Timer(_watchdogTimeout, () {
+      if (_disposed || !_appInForeground) return;
+      debugPrint(
+        '[SOS-SSE] ⏱ Watchdog: ${_watchdogTimeout.inSeconds}s không có data — force reconnect',
+      );
+      _disconnect();
+      _scheduleReconnect(immediately: true);
+    });
   }
 
   // ─── Retry with exponential backoff ──────────────────────────────────────
