@@ -19,7 +19,7 @@ class CustomAlert {
         margin: const EdgeInsets.all(16),
         padding: EdgeInsets.zero,
         borderRadius: 8,
-        snackPosition: SnackPosition.TOP,
+        snackPosition: SnackPosition.BOTTOM,
         duration: duration,
         animationDuration: const Duration(milliseconds: 300),
       );
@@ -30,7 +30,7 @@ class CustomAlert {
 
   /// Check if Overlay widget is available in the current context
   static bool _isOverlayAvailable() {
-    final context = Get.overlayContext;
+    final context = Get.overlayContext ?? Get.context;
     if (context == null) return false;
 
     try {
@@ -68,10 +68,6 @@ class CustomAlert {
             top: MediaQuery.of(context).padding.top + 16,
             left: 16,
             right: 16,
-            bottom:
-                MediaQuery.of(context).size.height -
-                MediaQuery.of(context).padding.top -
-                100,
           ),
           padding: EdgeInsets.zero,
           duration: duration,
