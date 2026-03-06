@@ -208,7 +208,7 @@ class ProfileView extends GetView<ProfileController> {
                 keyboardType: TextInputType.phone,
               ),
               SizedBox(height: 16.h),
-              
+
               Obx(
                 () => CustomDropdown<Map<String, dynamic>>(
                   key: ValueKey(
@@ -278,6 +278,14 @@ class ProfileView extends GetView<ProfileController> {
               PrimaryButton(
                 text: 'Lưu thay đổi'.tr,
                 onPressed: controller.saveProfile,
+              ),
+              SizedBox(height: 16.h),
+
+              // 5. Nút Đăng xuất
+              PrimaryButton(
+                text: 'Đăng xuất',
+                onPressed: controller.logout,
+                color: Colors.red,
               ),
               SizedBox(height: 20.h),
             ],

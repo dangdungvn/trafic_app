@@ -29,11 +29,16 @@ class EmergencyController extends GetxController {
 
   Future<void> onContinue() async {
     if (selectedOption.value == 0) {
-      final String relativePhone = (StorageService.to.getRelativePhone() ?? '').trim();
+      final String relativePhone = (StorageService.to.getRelativePhone() ?? '')
+          .trim();
 
       if (relativePhone.isEmpty) {
         CustomAlert.showWarning('emergency_notification_mesg_1'.tr);
+<<<<<<< HEAD
         await _makePhoneCall(''); 
+=======
+        await _makePhoneCall('');
+>>>>>>> dca673d0edb22aef6af479042a16836922435f06
       } else {
         await _makePhoneCall(relativePhone);
       }
@@ -45,13 +50,14 @@ class EmergencyController extends GetxController {
 
   // Hàm xử lý gọi điện dùng chung
   Future<void> _makePhoneCall(String phoneNumber) async {
-    final Uri launchUri = Uri(
-      scheme: 'tel',
-      path: phoneNumber,
-    );
+    final Uri launchUri = Uri(scheme: 'tel', path: phoneNumber);
 
     try {
       if (await canLaunchUrl(launchUri)) {
+<<<<<<< HEAD
+=======
+        // mode: LaunchMode.externalApplication giúp ép HĐH mở app Điện thoại
+>>>>>>> dca673d0edb22aef6af479042a16836922435f06
         await launchUrl(launchUri, mode: LaunchMode.externalApplication);
       } else {
         CustomAlert.showError('emergency_notification_mesg_2'.tr);
@@ -60,6 +66,7 @@ class EmergencyController extends GetxController {
       CustomAlert.showError('emergency_notification_mesg_3'.tr);
     }
   }
+<<<<<<< HEAD
 
   // Hàm tự động check SOS của chính mình từ Server
   Future<void> _checkMyActiveSosFromServer() async {
@@ -167,3 +174,6 @@ class EmergencyController extends GetxController {
     super.onClose();
   }
 }
+=======
+}
+>>>>>>> dca673d0edb22aef6af479042a16836922435f06

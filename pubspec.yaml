@@ -63,7 +63,8 @@ dependencies:
   pull_to_refresh_flutter3: ^2.0.2
   webview_flutter: ^4.13.1
   url_launcher: ^6.3.2
-  connectivity_plus: ^6.1.4
+  connectivity_plus: ^7.0.0
+  googleai_dart: ^3.3.0
 
 dev_dependencies:
   flutter_test:

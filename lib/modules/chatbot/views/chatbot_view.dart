@@ -1,11 +1,14 @@
+import 'package:adaptive_platform_ui/adaptive_platform_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import '../../../data/models/sos_model.dart';
-import '../../../data/services/sos_stream_service.dart';
 import '../../../theme/app_theme.dart';
+import '../../../widgets/custom_dialog.dart';
+import '../../../widgets/custom_text_field.dart';
+import '../../../widgets/primary_button.dart';
 import '../controllers/chatbot_controller.dart';
 
 class ChatbotView extends GetView<ChatbotController> {
@@ -13,471 +16,713 @@ class ChatbotView extends GetView<ChatbotController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
-      appBar: AppBar(
-        backgroundColor: AppTheme.backgroundColor,
-        elevation: 0,
-        title: Text(
-          'SOS Alerts',
-          style: TextStyle(
-            fontSize: 18.sp,
-            fontWeight: FontWeight.w700,
-            color: AppTheme.textColor,
-          ),
-        ),
-        centerTitle: false,
-        actions: [
-          Obx(() {
-            final status = controller.sosService.connectionStatus.value;
-            return Padding(
-              padding: EdgeInsets.only(right: 16.w),
-              child: _ConnectionBadge(status: status),
-            );
-          }),
-        ],
-      ),
-      body: Obx(() {
-        final status = controller.sosService.connectionStatus.value;
-        final list = controller.sosService.sosList;
-
-        return Column(
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        resizeToAvoidBottomInset: true,
+        body: Column(
           children: [
-            // Status banner
-            _StatusBanner(
-              status: status,
-              error: controller.sosService.lastError.value,
-            ),
-
-            // SOS list
+            _ChatHeader(controller: controller),
             Expanded(
-              child: list.isEmpty
-                  ? _EmptyState(status: status)
-                  : RefreshIndicator(
-                      color: AppTheme.primaryColor,
-                      onRefresh: () async {
-                        controller.sosService.connect();
-                      },
-                      child: ListView.separated(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 16.w,
-                          vertical: 12.h,
-                        ),
-                        itemCount: list.length,
-                        separatorBuilder: (_, __) => SizedBox(height: 10.h),
-                        itemBuilder: (_, i) => _SosCard(sos: list[i]),
-                      ),
-                    ),
+              child: ColoredBox(
+                color: const Color(0xFFF5F5F5),
+                child: _ChatMessageList(controller: controller),
+              ),
             ),
+            _ChatInputBar(controller: controller),
           ],
-        );
-      }),
-      floatingActionButton: Obx(() {
-        final status = controller.sosService.connectionStatus.value;
-        final isConnected = status == SosConnectionStatus.connected;
-        return FloatingActionButton.small(
-          backgroundColor: isConnected ? Colors.green : AppTheme.primaryColor,
-          onPressed: () {
-            if (status == SosConnectionStatus.connected) {
-              controller.sosService.disconnect();
-            } else {
-              controller.sosService.connect();
-            }
-          },
-          tooltip: isConnected ? 'Ngắt kết nối' : 'Kết nối lại',
-          child: Icon(
-            isConnected ? Icons.wifi_off : Icons.wifi,
-            color: Colors.white,
-            size: 18.r,
-          ),
-        );
-      }),
+        ),
+      ),
     );
   }
 }
 
-// ─── Connection badge ──────────────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// HEADER
+// ─────────────────────────────────────────────
 
-class _ConnectionBadge extends StatelessWidget {
-  const _ConnectionBadge({required this.status});
-  final SosConnectionStatus status;
+class _ChatHeader extends StatelessWidget {
+  final ChatbotController controller;
+  const _ChatHeader({required this.controller});
 
   @override
   Widget build(BuildContext context) {
-    Color color;
-    String label;
-    bool showPulse;
-
-    switch (status) {
-      case SosConnectionStatus.connected:
-        color = Colors.green;
-        label = 'Live';
-        showPulse = true;
-        break;
-      case SosConnectionStatus.connecting:
-        color = Colors.orange;
-        label = 'Đang kết nối';
-        showPulse = false;
-        break;
-      case SosConnectionStatus.reconnecting:
-        color = Colors.orange;
-        label = 'Reconnect...';
-        showPulse = false;
-        break;
-      case SosConnectionStatus.noNetwork:
-        color = Colors.grey;
-        label = 'Mất mạng';
-        showPulse = false;
-        break;
-      case SosConnectionStatus.error:
-        color = Colors.red;
-        label = 'Lỗi';
-        showPulse = false;
-        break;
-      case SosConnectionStatus.disconnected:
-        color = Colors.grey;
-        label = 'Offline';
-        showPulse = false;
-        break;
-    }
-
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _Dot(color: color, pulse: showPulse),
-        SizedBox(width: 4.w),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12.sp,
-            color: color,
-            fontWeight: FontWeight.w600,
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF04060F).withOpacity(0.05),
+            offset: const Offset(0, 2),
+            blurRadius: 50,
           ),
-        ),
-      ],
+        ],
+      ),
+      padding: EdgeInsets.only(
+        left: 24.w,
+        right: 24.w,
+        top: MediaQuery.of(context).padding.top + 10.h,
+        bottom: 12.h,
+      ),
+      child: Row(
+        children: [
+          // Bot avatar
+          Container(
+            width: 42.w,
+            height: 42.w,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppTheme.primaryColor.withOpacity(0.1),
+            ),
+            child: Center(
+              child: Icon(
+                Icons.smart_toy_rounded,
+                color: AppTheme.primaryColor,
+                size: 22.sp,
+              ),
+            ),
+          ),
+          SizedBox(width: 12.w),
+          // Tên và trạng thái
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Trợ lý Giao thông AI',
+                  style: TextStyle(
+                    color: AppTheme.textColor,
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                SizedBox(height: 3.h),
+                Row(
+                  children: [
+                    Container(
+                      width: 7.w,
+                      height: 7.w,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Color(0xFF4CAF50),
+                      ),
+                    ),
+                    SizedBox(width: 5.w),
+                    Text(
+                      'Trực tuyến · Gemini AI',
+                      style: TextStyle(
+                        color: AppTheme.subTextColor,
+                        fontSize: 11.sp,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          // Nút xóa hội thoại
+          _ClearButton(controller: controller),
+        ],
+      ),
     );
   }
 }
 
-class _Dot extends StatefulWidget {
-  const _Dot({required this.color, required this.pulse});
-  final Color color;
-  final bool pulse;
+class _ClearButton extends StatelessWidget {
+  final ChatbotController controller;
+  const _ClearButton({required this.controller});
+
+  void _showClearDialog(BuildContext context) {
+    CustomDialog.showConfirm(
+      context: context,
+      title: 'Cuộc trò chuyện mới',
+      message: 'Bạn có muốn xóa lịch sử và bắt đầu lại không?',
+      confirmText: 'Xóa',
+      cancelText: 'Hủy',
+      onConfirm: controller.clearChat,
+      type: DialogType.warning,
+    );
+  }
 
   @override
-  State<_Dot> createState() => _DotState();
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => _showClearDialog(context),
+      child: Container(
+        width: 36.w,
+        height: 36.w,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: AppTheme.primaryColor.withOpacity(0.08),
+        ),
+        child: Icon(
+          Icons.refresh_rounded,
+          color: AppTheme.primaryColor,
+          size: 18.sp,
+        ),
+      ),
+    );
+  }
 }
 
-class _DotState extends State<_Dot> with SingleTickerProviderStateMixin {
-  late AnimationController _ctrl;
-  late Animation<double> _anim;
+// ─────────────────────────────────────────────
+// MESSAGE LIST
+// ─────────────────────────────────────────────
+
+class _ChatMessageList extends StatelessWidget {
+  final ChatbotController controller;
+  const _ChatMessageList({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      final msgs = controller.messages;
+      final isTyping = controller.isTyping.value;
+      final showSuggestions = msgs.length <= 1 && !isTyping;
+      final extraItems = (isTyping ? 1 : 0) + (showSuggestions ? 1 : 0);
+
+      return ListView.builder(
+        controller: controller.scrollController,
+        padding: EdgeInsets.only(
+          left: 16.w,
+          right: 16.w,
+          top: 16.h,
+          bottom: 12.h,
+        ),
+        itemCount: msgs.length + extraItems,
+        itemBuilder: (ctx, index) {
+          // Gợi ý nhanh (khi hội thoại trống)
+          if (showSuggestions && index == msgs.length) {
+            return _SuggestionChips(controller: controller);
+          }
+          // Typing / Streaming bubble
+          if (isTyping && index == msgs.length + (showSuggestions ? 1 : 0)) {
+            return Obx(() {
+              final text = controller.streamingText.value;
+              return text.isEmpty
+                  ? const _TypingBubble()
+                  : _AIMessageBubble(text: text, isStreaming: true);
+            });
+          }
+          // Tin nhắn thông thường
+          final msg = msgs[index];
+          return msg.isUser
+              ? _UserMessageBubble(msg: msg)
+              : _AIMessageBubble(
+                  text: msg.text,
+                  timestamp: msg.timestamp,
+                  isError: msg.isError,
+                );
+        },
+      );
+    });
+  }
+}
+
+// ─────────────────────────────────────────────
+// AI MESSAGE BUBBLE
+// ─────────────────────────────────────────────
+
+class _AIMessageBubble extends StatelessWidget {
+  final String text;
+  final DateTime? timestamp;
+  final bool isStreaming;
+  final bool isError;
+
+  const _AIMessageBubble({
+    required this.text,
+    this.timestamp,
+    this.isStreaming = false,
+    this.isError = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 14.h),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          // Avatar trợ lý
+          Container(
+            width: 32.w,
+            height: 32.w,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                colors: [Color(0xFF4D5DFA), Color(0xFF7B88FF)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Center(
+              child: Icon(
+                Icons.smart_toy_rounded,
+                color: Colors.white,
+                size: 16.sp,
+              ),
+            ),
+          ),
+          SizedBox(width: 8.w),
+          // Bubble
+          Flexible(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 14.w,
+                    vertical: 11.h,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isError
+                        ? const Color(0xFFFFEBEE)
+                        : Colors.white.withOpacity(0.95),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(4.r),
+                      topRight: Radius.circular(18.r),
+                      bottomLeft: Radius.circular(18.r),
+                      bottomRight: Radius.circular(18.r),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.06),
+                        blurRadius: 10,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        text,
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          color: isError
+                              ? const Color(0xFFD32F2F)
+                              : AppTheme.textColor,
+                          height: 1.55,
+                        ),
+                      ),
+                      // Cursor nhấp nháy khi đang stream
+                      if (isStreaming)
+                        Padding(
+                          padding: EdgeInsets.only(top: 2.h),
+                          child: const _BlinkingCursor(),
+                        ),
+                    ],
+                  ),
+                ),
+                if (timestamp != null && !isStreaming)
+                  Padding(
+                    padding: EdgeInsets.only(top: 4.h, left: 4.w),
+                    child: Text(
+                      DateFormat('HH:mm').format(timestamp!),
+                      style: TextStyle(
+                        fontSize: 10.sp,
+                        color: AppTheme.subTextColor,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          SizedBox(width: 44.w),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
+// USER MESSAGE BUBBLE
+// ─────────────────────────────────────────────
+
+class _UserMessageBubble extends StatelessWidget {
+  final ChatMessage msg;
+  const _UserMessageBubble({required this.msg});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 14.h),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          SizedBox(width: 44.w),
+          Flexible(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 14.w,
+                    vertical: 11.h,
+                  ),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF4D5DFA), Color(0xFF6B78FF)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(18.r),
+                      topRight: Radius.circular(4.r),
+                      bottomLeft: Radius.circular(18.r),
+                      bottomRight: Radius.circular(18.r),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF4D5DFA).withOpacity(0.35),
+                        blurRadius: 10,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Text(
+                    msg.text,
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: Colors.white,
+                      height: 1.55,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 4.h, right: 4.w),
+                  child: Text(
+                    DateFormat('HH:mm').format(msg.timestamp),
+                    style: TextStyle(
+                      fontSize: 10.sp,
+                      color: AppTheme.subTextColor,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
+// TYPING INDICATOR (3 chấm nảy)
+// ─────────────────────────────────────────────
+
+class _TypingBubble extends StatelessWidget {
+  const _TypingBubble();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 14.h),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Container(
+            width: 32.w,
+            height: 32.w,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                colors: [Color(0xFF4D5DFA), Color(0xFF7B88FF)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Center(
+              child: Icon(
+                Icons.smart_toy_rounded,
+                color: Colors.white,
+                size: 16.sp,
+              ),
+            ),
+          ),
+          SizedBox(width: 8.w),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 14.h),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(4.r),
+                topRight: Radius.circular(18.r),
+                bottomLeft: Radius.circular(18.r),
+                bottomRight: Radius.circular(18.r),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.06),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: const _TypingDots(),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
+// SUGGESTION CHIPS
+// ─────────────────────────────────────────────
+
+class _SuggestionChips extends StatelessWidget {
+  final ChatbotController controller;
+  const _SuggestionChips({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(top: 4.h, bottom: 8.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.only(left: 44.w, bottom: 8.h),
+            child: Text(
+              'Hỏi nhanh:',
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: AppTheme.subTextColor,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(left: 44.w),
+            child: Wrap(
+              spacing: 8.w,
+              runSpacing: 8.h,
+              children: controller.suggestions.map((s) {
+                return GestureDetector(
+                  onTap: () => controller.sendMessage(s),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 14.w,
+                      vertical: 8.h,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20.r),
+                      border: Border.all(
+                        color: AppTheme.primaryColor.withOpacity(0.35),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.04),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Text(
+                      s,
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        color: AppTheme.primaryColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
+// INPUT BAR
+// ─────────────────────────────────────────────
+
+class _ChatInputBar extends StatelessWidget {
+  final ChatbotController controller;
+  const _ChatInputBar({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.only(
+        left: 16.w,
+        right: 16.w,
+        top: 10.h,
+        bottom: PlatformInfo.isIOS26OrHigher()
+            ? MediaQuery.of(context).viewPadding.bottom + 65.h
+            : MediaQuery.of(context).padding.bottom + 10.h,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(top: BorderSide(color: AppTheme.dividerColor, width: 1)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          // Text input
+          Expanded(
+            child: CustomTextField(
+              controller: controller.textController,
+              focusNode: controller.focusNode,
+              hintText: 'Nhập tin nhắn...',
+              maxLines: 4,
+              minLines: 1,
+              keyboardType: TextInputType.multiline,
+              textInputAction: TextInputAction.newline,
+              onSubmitted: (_) =>
+                  controller.sendMessage(controller.textController.text),
+            ),
+          ),
+          SizedBox(width: 10.w),
+          // Nút gửi (reactive)
+          Obx(
+            () => PrimaryButton(
+              isCircle: true,
+              width: 48.w,
+              height: 48.w,
+              isLoading: controller.isTyping.value,
+              onPressed: () =>
+                  controller.sendMessage(controller.textController.text),
+              child: SvgPicture.asset('assets/icons/big_send.svg'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
+// ANIMATED TYPING DOTS
+// ─────────────────────────────────────────────
+
+class _TypingDots extends StatefulWidget {
+  const _TypingDots();
+
+  @override
+  State<_TypingDots> createState() => _TypingDotsState();
+}
+
+class _TypingDotsState extends State<_TypingDots>
+    with TickerProviderStateMixin {
+  late List<AnimationController> _controllers;
+  late List<Animation<double>> _animations;
 
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 900),
+    _controllers = List.generate(
+      3,
+      (_) => AnimationController(
+        vsync: this,
+        duration: const Duration(milliseconds: 480),
+      ),
     );
-    _anim = Tween(
-      begin: 0.5,
-      end: 1.0,
-    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut));
-    if (widget.pulse) _ctrl.repeat(reverse: true);
-  }
+    _animations = _controllers
+        .map(
+          (c) => Tween<double>(
+            begin: 0,
+            end: -7,
+          ).animate(CurvedAnimation(parent: c, curve: Curves.easeInOut)),
+        )
+        .toList();
 
-  @override
-  void didUpdateWidget(_Dot old) {
-    super.didUpdateWidget(old);
-    if (widget.pulse && !_ctrl.isAnimating) {
-      _ctrl.repeat(reverse: true);
-    } else if (!widget.pulse) {
-      _ctrl.stop();
+    for (int i = 0; i < 3; i++) {
+      Future.delayed(Duration(milliseconds: i * 170), () {
+        if (mounted) _controllers[i].repeat(reverse: true);
+      });
     }
   }
 
   @override
   void dispose() {
-    _ctrl.dispose();
+    for (final c in _controllers) {
+      c.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(
+        3,
+        (i) => AnimatedBuilder(
+          animation: _animations[i],
+          builder: (ctx, child) => Transform.translate(
+            offset: Offset(0, _animations[i].value),
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 3.w),
+              width: 9.w,
+              height: 9.w,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppTheme.primaryColor.withOpacity(0.65),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
+// BLINKING CURSOR (hiệu ứng đang stream)
+// ─────────────────────────────────────────────
+
+class _BlinkingCursor extends StatefulWidget {
+  const _BlinkingCursor();
+
+  @override
+  State<_BlinkingCursor> createState() => _BlinkingCursorState();
+}
+
+class _BlinkingCursorState extends State<_BlinkingCursor>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: _anim,
-      builder: (_, __) => Opacity(
-        opacity: widget.pulse ? _anim.value : 1.0,
+      animation: _controller,
+      builder: (ctx, child) => Opacity(
+        opacity: _controller.value,
         child: Container(
-          width: 8.r,
-          height: 8.r,
+          width: 2.w,
+          height: 14.h,
           decoration: BoxDecoration(
-            color: widget.color,
-            shape: BoxShape.circle,
+            color: AppTheme.primaryColor,
+            borderRadius: BorderRadius.circular(2.r),
           ),
         ),
       ),
-    );
-  }
-}
-
-// ─── Status banner ─────────────────────────────────────────────────────────
-
-class _StatusBanner extends StatelessWidget {
-  const _StatusBanner({required this.status, required this.error});
-  final SosConnectionStatus status;
-  final String error;
-
-  @override
-  Widget build(BuildContext context) {
-    String? msg;
-    Color bg;
-    IconData icon;
-
-    switch (status) {
-      case SosConnectionStatus.noNetwork:
-        msg = 'Không có kết nối mạng. Sẽ tự động kết nối lại khi có mạng.';
-        bg = Colors.orange.shade50;
-        icon = Icons.wifi_off;
-        break;
-      case SosConnectionStatus.reconnecting:
-        msg = 'Đang thử kết nối lại...';
-        bg = Colors.blue.shade50;
-        icon = Icons.sync;
-        break;
-      case SosConnectionStatus.connecting:
-        msg = 'Đang kết nối tới server...';
-        bg = Colors.blue.shade50;
-        icon = Icons.sync;
-        break;
-      case SosConnectionStatus.error:
-        msg = error.isNotEmpty
-            ? error
-            : 'Kết nối thất bại. Kéo xuống để thử lại.';
-        bg = Colors.red.shade50;
-        icon = Icons.error_outline;
-        break;
-      default:
-        return const SizedBox.shrink();
-    }
-
-    return Container(
-      width: double.infinity,
-      color: bg,
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-      child: Row(
-        children: [
-          Icon(icon, size: 16.r, color: Colors.black54),
-          SizedBox(width: 8.w),
-          Expanded(
-            child: Text(
-              msg,
-              style: TextStyle(fontSize: 12.sp, color: Colors.black54),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ─── Empty state ───────────────────────────────────────────────────────────
-
-class _EmptyState extends StatelessWidget {
-  const _EmptyState({required this.status});
-  final SosConnectionStatus status;
-
-  @override
-  Widget build(BuildContext context) {
-    if (status == SosConnectionStatus.connecting ||
-        status == SosConnectionStatus.reconnecting) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              width: 32.r,
-              height: 32.r,
-              child: CircularProgressIndicator(
-                strokeWidth: 2.5,
-                color: AppTheme.primaryColor,
-              ),
-            ),
-            SizedBox(height: 12.h),
-            Text(
-              'Đang kết nối...',
-              style: TextStyle(fontSize: 14.sp, color: AppTheme.subTextColor),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.notifications_none,
-            size: 48.r,
-            color: AppTheme.dividerColor,
-          ),
-          SizedBox(height: 12.h),
-          Text(
-            status == SosConnectionStatus.connected
-                ? 'Chưa có cảnh báo SOS nào'
-                : 'Chưa kết nối',
-            style: TextStyle(fontSize: 14.sp, color: AppTheme.subTextColor),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ─── SOS Card ──────────────────────────────────────────────────────────────
-
-class _SosCard extends StatelessWidget {
-  const _SosCard({required this.sos});
-  final SosResponseDTO sos;
-
-  @override
-  Widget build(BuildContext context) {
-    final statusColor = _statusColor(sos.status);
-    final timeStr = sos.timestamp != null
-        ? DateFormat('HH:mm dd/MM/yyyy').format(sos.timestamp!.toLocal())
-        : '--';
-
-    return Container(
-      padding: EdgeInsets.all(14.r),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-        border: Border.all(color: statusColor.withOpacity(0.4), width: 1),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header row
-          Row(
-            children: [
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
-                decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(20.r),
-                ),
-                child: Text(
-                  sos.status?.toUpperCase() ?? 'UNKNOWN',
-                  style: TextStyle(
-                    fontSize: 10.sp,
-                    fontWeight: FontWeight.w700,
-                    color: statusColor,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              ),
-              const Spacer(),
-              Icon(Icons.access_time, size: 12.r, color: AppTheme.subTextColor),
-              SizedBox(width: 3.w),
-              Text(
-                timeStr,
-                style: TextStyle(fontSize: 11.sp, color: AppTheme.subTextColor),
-              ),
-            ],
-          ),
-          SizedBox(height: 10.h),
-
-          // Phone
-          if (sos.phoneNumber != null) ...[
-            _InfoRow(
-              icon: Icons.phone,
-              text: sos.phoneNumber!,
-              iconColor: Colors.green,
-            ),
-            SizedBox(height: 6.h),
-          ],
-
-          // Address
-          if (sos.address != null) ...[
-            _InfoRow(
-              icon: Icons.location_on,
-              text: sos.address!,
-              iconColor: Colors.red,
-            ),
-            SizedBox(height: 6.h),
-          ],
-
-          // Coordinates
-          if (sos.latitude != null && sos.longitude != null) ...[
-            _InfoRow(
-              icon: Icons.my_location,
-              text:
-                  '${sos.latitude!.toStringAsFixed(5)}, ${sos.longitude!.toStringAsFixed(5)}',
-              iconColor: AppTheme.primaryColor,
-            ),
-            SizedBox(height: 6.h),
-          ],
-
-          // Note
-          if (sos.note != null && sos.note!.isNotEmpty) ...[
-            Divider(height: 12.h, color: AppTheme.dividerColor),
-            _InfoRow(
-              icon: Icons.notes,
-              text: sos.note!,
-              iconColor: AppTheme.subTextColor,
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Color _statusColor(String? status) {
-    switch (status?.toLowerCase()) {
-      case 'active':
-        return Colors.red;
-      case 'resolved':
-        return Colors.green;
-      case 'pending':
-        return Colors.orange;
-      default:
-        return Colors.grey;
-    }
-  }
-}
-
-class _InfoRow extends StatelessWidget {
-  const _InfoRow({
-    required this.icon,
-    required this.text,
-    required this.iconColor,
-  });
-  final IconData icon;
-  final String text;
-  final Color iconColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(icon, size: 14.r, color: iconColor),
-        SizedBox(width: 6.w),
-        Expanded(
-          child: Text(
-            text,
-            style: TextStyle(fontSize: 13.sp, color: AppTheme.textColor),
-          ),
-        ),
-      ],
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import '../theme/app_theme.dart';
 import 'loading_widget.dart';
 
@@ -9,14 +10,22 @@ class PrimaryButton extends StatelessWidget {
   final double? width;
   final double? height;
   final bool isLoading;
+  final Widget? child;
+  final bool isCircle;
+  final Color? color;
+  final Color? textColor;
 
   const PrimaryButton({
     super.key,
-    required this.text,
+    this.text = '',
     required this.onPressed,
     this.width,
     this.height,
     this.isLoading = false,
+    this.child,
+    this.isCircle = false,
+    this.color,
+    this.textColor,
   });
 
   @override
@@ -27,23 +36,25 @@ class PrimaryButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppTheme.primaryColor,
+          backgroundColor: color ?? AppTheme.primaryColor,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(100.r),
+            borderRadius: BorderRadius.circular(isCircle ? 999.r : 100.r),
           ),
           elevation: 4,
-          shadowColor: AppTheme.primaryColor.withOpacity(0.25),
+          shadowColor: (color ?? AppTheme.primaryColor).withOpacity(0.25),
+          padding: EdgeInsets.zero,
         ),
         child: isLoading
-            ? LoadingWidget(height: 40.h)
-            : Text(
-                text,
-                style: TextStyle(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                ),
-              ),
+            ? LoadingWidget(height: isCircle ? (height ?? 48.h) * 0.5 : 40.h)
+            : (child ??
+                  Text(
+                    text,
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w700,
+                      color: textColor ?? Colors.white,
+                    ),
+                  )),
       ),
     );
   }
