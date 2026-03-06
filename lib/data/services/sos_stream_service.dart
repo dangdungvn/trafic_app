@@ -6,6 +6,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
+import 'package:traffic_app/data/repositories/sos_repository.dart';
 
 import '../../services/storage_service.dart';
 import '../models/sos_model.dart';
@@ -27,6 +28,7 @@ class SosStreamService extends GetxService with WidgetsBindingObserver {
   final connectionStatus = SosConnectionStatus.disconnected.obs;
   final sosList = <SosResponseDTO>[].obs;
   final lastError = ''.obs;
+  final SosRepository _sosRepo = SosRepository();
 
   // ─── Internals ────────────────────────────────────────────────────────────
   StreamSubscription<List<ConnectivityResult>>? _connectivitySub;
@@ -60,6 +62,8 @@ class SosStreamService extends GetxService with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _listenConnectivity();
     debugPrint('[SOS-SSE] Service khởi động');
+
+    _fetchExistingSos(); 
     connect();
   }
 
@@ -258,6 +262,13 @@ class SosStreamService extends GetxService with WidgetsBindingObserver {
     try {
       final json = jsonDecode(dataLine) as Map<String, dynamic>;
       final sos = SosResponseDTO.fromJson(json);
+      // cập nhật xóa hoặc thêm mới vào list
+      if (sos.status == 'RESOLVED' || sos.status == 'CANCELLED') {
+        sosList.removeWhere((s) => s.sosId == sos.sosId);
+        debugPrint('[SOS-SSE] 🗑️ Đã rút ghim SOS khỏi bản đồ: ${sos.sosId}');
+        return; 
+      }
+
       // Update or add to list
       final idx = sosList.indexWhere((s) => s.sosId == sos.sosId);
       if (idx >= 0) {
@@ -441,5 +452,15 @@ class SosStreamService extends GetxService with WidgetsBindingObserver {
     await storage.removeToken();
     await storage.clearCredentials();
     Get.offAllNamed('/login');
+  }
+
+  // Lấy danh sách SOS
+  Future<void> _fetchExistingSos() async {
+    try {
+      final actives = await _sosRepo.getActiveSosAlerts();
+      sosList.assignAll(actives);
+    } catch (e) {
+      debugPrint('[SOS-SSE] Lỗi tải SOS cũ: $e');
+    }
   }
 }

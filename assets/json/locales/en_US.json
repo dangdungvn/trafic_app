@@ -90,5 +90,7 @@
   "emergency_notification_mesg_3": "Unable to open the dialer.",
   "discovery_notification_mesg_1": "Cannot open the discovery page.",
   "discovery_notification_mesg_2": "Please check your internet connection.",
-  "traffic_fine_lookup": "Traffic Fine Lookup"
+  "traffic_fine_lookup": "Traffic Fine Lookup",
+  "emergency_method_3": "Broadcast SOS",
+  "emergency_hint_3": "Share your location for immediate assistance"
 }

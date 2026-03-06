@@ -83,7 +83,16 @@ class LoginController extends GetxController {
         fullName: loginResponse.fullName,
         province: loginResponse.province,
         relativePhone: loginResponse.relativePhone,
+        phoneNumber: loginResponse.phoneNumber,
       );
+
+      debugPrint('==== 🕵️ KIỂM TRA KHO LƯU TRỮ SAU KHI ĐĂNG NHẬP ====');
+      debugPrint('ID: ${StorageService.to.getUserId()}');
+      debugPrint('Username: ${StorageService.to.getUsername()}');
+      debugPrint('Họ và tên: ${StorageService.to.getFullName()}');
+      debugPrint('SĐT Người thân: ${StorageService.to.getRelativePhone()}');
+      debugPrint('👉 SĐT CỦA TÔI: ${StorageService.to.getPhoneNumber()}');
+      debugPrint('===================================================');
 
       // Save credentials for auto-login if rememberMe is checked
       if (rememberMe.value) {

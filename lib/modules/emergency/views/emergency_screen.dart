@@ -62,6 +62,17 @@ class EmergencyScreen extends GetView<EmergencyController> {
                   title: 'emergency_method_2'.tr,
                   isSelected: controller.selectedOption.value == 1,
                 )),
+
+            SizedBox(height: 16.h),
+
+            // Option 3: Cầu cứu sự trợ giúp từ cộng đồng (tùy chọn, có thể thêm sau nếu cần)
+            Obx(() => _buildOptionCard(
+                  index: 2,
+                  icon: Icons.group_outlined,
+                  title: 'emergency_method_3'.tr,
+                  subtitle: 'emergency_hint_3'.tr,
+                  isSelected: controller.selectedOption.value == 2,
+                )),
           ],
         ),
       ),
@@ -74,7 +85,13 @@ class EmergencyScreen extends GetView<EmergencyController> {
             width: double.infinity,
             height: 54.h,
             child: ElevatedButton(
-              onPressed: controller.onContinue,
+              onPressed: () {
+                   if (controller.selectedOption.value == 2) {
+                     _showSosInputDialog();
+                   } else {
+                     controller.onContinue();
+                   }
+                },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF4F46E5), // Màu xanh tím (Primary)
                 shape: RoundedRectangleBorder(
@@ -191,6 +208,67 @@ class EmergencyScreen extends GetView<EmergencyController> {
           ],
         ),
       ),
+    );
+  }
+
+  // Hàm hiển thị Popup nhập ghi chú (Chỉ UI)
+  void _showSosInputDialog() {
+    Get.dialog(
+      Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24.r)),
+        backgroundColor: Colors.white,
+        child: Padding(
+          padding: EdgeInsets.all(24.w),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Chi tiết sự cố',
+                style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 16.h),
+              
+              // Ô nhập nội dung
+              TextField(
+                controller: controller.noteController,
+                maxLines: 4,
+                decoration: InputDecoration(
+                  hintText: 'VD: Xe bị thủng lốp, hết xăng...',
+                  filled: true,
+                  fillColor: Colors.grey.shade50,
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16.r)),
+                ),
+              ),
+              SizedBox(height: 24.h),
+              
+              // 2 Nút tiêu chuẩn: Hủy và Gửi
+              Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Get.back(),
+                      child: Text('Hủy', style: TextStyle(fontSize: 16.sp, color: Colors.grey)),
+                    ),
+                  ),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => controller.sendSosAlert(),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF4F46E5),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+                        padding: EdgeInsets.symmetric(vertical: 12.h),
+                      ),
+                      child: Text('Phát tín hiệu', style: TextStyle(fontSize: 16.sp, color: Colors.white)),
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: false,
     );
   }
 }

@@ -15,6 +15,9 @@ import '../../../data/repositories/follow_repository.dart';
 import '../../../data/repositories/traffic_post_repository.dart';
 import '../../../services/storage_service.dart';
 import '../widgets/post_bottom_sheet.dart';
+import '../widgets/sos_bottom_sheet.dart';
+// import '../../../data/models/sos_model.dart';
+import '../../../data/services/sos_stream_service.dart';
 
 /// Hashtags được đánh dấu trên bản đồ – đồng bộ với CameraController
 const List<String> kMapHashtags = [
@@ -22,7 +25,8 @@ const List<String> kMapHashtags = [
   'giaothong',
   'tainan',
   'ngaplutnuoc',
-  'suachua',
+  'baocaotainan',
+  'sos',
 ];
 
 class MapController extends GetxController {
@@ -61,6 +65,15 @@ class MapController extends GetxController {
     loadTaggedPosts();
     _addDummyPolyline();
     _checkLocationPermission();
+
+    // 👇 THÊM: Lắng nghe danh sách SOS
+    ever(SosStreamService.to.sosList, (_) {
+      _buildSosMarkers();
+    });
+    
+    if (SosStreamService.to.sosList.isNotEmpty) {
+      _buildSosMarkers();
+    }
   }
 
   @override
@@ -268,8 +281,10 @@ class MapController extends GetxController {
         return BitmapDescriptor.hueOrange;
       case 'ngaplutnuoc':
         return BitmapDescriptor.hueCyan;
-      case 'suachua':
+      case 'baocaotainan':
         return BitmapDescriptor.hueYellow;
+      case 'sos':
+        return BitmapDescriptor.hueMagenta;
       case 'giaothong':
       default:
         return BitmapDescriptor.hueViolet;
@@ -347,6 +362,32 @@ class MapController extends GetxController {
         width: 5,
       ),
     );
+  }
+
+  void _buildSosMarkers() {
+    // 1. Dọn dẹp các marker SOS cũ (giữ lại marker bài viết 'post_')
+    markers.removeWhere((m) => m.markerId.value.startsWith('sos_'));
+
+    // 2. Lấy dữ liệu từ Service
+    final sosList = SosStreamService.to.sosList;
+
+    // 3. Vẽ lại toàn bộ Marker SOS
+    for (final sos in sosList) {
+      if (sos.latitude == null || sos.longitude == null) continue;
+
+      markers.add(
+        Marker(
+          markerId: MarkerId('sos_${sos.sosId}'),
+          position: LatLng(sos.latitude!, sos.longitude!),
+          
+          // Đặt màu Magenta (Hồng đậm) cho dễ nhận diện
+          icon: BitmapDescriptor.defaultMarkerWithHue(_hueForTag( 'sos' )),
+          
+          // Bấm vào Marker thì đẩy cái Bottom Sheet lên
+          onTap: () => SosBottomSheet.show(sos: sos),
+        ),
+      );
+    }
   }
 }
 

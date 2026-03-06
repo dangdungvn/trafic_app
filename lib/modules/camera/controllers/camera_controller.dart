@@ -21,7 +21,7 @@ class CameraController extends GetxController {
   final imagePath = ''.obs;
   final contentController = TextEditingController();
 
-  final availableHashtags = ['ketxe', 'tainan', 'ngaplutnuoc', 'baocaotainan'];
+  final availableHashtags = ['ketxe', 'tainan', 'ngaplutnuoc', 'baocaotainan', 'sos'];
   final selectedHashtags = <String>[].obs;
 
   void toggleHashtag(String tag) {
