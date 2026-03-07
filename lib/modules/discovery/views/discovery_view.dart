@@ -15,36 +15,40 @@ class DiscoveryView extends GetView<DiscoveryController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
-      body: Column(
-        children: [
-          DiscoverySearchBar(controller: controller),
-          Expanded(
-            child: Obx(() {
-              if (controller.isLoading.value) {
-                return const DiscoveryLoadingState();
-              }
-              if (controller.errorMessage.isNotEmpty) {
-                return DiscoveryErrorState(
-                  message: controller.errorMessage.value,
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        behavior: HitTestBehavior.opaque,
+        child: Column(
+          children: [
+            DiscoverySearchBar(controller: controller),
+            Expanded(
+              child: Obx(() {
+                if (controller.isLoading.value) {
+                  return const DiscoveryLoadingState();
+                }
+                if (controller.errorMessage.isNotEmpty) {
+                  return DiscoveryErrorState(
+                    message: controller.errorMessage.value,
+                  );
+                }
+                final response = controller.fineResponse.value;
+                if (response == null) {
+                  return const DiscoveryEmptyState();
+                }
+                if (response.notFound || response.data.isEmpty) {
+                  return const DiscoveryNoViolationsState();
+                }
+                return Column(
+                  children: [
+                    if (response.dataInfo != null)
+                      DiscoverySummaryBanner(info: response.dataInfo!),
+                    Expanded(child: FineResultList(records: response.data)),
+                  ],
                 );
-              }
-              final response = controller.fineResponse.value;
-              if (response == null) {
-                return const DiscoveryEmptyState();
-              }
-              if (response.notFound || response.data.isEmpty) {
-                return const DiscoveryNoViolationsState();
-              }
-              return Column(
-                children: [
-                  if (response.dataInfo != null)
-                    DiscoverySummaryBanner(info: response.dataInfo!),
-                  Expanded(child: FineResultList(records: response.data)),
-                ],
-              );
-            }),
-          ),
-        ],
+              }),
+            ),
+          ],
+        ),
       ),
     );
   }
