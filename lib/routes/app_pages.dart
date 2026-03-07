@@ -1,17 +1,18 @@
 import 'package:get/get.dart';
 
-import '../modules/login/binding/login_binding.dart';
-import '../modules/login/views/login_screen.dart';
-import '../modules/signup/bindings/signup_binding.dart';
-import '../modules/signup/views/signup_screen.dart';
-import '../modules/home/bindings/home_binding.dart';
-import '../modules/home/views/home_view.dart';
-import '../modules/profile/views/profile_view.dart';
 import '../modules/camera/bindings/camera_binding.dart';
 import '../modules/camera/views/camera_view.dart';
 import '../modules/emergency/bindings/emergency_binding.dart';
+import '../modules/emergency/controllers/sos_stream_controller.dart';
 import '../modules/emergency/views/emergency_screen.dart';
-
+import '../modules/emergency/views/sos_stream_view.dart';
+import '../modules/home/bindings/home_binding.dart';
+import '../modules/home/views/home_view.dart';
+import '../modules/login/binding/login_binding.dart';
+import '../modules/login/views/login_screen.dart';
+import '../modules/profile/views/profile_view.dart';
+import '../modules/signup/bindings/signup_binding.dart';
+import '../modules/signup/views/signup_screen.dart';
 
 part 'app_routes.dart';
 
@@ -50,6 +51,13 @@ class AppPages {
       name: _Paths.EMERGENCY,
       page: () => const EmergencyScreen(),
       binding: EmergencyBinding(),
+    ),
+    GetPage(
+      name: _Paths.SOS_STREAM,
+      page: () => const SosStreamView(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut<SosStreamController>(() => SosStreamController());
+      }),
     ),
   ];
 }

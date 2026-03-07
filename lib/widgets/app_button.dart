@@ -42,7 +42,7 @@ class AppButton extends StatelessWidget {
         height: height,
         padding: padding ?? EdgeInsets.symmetric(horizontal: 18.r),
         decoration: BoxDecoration(
-          color: isPrimary ? AppTheme.primaryColor : const Color(0xFFEDEFFF),
+          color: isPrimary ? AppTheme.primaryColor : AppTheme.primaryBgColor,
           borderRadius: BorderRadius.circular(100.r),
           boxShadow: isPrimary
               ? [

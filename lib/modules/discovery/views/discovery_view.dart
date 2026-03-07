@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:traffic_app/theme/app_theme.dart';
+
 import '../controllers/discovery_controller.dart';
+import '../widgets/discovery_search_bar.dart';
+import '../widgets/discovery_states.dart';
+import '../widgets/discovery_summary_banner.dart';
+import '../widgets/fine_card.dart';
 
 class DiscoveryView extends GetView<DiscoveryController> {
   const DiscoveryView({super.key});
@@ -9,17 +14,42 @@ class DiscoveryView extends GetView<DiscoveryController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "traffic_fine_lookup".tr, // Tận dụng luôn đa ngôn ngữ
-          style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+      backgroundColor: AppTheme.backgroundColor,
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        behavior: HitTestBehavior.opaque,
+        child: Column(
+          children: [
+            DiscoverySearchBar(controller: controller),
+            Expanded(
+              child: Obx(() {
+                if (controller.isLoading.value) {
+                  return const DiscoveryLoadingState();
+                }
+                if (controller.errorMessage.isNotEmpty) {
+                  return DiscoveryErrorState(
+                    message: controller.errorMessage.value,
+                  );
+                }
+                final response = controller.fineResponse.value;
+                if (response == null) {
+                  return const DiscoveryEmptyState();
+                }
+                if (response.notFound || response.data.isEmpty) {
+                  return const DiscoveryNoViolationsState();
+                }
+                return Column(
+                  children: [
+                    if (response.dataInfo != null)
+                      DiscoverySummaryBanner(info: response.dataInfo!),
+                    Expanded(child: FineResultList(records: response.data)),
+                  ],
+                );
+              }),
+            ),
+          ],
         ),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        elevation: 0,
       ),
-      // Bỏ hẳn Stack và vòng xoay Loading, ốp thẳng WebView vào luôn
-      body: WebViewWidget(controller: controller.webViewController),
     );
   }
 }

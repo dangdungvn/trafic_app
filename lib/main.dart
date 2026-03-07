@@ -1,14 +1,18 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:firebase_core/firebase_core.dart';
+
 import 'data/models/login_request.dart';
 import 'data/repositories/auth_repository.dart';
 import 'modules/not_found/not_found_page.dart';
 import 'routes/app_pages.dart';
 import 'services/assets_service.dart';
+import 'services/image_picker_service.dart';
 import 'services/localization_service.dart';
+import 'services/notification_service.dart';
 import 'services/storage_service.dart';
 import 'theme/app_theme.dart';
 
@@ -18,6 +22,10 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
+  // Đăng ký background message handler
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
   await dotenv.load(fileName: ".env");
   await LocalizationService.init();
 
@@ -26,6 +34,12 @@ void main() async {
 
   // Initialize AssetsService
   await Get.putAsync(() => AssetsService().init().then((_) => AssetsService()));
+
+  // Initialize ImagePickerService (warms up the picker platform channel)
+  await Get.putAsync(() => ImagePickerService().init());
+
+  // Initialize NotificationService (FCM)
+  await Get.putAsync(() => NotificationService().init());
 
   // Check auto login
   String initialRoute = AppPages.INITIAL;

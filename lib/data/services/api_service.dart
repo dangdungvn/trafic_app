@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
-import '../../services/storage_service.dart';
+
 import '../../routes/app_pages.dart';
+import '../../services/storage_service.dart';
+import 'network_check_interceptor.dart';
 
 class ApiService {
   static final ApiService _instance = ApiService._internal();
@@ -22,11 +24,15 @@ class ApiService {
       ),
     );
 
+    // Kiểm tra mạng trước mọi request — tự chờ và retry khi có lại mạng
+    _dio.interceptors.add(NetworkCheckInterceptor());
+
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
           final token = _storageService.getToken();
-          final isAuthEndpoint = options.path.contains('/auth/login') ||
+          final isAuthEndpoint =
+              options.path.contains('/auth/login') ||
               options.path.contains('/auth/register');
           if (token != null && token.isNotEmpty && !isAuthEndpoint) {
             options.headers['Authorization'] = 'Bearer $token';
@@ -35,8 +41,9 @@ class ApiService {
         },
         onError: (DioException e, handler) async {
           if (e.response?.statusCode == 401) {
-            if (e.requestOptions.path.contains('/auth/login') || Get.currentRoute == Routes.LOGIN) {
-                return handler.next(e);
+            if (e.requestOptions.path.contains('/auth/login') ||
+                Get.currentRoute == Routes.LOGIN) {
+              return handler.next(e);
             }
 
             // Try to login again
