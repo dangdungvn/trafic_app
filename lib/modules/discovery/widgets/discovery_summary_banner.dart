@@ -13,7 +13,7 @@ class DiscoverySummaryBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 4.h),
+      padding: EdgeInsets.fromLTRB(16.w, 4.h, 16.w, 4.h),
       child: Row(
         children: [
           _StatChip(
