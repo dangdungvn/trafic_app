@@ -68,6 +68,7 @@ class CustomAlert {
             top: MediaQuery.of(context).padding.top + 16,
             left: 16,
             right: 16,
+            bottom: MediaQuery.of(context).padding.bottom + 16,
           ),
           padding: EdgeInsets.zero,
           duration: duration,

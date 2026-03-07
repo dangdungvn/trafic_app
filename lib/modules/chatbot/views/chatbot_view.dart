@@ -38,10 +38,6 @@ class ChatbotView extends GetView<ChatbotController> {
   }
 }
 
-// ─────────────────────────────────────────────
-// HEADER
-// ─────────────────────────────────────────────
-
 class _ChatHeader extends StatelessWidget {
   final ChatbotController controller;
   const _ChatHeader({required this.controller});
@@ -167,10 +163,6 @@ class _ClearButton extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────
-// MESSAGE LIST
-// ─────────────────────────────────────────────
-
 class _ChatMessageList extends StatelessWidget {
   final ChatbotController controller;
   const _ChatMessageList({required this.controller});
@@ -220,10 +212,6 @@ class _ChatMessageList extends StatelessWidget {
     });
   }
 }
-
-// ─────────────────────────────────────────────
-// AI MESSAGE BUBBLE
-// ─────────────────────────────────────────────
 
 class _AIMessageBubble extends StatelessWidget {
   final String text;
@@ -337,10 +325,6 @@ class _AIMessageBubble extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────
-// USER MESSAGE BUBBLE
-// ─────────────────────────────────────────────
-
 class _UserMessageBubble extends StatelessWidget {
   final ChatMessage msg;
   const _UserMessageBubble({required this.msg});
@@ -411,10 +395,6 @@ class _UserMessageBubble extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────
-// TYPING INDICATOR (3 chấm nảy)
-// ─────────────────────────────────────────────
-
 class _TypingBubble extends StatelessWidget {
   const _TypingBubble();
 
@@ -470,10 +450,6 @@ class _TypingBubble extends StatelessWidget {
     );
   }
 }
-
-// ─────────────────────────────────────────────
-// SUGGESTION CHIPS
-// ─────────────────────────────────────────────
 
 class _SuggestionChips extends StatelessWidget {
   final ChatbotController controller;
@@ -542,10 +518,6 @@ class _SuggestionChips extends StatelessWidget {
     );
   }
 }
-
-// ─────────────────────────────────────────────
-// INPUT BAR
-// ─────────────────────────────────────────────
 
 class _ChatInputBar extends StatelessWidget {
   final ChatbotController controller;

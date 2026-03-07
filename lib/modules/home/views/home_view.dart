@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
 
+import '../../../widgets/location_permission_banner.dart';
 import '../../../widgets/upload_progress_overlay.dart';
 import '../../camera/views/camera_view.dart';
 import '../../chatbot/views/chatbot_view.dart';
@@ -92,6 +93,21 @@ class HomeView extends GetView<HomeController> {
                 progress: controller.uploadProgress.value,
                 label: controller.uploadLabel.value,
                 onCancel: controller.cancelUpload,
+              ),
+            ),
+          // Location Permission / Service Banner
+          if (!controller.locationBannerDismissed.value &&
+              !controller.isUploading.value &&
+              (controller.isLocationPermissionDenied.value ||
+                  controller.isLocationServiceDisabled.value))
+            Positioned(
+              top: MediaQuery.of(context).padding.top + 8,
+              left: 0,
+              right: 0,
+              child: LocationPermissionBanner(
+                isServiceDisabled: controller.isLocationServiceDisabled.value,
+                onAction: controller.requestLocationPermission,
+                onDismiss: controller.dismissLocationBanner,
               ),
             ),
         ],
