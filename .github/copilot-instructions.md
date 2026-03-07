@@ -165,11 +165,29 @@ Reusable widgets in [lib/widgets/](../lib/widgets/):
 
 ## Localization
 
-Uses GetX translations - keys stored in `assets/json/locales/`. Access via:
+Uses GetX translations - keys stored in `assets/json/locales/` (`vi_VN.json` and `en_US.json`). Access via:
 
 ```dart
-'key_name'.tr // In code
-Text('welcome_message'.tr)
+'key_name'.tr                          // Simple string
+'key_with_param'.trParams({'x': val})  // Interpolation: use @x in locale value
+```
+
+**CRITICAL RULES — must be followed for every text string:**
+
+1. **Never hardcode any user-visible text** — all strings (labels, hints, dialog titles/messages, button text, snackbar messages, error messages) MUST use `.tr`.
+2. **Add the key to both locale files** (`vi_VN.json` AND `en_US.json`) before using it in code.
+3. **Naming convention** — keys use `snake_case` prefixed by feature (e.g., `chatbot_title`, `profile_update_success`).
+4. **Dynamic values** — use `.trParams({'param': value})` in code and `@param` placeholder in the locale JSON value.
+
+```dart
+// ✅ Correct
+Text('chatbot_title'.tr)
+Get.snackbar('notice_title'.tr, 'profile_update_success'.tr)
+CustomDialog.showConfirm(title: 'chatbot_open_link_title'.tr, message: 'chatbot_open_link_message'.trParams({'href': url}))
+
+// ❌ Wrong — never do this
+Text('Trợ lý Giao thông AI')
+Get.snackbar('Thông báo', 'Cập nhật thành công')
 ```
 
 Service initialized in [main.dart](../lib/main.dart) before app start.

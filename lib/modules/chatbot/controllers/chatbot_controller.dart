@@ -74,11 +74,11 @@ Luôn ưu tiên:
   bool _hasApiKey = false;
 
   final suggestions = const [
-    '🚦 Kiểm tra phạt nguội như thế nào?',
-    '📋 Các mức phạt vượt đèn đỏ?',
-    '🗺️ Làm gì khi gặp tắc đường?',
-    '⚠️ Biển báo giao thông cần biết',
-    '🚗 Xử lý thế nào khi tai nạn?',
+    'chatbot_suggestion_1',
+    'chatbot_suggestion_2',
+    'chatbot_suggestion_3',
+    'chatbot_suggestion_4',
+    'chatbot_suggestion_5',
   ];
 
   @override
@@ -105,11 +105,7 @@ Luôn ưu tiên:
     messages.add(
       ChatMessage(
         id: 'welcome',
-        text:
-            'Xin chào! Tôi là Trợ lý Giao thông AI của Traffic App 🚦\n\n'
-            'Tôi có thể giúp bạn tra cứu luật giao thông, mức phạt, '
-            'biển báo, xử lý tai nạn và nhiều thông tin hữu ích khác.\n\n'
-            'Bạn cần hỗ trợ gì không?',
+        text: 'chatbot_welcome'.tr,
         isUser: false,
         timestamp: DateTime.now(),
       ),
@@ -122,8 +118,8 @@ Luôn ưu tiên:
 
     if (!_hasApiKey) {
       Get.snackbar(
-        'Lỗi cấu hình',
-        'Chưa thiết lập GEMINI_API_KEY trong file .env',
+        'chatbot_config_error'.tr,
+        'chatbot_config_error_message'.tr,
         backgroundColor: Colors.red.shade600,
         colorText: Colors.white,
         duration: const Duration(seconds: 3),
@@ -191,21 +187,18 @@ Luôn ưu tiên:
       final errStr = e.toString();
       final String errorMsg;
       if (errStr.contains('429')) {
-        errorMsg =
-            '⚠️ Đã vượt giới hạn quota API miễn phí. Vui lòng thử lại sau vài phút hoặc kiểm tra kế hoạch billing tại Google AI Studio.';
+        errorMsg = 'chatbot_error_quota'.tr;
       } else if (errStr.contains('401') || errStr.contains('403')) {
-        errorMsg =
-            '🔑 API key không hợp lệ hoặc không có quyền truy cập. Vui lòng kiểm tra GEMINI_API_KEY trong file .env';
+        errorMsg = 'chatbot_error_auth'.tr;
       } else if (errStr.contains('404')) {
-        errorMsg = '❌ Model AI không tìm thấy. Vui lòng liên hệ hỗ trợ.';
+        errorMsg = 'chatbot_error_not_found'.tr;
       } else if (errStr.contains('SocketException') ||
           errStr.contains('network') ||
           errStr.contains('connection')) {
-        errorMsg =
-            '📡 Không có kết nối mạng. Vui lòng kiểm tra Internet và thử lại.';
+        errorMsg = 'chatbot_error_network'.tr;
       } else {
         errorMsg =
-            'Đã xảy ra lỗi. Vui lòng thử lại.\n(${errStr.substring(0, errStr.length.clamp(0, 100))})';
+            '${'chatbot_error_generic'.tr}\n(${errStr.substring(0, errStr.length.clamp(0, 100))})';
       }
       messages.add(
         ChatMessage(
