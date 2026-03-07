@@ -1,4 +1,3 @@
-import 'package:adaptive_platform_ui/adaptive_platform_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -15,51 +14,59 @@ class ChatInputBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.only(
-        left: 16.w,
-        right: 16.w,
-        top: 10.h,
-        bottom: PlatformInfo.isIOS26OrHigher()
-            ? MediaQuery.of(context).viewPadding.bottom + 65.h
-            : MediaQuery.of(context).padding.bottom + 10.h,
-      ),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: AppTheme.dividerColor, width: 1)),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          // Text input
-          Expanded(
-            child: CustomTextField(
-              controller: controller.textController,
-              focusNode: controller.focusNode,
-              hintText: 'chatbot_input_hint'.tr,
-              maxLines: 4,
-              minLines: 1,
-              keyboardType: TextInputType.multiline,
-              textInputAction: TextInputAction.newline,
-              onSubmitted: (_) =>
-                  controller.sendMessage(controller.textController.text),
+    return ListenableBuilder(
+      listenable: controller.focusNode,
+      builder: (context, child) {
+        final isFocused = controller.focusNode.hasFocus;
+        return Container(
+          padding: EdgeInsets.only(
+            left: 16.w,
+            right: 16.w,
+            top: 10.h,
+            bottom:
+                MediaQuery.of(context).viewPadding.bottom +
+                (isFocused ? 115.h : 65.h),
+          ),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border(
+              top: BorderSide(color: AppTheme.dividerColor, width: 1),
             ),
           ),
-          SizedBox(width: 10.w),
-          // Nút gửi (reactive)
-          Obx(
-            () => PrimaryButton(
-              isCircle: true,
-              width: 48.w,
-              height: 48.w,
-              isLoading: controller.isTyping.value,
-              onPressed: () =>
-                  controller.sendMessage(controller.textController.text),
-              child: SvgPicture.asset('assets/icons/big_send.svg'),
-            ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              // Text input
+              Expanded(
+                child: CustomTextField(
+                  controller: controller.textController,
+                  focusNode: controller.focusNode,
+                  hintText: 'chatbot_input_hint'.tr,
+                  maxLines: 4,
+                  minLines: 1,
+                  keyboardType: TextInputType.multiline,
+                  textInputAction: TextInputAction.newline,
+                  onSubmitted: (_) =>
+                      controller.sendMessage(controller.textController.text),
+                ),
+              ),
+              SizedBox(width: 10.w),
+              // Nút gửi (reactive)
+              Obx(
+                () => PrimaryButton(
+                  isCircle: true,
+                  width: 48.w,
+                  height: 48.w,
+                  isLoading: controller.isTyping.value,
+                  onPressed: () =>
+                      controller.sendMessage(controller.textController.text),
+                  child: SvgPicture.asset('assets/icons/big_send.svg'),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

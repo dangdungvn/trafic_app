@@ -5,6 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart' hide ServiceStatus;
 import 'package:traffic_app/modules/dashboard/controllers/dashboard_controller.dart';
+import 'package:traffic_app/modules/map/controllers/map_controller.dart';
 import 'package:traffic_app/routes/app_pages.dart';
 
 class HomeController extends GetxController with WidgetsBindingObserver {
@@ -147,6 +148,10 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     Future.delayed(const Duration(milliseconds: 500), () {
       isUploading.value = false;
       uploadProgress.value = 0.0;
+      // Reload map markers sau khi đăng bài thành công
+      if (Get.isRegistered<MapController>()) {
+        Get.find<MapController>().loadTaggedPosts();
+      }
     });
   }
 

@@ -41,6 +41,8 @@ class MapController extends GetxController {
   // Tagged posts (có hashtag khớp kMapHashtags)
   final taggedPosts = <TrafficPostModel>[].obs;
 
+  Timer? _markerRefreshTimer;
+
   final LatLng _center = const LatLng(
     21.028511,
     105.804817,
@@ -59,12 +61,17 @@ class MapController extends GetxController {
   void onInit() {
     super.onInit();
     loadTaggedPosts();
+    _markerRefreshTimer = Timer.periodic(
+      const Duration(seconds: 30),
+      (_) => loadTaggedPosts(),
+    );
     _addDummyPolyline();
     _checkLocationPermission();
   }
 
   @override
   void onClose() {
+    _markerRefreshTimer?.cancel();
     searchController.dispose();
     super.onClose();
   }
