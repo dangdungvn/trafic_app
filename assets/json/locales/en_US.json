@@ -138,5 +138,10 @@
   "discovery_field_unit": "Detection Unit",
   "discovery_status_unknown": "Unknown",
   "discovery_summary": "Total: @total violation(s) · Pending: @pending · Resolved: @resolved",
-  "discovery_field_resolve_location": "Where to resolve"
+  "discovery_field_resolve_location": "Where to resolve",
+  "discovery_header_subtitle": "Check traffic violations by license plate",
+  "discovery_retry": "Try Again",
+  "discovery_stat_total": "Total",
+  "discovery_stat_pending": "Unpaid",
+  "discovery_stat_resolved": "Paid"
 }

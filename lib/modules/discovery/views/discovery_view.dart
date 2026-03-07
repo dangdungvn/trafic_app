@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:traffic_app/theme/app_theme.dart';
 
-import '../../../theme/app_theme.dart';
 import '../controllers/discovery_controller.dart';
 import '../widgets/discovery_search_bar.dart';
 import '../widgets/discovery_states.dart';
@@ -16,20 +15,6 @@ class DiscoveryView extends GetView<DiscoveryController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
-      appBar: AppBar(
-        title: Text(
-          'traffic_fine_lookup'.tr,
-          style: TextStyle(
-            color: AppTheme.textColor,
-            fontWeight: FontWeight.bold,
-            fontSize: 18.sp,
-          ),
-        ),
-        centerTitle: true,
-        backgroundColor: AppTheme.backgroundColor,
-        elevation: 0,
-        surfaceTintColor: Colors.transparent,
-      ),
       body: Column(
         children: [
           DiscoverySearchBar(controller: controller),

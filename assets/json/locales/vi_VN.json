@@ -138,5 +138,10 @@
   "discovery_field_unit": "Đơn vị phát hiện",
   "discovery_status_unknown": "Chưa xác định",
   "discovery_summary": "Tổng: @total vi phạm · Chưa xử phạt: @pending · Đã xử phạt: @resolved",
-  "discovery_field_resolve_location": "Nơi giải quyết vụ việc"
+  "discovery_field_resolve_location": "Nơi giải quyết vụ việc",
+  "discovery_header_subtitle": "Kiểm tra vi phạm giao thông theo biển số xe",
+  "discovery_retry": "Thử lại",
+  "discovery_stat_total": "Tổng vi phạm",
+  "discovery_stat_pending": "Chưa xử phạt",
+  "discovery_stat_resolved": "Đã xử phạt"
 }
