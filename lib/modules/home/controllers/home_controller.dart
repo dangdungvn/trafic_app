@@ -1,16 +1,16 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart' hide ServiceStatus;
 import 'package:traffic_app/modules/dashboard/controllers/dashboard_controller.dart';
 import 'package:traffic_app/routes/app_pages.dart';
 
-class HomeController extends GetxController {
+class HomeController extends GetxController with WidgetsBindingObserver {
   // Bottom Navigation State
   var currentIndex = 0.obs;
-  final bool _mapTabVisited = false;
+  // final bool _mapTabVisited = false;
 
   // Upload Progress State
   var isUploading = false.obs;
@@ -27,13 +27,23 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    WidgetsBinding.instance.addObserver(this);
     _initLocationMonitoring();
   }
 
   @override
   void onClose() {
+    WidgetsBinding.instance.removeObserver(this);
     _serviceStatusSubscription?.cancel();
     super.onClose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // Re-check when user returns from Settings after granting permission
+      checkLocationStatus();
+    }
   }
 
   Future<void> _initLocationMonitoring() async {
@@ -59,9 +69,14 @@ class HomeController extends GetxController {
         return;
       }
       final permission = await Geolocator.checkPermission();
-      isLocationPermissionDenied.value =
+      final denied =
           permission == LocationPermission.denied ||
           permission == LocationPermission.deniedForever;
+      isLocationPermissionDenied.value = denied;
+      // Auto-hide banner if permission is now granted
+      if (!denied) {
+        locationBannerDismissed.value = false;
+      }
     } catch (e) {
       debugPrint('HomeController checkLocationStatus error: $e');
     }
