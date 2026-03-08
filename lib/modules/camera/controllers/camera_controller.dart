@@ -171,6 +171,11 @@ class CameraController extends GetxController {
       return;
     }
 
+    if (selectedHashtags.isEmpty) {
+      CustomAlert.showWarning('camera_please_select_hashtag'.tr);
+      return;
+    }
+
     if (currentLat.value == 0.0 || currentLng.value == 0.0) {
       // Trigger the location banner in HomeView so user can grant permission
       final homeController = Get.find<HomeController>();

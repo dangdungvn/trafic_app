@@ -114,14 +114,15 @@ class _LiquidGlassBottomBarState extends State<LiquidGlassBottomBar> {
         child: Stack(
           children: [
             // White overlay so glass always appears light on any background
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFFFFF).withValues(alpha: 1.50),
-                  borderRadius: BorderRadius.circular(32),
+            if (widget.selectedIndex == 1)
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFFFFF).withValues(alpha: 1.50),
+                    borderRadius: BorderRadius.circular(32),
+                  ),
                 ),
               ),
-            ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 4),
               height: widget.barHeight,
@@ -154,14 +155,14 @@ class _LiquidGlassBottomBarState extends State<LiquidGlassBottomBar> {
         widget.glassSettings ??
         LiquidGlassSettings(
           refractiveIndex: 1.08,
-          thickness: 12,
-          blur: 14,
+          thickness: 20,
+          blur: 5,
           saturation: 1.1,
           lightIntensity: isDark ? .8 : 1.4,
           ambientStrength: isDark ? .3 : .7,
           lightAngle: math.pi / 4,
           glassColor: const Color(
-            0xFFFFFFFF,
+            0x33FFFFFF,
           ).withValues(alpha: isDark ? 0.25 : 0.65),
         );
 

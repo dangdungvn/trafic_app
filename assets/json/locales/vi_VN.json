@@ -40,6 +40,7 @@
   "camera_cannot_capture": "Không thể chụp ảnh",
   "cannot_pick_image": "Không thể chọn ảnh",
   "camera_please_enter_content": "Vui lòng nhập nội dung bài viết",
+  "camera_please_select_hashtag": "Vui lòng chọn ít nhất một hashtag trước khi đăng bài",
   "camera_cannot_get_current_location": "Không thể lấy vị trí hiện tại",
   "camera_post_success": "Đã đăng bài viết",
   "camera_cannot_post": "Không thể đăng bài",

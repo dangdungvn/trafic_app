@@ -40,6 +40,7 @@
   "camera_cannot_capture": "Cannot capture image",
   "cannot_pick_image": "Cannot pick image",
   "camera_please_enter_content": "Please enter post content",
+  "camera_please_select_hashtag": "Please select at least one hashtag before posting",
   "camera_cannot_get_current_location": "Cannot get current location",
   "camera_post_success": "Post published",
   "camera_cannot_post": "Cannot publish post",
