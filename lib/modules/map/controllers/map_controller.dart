@@ -45,6 +45,8 @@ class MapController extends GetxController {
   // Tagged posts (có hashtag khớp kMapHashtags)
   final taggedPosts = <TrafficPostModel>[].obs;
 
+  Timer? _markerRefreshTimer;
+
   final LatLng _center = const LatLng(
     21.028511,
     105.804817,
@@ -63,6 +65,10 @@ class MapController extends GetxController {
   void onInit() {
     super.onInit();
     loadTaggedPosts();
+    _markerRefreshTimer = Timer.periodic(
+      const Duration(seconds: 30),
+      (_) => loadTaggedPosts(),
+    );
     _addDummyPolyline();
     _checkLocationPermission();
 
@@ -78,6 +84,7 @@ class MapController extends GetxController {
 
   @override
   void onClose() {
+    _markerRefreshTimer?.cancel();
     searchController.dispose();
     super.onClose();
   }
@@ -130,7 +137,9 @@ class MapController extends GetxController {
         Location location = locations.first;
         LatLng target = LatLng(location.latitude, location.longitude);
 
-        mapController.animateCamera(
+        if (!_controller.isCompleted) return;
+        final ctrl = await _controller.future;
+        ctrl.animateCamera(
           CameraUpdate.newCameraPosition(
             CameraPosition(target: target, zoom: 16.0),
           ),
@@ -172,9 +181,17 @@ class MapController extends GetxController {
   }
 
   Future<void> _checkLocationPermission() async {
-    var status = await Permission.location.status;
-    if (!status.isGranted) {
-      await Permission.location.request();
+    try {
+      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        return;
+      }
+      var status = await Permission.location.status;
+      if (!status.isGranted) {
+        await Permission.location.request();
+      }
+    } catch (e) {
+      debugPrint('MapController _checkLocationPermission error: $e');
     }
   }
 
@@ -202,7 +219,9 @@ class MapController extends GetxController {
       }
 
       Position position = await Geolocator.getCurrentPosition();
-      mapController.animateCamera(
+      if (!_controller.isCompleted) return;
+      final ctrl = await _controller.future;
+      ctrl.animateCamera(
         CameraUpdate.newCameraPosition(
           CameraPosition(
             target: LatLng(position.latitude, position.longitude),
@@ -390,4 +409,3 @@ class MapController extends GetxController {
     }
   }
 }
-

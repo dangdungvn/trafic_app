@@ -62,6 +62,13 @@ class CameraController extends GetxController {
 
   Future<void> _getCurrentLocation() async {
     try {
+      // Kiểm tra dịch vụ vị trí có được bật không
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        location.value = 'map_location_service_disabled'.tr;
+        return;
+      }
+
       // Kiểm tra permission
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
@@ -165,6 +172,10 @@ class CameraController extends GetxController {
     }
 
     if (currentLat.value == 0.0 || currentLng.value == 0.0) {
+      // Trigger the location banner in HomeView so user can grant permission
+      final homeController = Get.find<HomeController>();
+      homeController.locationBannerDismissed.value = false;
+      homeController.checkLocationStatus();
       CustomAlert.showError('camera_cannot_get_current_location'.tr);
       return;
     }
