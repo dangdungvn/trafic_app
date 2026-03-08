@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
+import 'package:traffic_app/theme/app_theme.dart';
 
 import '../../../widgets/liquid_glass_bottom_bar.dart';
 import '../../../widgets/location_permission_banner.dart';
@@ -20,7 +21,7 @@ class HomeView extends GetView<HomeController> {
     return Obx(
       () => Scaffold(
         extendBody: true,
-        backgroundColor: Colors.white,
+        backgroundColor: AppTheme.backgroundColor,
         body: Stack(
           children: [
             IndexedStack(
