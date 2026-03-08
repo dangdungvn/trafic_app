@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:iconly/iconly.dart';
 import 'package:traffic_app/theme/app_theme.dart';
 
 import '../controllers/map_controller.dart';
@@ -57,7 +58,7 @@ class MapView extends GetView<MapController> {
                     decoration: const InputDecoration(
                       hintText: 'Tìm kiếm địa điểm...',
                       border: InputBorder.none,
-                      icon: Icon(Icons.search, color: Colors.grey),
+                      icon: Icon(IconlyBroken.search, color: Colors.grey),
                     ),
                     onChanged: (value) {
                       controller.fetchSuggestions(value);
@@ -93,7 +94,7 @@ class MapView extends GetView<MapController> {
                             return ListTile(
                               title: Text(suggestion['description']),
                               leading: const Icon(
-                                Icons.location_on,
+                                IconlyBroken.location,
                                 color: Colors.grey,
                               ),
                               onTap: () {
@@ -151,7 +152,7 @@ class MapView extends GetView<MapController> {
                 child: Obx(
                   () => controller.isLoading.value
                       ? const CircularProgressIndicator(strokeWidth: 2)
-                      : const Icon(Icons.my_location, color: Colors.black87),
+                      : const Icon(IconlyBold.location, color: Colors.black87),
                 ),
               ),
             ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:iconly/iconly.dart';
 
 import '../theme/app_theme.dart';
 
@@ -133,7 +134,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
             if (widget.isPassword)
               IconButton(
                 icon: Icon(
-                  _isObscure ? Icons.visibility_off : Icons.visibility,
+                  _isObscure ? IconlyBroken.hide : IconlyBroken.show,
                   color: _isFocused
                       ? AppTheme.primaryColor
                       : AppTheme.subTextColor,

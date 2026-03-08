@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:iconly/iconly.dart';
 import 'package:traffic_app/theme/app_theme.dart';
 
 import '../controllers/camera_controller.dart';
@@ -15,12 +16,12 @@ class CameraInfoChips extends GetView<CameraController> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildChip(
-            icon: Icons.access_time_filled_rounded,
+            icon: IconlyBold.time_circle,
             text: "${'camera_time_label'.tr} ${controller.time.value}",
           ),
           SizedBox(height: 12.h),
           _buildChip(
-            icon: Icons.location_on_rounded,
+            icon: IconlyBold.location,
             text: "${'camera_location_label'.tr} ${controller.location.value}",
           ),
         ],

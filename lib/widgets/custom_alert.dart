@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:iconly/iconly.dart';
 
 import '../theme/app_theme.dart';
 
@@ -175,7 +176,11 @@ class _AlertWidget extends StatelessWidget {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(Icons.close, size: 16, color: _getIconColor()),
+                child: Icon(
+                  IconlyBroken.close_square,
+                  size: 16,
+                  color: _getIconColor(),
+                ),
               ),
             ),
         ],
@@ -199,13 +204,13 @@ class _AlertWidget extends StatelessWidget {
   IconData _getIcon() {
     switch (type) {
       case AlertType.success:
-        return Icons.check_circle;
+        return IconlyBold.tick_square;
       case AlertType.error:
-        return Icons.cancel;
+        return IconlyBold.close_square;
       case AlertType.warning:
-        return Icons.warning;
+        return IconlyBold.danger;
       case AlertType.info:
-        return Icons.info;
+        return IconlyBold.info_square;
     }
   }
 

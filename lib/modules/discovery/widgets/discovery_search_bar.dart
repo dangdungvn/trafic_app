@@ -44,7 +44,7 @@ class DiscoverySearchBar extends StatelessWidget {
                   color: AppTheme.primaryColor.withValues(alpha: 0.1),
                 ),
                 child: Icon(
-                  IconlyLight.shield_done,
+                  IconlyBroken.shield_done,
                   color: AppTheme.primaryColor,
                   size: 22.sp,
                 ),
@@ -81,7 +81,7 @@ class DiscoverySearchBar extends StatelessWidget {
               Expanded(
                 child: CustomTextField(
                   hintText: 'discovery_search_hint'.tr,
-                  prefixIcon: IconlyLight.search,
+                  prefixIcon: IconlyBroken.search,
                   controller: controller.searchController,
                   textInputAction: TextInputAction.search,
                   onSubmitted: (_) => controller.searchFines(),

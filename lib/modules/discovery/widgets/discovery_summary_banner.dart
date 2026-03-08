@@ -21,7 +21,7 @@ class DiscoverySummaryBanner extends StatelessWidget {
             value: '${info.total}',
             color: AppTheme.primaryColor,
             bgColor: AppTheme.primaryBgColor,
-            icon: IconlyLight.paper,
+            icon: IconlyBroken.paper,
           ),
           SizedBox(width: 8.w),
           _StatChip(
@@ -29,7 +29,7 @@ class DiscoverySummaryBanner extends StatelessWidget {
             value: '${info.chuaXuPhat}',
             color: AppTheme.errorColor,
             bgColor: AppTheme.errorBgColor,
-            icon: IconlyLight.time_circle,
+            icon: IconlyBroken.time_circle,
           ),
           SizedBox(width: 8.w),
           _StatChip(

@@ -156,28 +156,28 @@ class FineCard extends StatelessWidget {
                     // Detail rows
                     if (record.hanhViViPham.isNotEmpty)
                       _DetailRow(
-                        icon: IconlyLight.document,
+                        icon: IconlyBroken.document,
                         iconColor: AppTheme.warningColor,
                         label: 'discovery_field_violation'.tr,
                         value: _cleanViolation(record.hanhViViPham),
                       ),
                     if (record.thoiGianViPham.isNotEmpty)
                       _DetailRow(
-                        icon: IconlyLight.time_circle,
+                        icon: IconlyBroken.time_circle,
                         iconColor: AppTheme.primaryColor,
                         label: 'discovery_field_time'.tr,
                         value: record.thoiGianViPham,
                       ),
                     if (record.diaDiemViPham.isNotEmpty)
                       _DetailRow(
-                        icon: IconlyLight.location,
+                        icon: IconlyBroken.location,
                         iconColor: AppTheme.errorColor,
                         label: 'discovery_field_location'.tr,
                         value: record.diaDiemViPham,
                       ),
                     if (record.donViPhatHien.isNotEmpty)
                       _DetailRow(
-                        icon: IconlyLight.shield_done,
+                        icon: IconlyBroken.shield_done,
                         iconColor: AppTheme.subTextColor,
                         label: 'discovery_field_unit'.tr,
                         value: record.donViPhatHien,

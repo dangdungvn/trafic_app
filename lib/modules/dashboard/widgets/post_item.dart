@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:iconly/iconly.dart';
 
 import '../../../data/models/traffic_post_model.dart';
 import '../../../widgets/loading_widget.dart';
@@ -70,7 +71,7 @@ class PostItem extends StatelessWidget {
                           const Center(child: LoadingWidget()),
                       errorWidget: (context, url, error) => Center(
                         child: Icon(
-                          Icons.broken_image,
+                          IconlyBroken.image_2,
                           size: 48.w,
                           color: Colors.grey[400],
                         ),
@@ -78,7 +79,7 @@ class PostItem extends StatelessWidget {
                     )
                   : Center(
                       child: Icon(
-                        Icons.location_on,
+                        IconlyBroken.location,
                         size: 48.w,
                         color: Colors.grey[400],
                       ),
@@ -117,7 +118,7 @@ class PostItem extends StatelessWidget {
                                   height: 40.w,
                                   color: Colors.grey[300],
                                   child: Icon(
-                                    Icons.person,
+                                    IconlyBroken.profile,
                                     size: 24.w,
                                     color: Colors.grey[600],
                                   ),
@@ -131,7 +132,7 @@ class PostItem extends StatelessWidget {
                                   color: Colors.grey[300],
                                 ),
                                 child: Icon(
-                                  Icons.person,
+                                  IconlyBroken.profile,
                                   size: 24.w,
                                   color: Colors.grey[600],
                                 ),

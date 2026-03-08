@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:iconly/iconly.dart';
 
 import '../../../theme/app_theme.dart';
 import '../../../widgets/custom_dialog.dart';
@@ -18,7 +19,7 @@ class EmergencyScreen extends GetView<EmergencyController> {
         backgroundColor: AppTheme.backgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppTheme.textColor),
+          icon: Icon(IconlyBroken.arrow_left, color: AppTheme.textColor),
           onPressed: () => Get.back(),
         ),
         title: Text(
@@ -52,7 +53,7 @@ class EmergencyScreen extends GetView<EmergencyController> {
             Obx(
               () => _buildOptionCard(
                 index: 0,
-                icon: Icons.phone_in_talk_outlined,
+                icon: IconlyBroken.call,
                 title: 'emergency_method_1'.tr,
                 subtitle: 'emergency_hint'.tr,
                 isSelected: controller.selectedOption.value == 0,
