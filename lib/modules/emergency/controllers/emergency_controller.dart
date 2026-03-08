@@ -34,7 +34,7 @@ class EmergencyController extends GetxController {
 
       if (relativePhone.isEmpty) {
         CustomAlert.showWarning('emergency_notification_mesg_1'.tr);
-        await _makePhoneCall('');
+        await _makePhoneCall(''); 
       } else {
         await _makePhoneCall(relativePhone);
       }
@@ -50,7 +50,6 @@ class EmergencyController extends GetxController {
 
     try {
       if (await canLaunchUrl(launchUri)) {
-        // mode: LaunchMode.externalApplication giúp ép HĐH mở app Điện thoại
         await launchUrl(launchUri, mode: LaunchMode.externalApplication);
       } else {
         CustomAlert.showError('emergency_notification_mesg_2'.tr);

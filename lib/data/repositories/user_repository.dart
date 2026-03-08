@@ -6,6 +6,8 @@ import 'package:http_parser/http_parser.dart';
 
 import '../models/profile_request.dart';
 import '../services/api_service.dart';
+import '../../data/models/user_info_model.dart';
+import '../models/traffic_post_model.dart';
 
 class UserRepository {
   final ApiService _apiService = ApiService();
@@ -63,6 +65,53 @@ class UserRepository {
       throw 'Lỗi kết nối khi cập nhật';
     } catch (e) {
       throw e.toString();
+    }
+  }
+
+  /// Lấy thông tin hiển thị Trang cá nhân (Bao gồm UserInfo và Danh sách bài viết)
+  Future<Map<String, dynamic>> getUserProfile(
+    String userId, {
+    int page = 0, // ✅ KHAI BÁO THÊM THAM SỐ PAGE
+    int size = 10, // ✅ KHAI BÁO THÊM THAM SỐ SIZE
+  }) async {
+    try {
+      final response = await _apiService.dio.get(
+        '/users/$userId/profile',
+        // ✅ ĐẨY PAGE VÀ SIZE LÊN BACKEND THÔNG QUA QUERY PARAMETERS
+        queryParameters: {
+          'page': page,
+          'size': size,
+        },
+      );
+
+      // 1. Trích xuất data
+      final data = response.data['data'] ?? response.data;
+      if (data == null) throw 'Không có dữ liệu trả về từ server';
+
+      // 2. Parse phần UserInfo
+      if (data['userInfo'] == null) throw 'Không tìm thấy thông tin người dùng';
+      final userInfo = UserInfoModel.fromJson(data['userInfo'] as Map<String, dynamic>);
+
+      // 3. Parse phần Bài viết (Lấy từ posts -> content do API dùng phân trang)
+      List<TrafficPostModel> postsList = [];
+      if (data['posts'] != null && data['posts']['content'] != null) {
+        postsList = (data['posts']['content'] as List)
+            .map((json) => TrafficPostModel.fromJson(json as Map<String, dynamic>))
+            .toList();
+      }
+
+      return {
+        'userInfo': userInfo,
+        'posts': postsList,
+      };
+      
+    } on DioException catch (e) {
+      if (e.response != null && e.response!.data is Map) {
+        throw e.response!.data['message'] ?? 'Không thể tải trang cá nhân';
+      }
+      throw 'Lỗi kết nối mạng. Vui lòng kiểm tra lại Internet.';
+    } catch (e) {
+      throw 'Có lỗi xảy ra: ${e.toString()}';
     }
   }
 }

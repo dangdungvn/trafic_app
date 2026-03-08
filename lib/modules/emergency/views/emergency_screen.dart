@@ -6,6 +6,7 @@ import '../../../theme/app_theme.dart';
 import '../../../widgets/custom_dialog.dart';
 import '../../../widgets/primary_button.dart';
 import '../controllers/emergency_controller.dart';
+import '../../../widgets/app_button.dart';
 
 class EmergencyScreen extends GetView<EmergencyController> {
   const EmergencyScreen({super.key});
@@ -89,17 +90,23 @@ class EmergencyScreen extends GetView<EmergencyController> {
           padding: EdgeInsets.all(24.w),
           child: PrimaryButton(
             text: 'emergency_button'.tr,
-            onPressed: () => CustomDialog.showConfirm(
-              context: context,
-              title: 'emergency_title_1'.tr,
-              message: controller.selectedOption.value == 0
-                  ? 'emergency_hint'.tr
-                  : 'Gọi số cứu thương 115?',
-              confirmText: 'emergency_button'.tr,
-              cancelText: 'Hủy',
-              type: DialogType.warning,
-              onConfirm: controller.onContinue,
-            ),
+            onPressed: () {
+              if (controller.selectedOption.value == 2) {
+                _showSosInputDialog();
+              } else {
+                CustomDialog.showConfirm(
+                  context: context,
+                  title: 'emergency_title_1'.tr,
+                  message: controller.selectedOption.value == 0
+                      ? 'emergency_hint'.tr
+                      : 'Gọi số cứu thương 115?',
+                  confirmText: 'emergency_button'.tr,
+                  cancelText: 'Hủy',
+                  type: DialogType.warning,
+                  onConfirm: controller.onContinue,
+                );
+              }
+            },
           ),
         ),
       ),
@@ -196,12 +203,12 @@ class EmergencyScreen extends GetView<EmergencyController> {
     );
   }
 
-  // Hàm hiển thị Popup nhập ghi chú (Chỉ UI)
+  // Hàm hiển thị Popup nhập ghi chú 
   void _showSosInputDialog() {
     Get.dialog(
       Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24.r)),
-        backgroundColor: Colors.white,
+        backgroundColor: AppTheme.backgroundColor, 
         child: Padding(
           padding: EdgeInsets.all(24.w),
           child: Column(
@@ -210,7 +217,11 @@ class EmergencyScreen extends GetView<EmergencyController> {
             children: [
               Text(
                 'Chi tiết sự cố',
-                style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 20.sp, 
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.errorColor, 
+                ),
               ),
               SizedBox(height: 16.h),
               
@@ -220,32 +231,42 @@ class EmergencyScreen extends GetView<EmergencyController> {
                 maxLines: 4,
                 decoration: InputDecoration(
                   hintText: 'VD: Xe bị thủng lốp, hết xăng...',
+                  hintStyle: TextStyle(color: AppTheme.subTextColor), 
                   filled: true,
-                  fillColor: Colors.grey.shade50,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16.r)),
+                  fillColor: AppTheme.inputFillColor, 
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.r),
+                    borderSide: BorderSide.none, 
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.r),
+                    borderSide: const BorderSide(color: AppTheme.errorColor), 
+                  ),
                 ),
               ),
               SizedBox(height: 24.h),
               
-              // 2 Nút tiêu chuẩn: Hủy và Gửi
               Row(
                 children: [
                   Expanded(
-                    child: TextButton(
-                      onPressed: () => Get.back(),
-                      child: Text('Hủy', style: TextStyle(fontSize: 16.sp, color: Colors.grey)),
+                    child: AppButton(
+                      text: 'Hủy',
+                      type: ButtonType.secondary, 
+                      onPressed: () {
+                        // Vẫn chặn không cho Hủy nếu đang gửi dữ liệu
+                        if (!controller.isLoading.value) Get.back();
+                      },
                     ),
                   ),
+                  SizedBox(width: 12.w), // Khoảng cách giữa 2 nút
+                  
                   Expanded(
-                    child: ElevatedButton(
+                    child: Obx(() => AppButton(
+                      text: 'Phát tín hiệu',
+                      type: ButtonType.primary,
+                      isLoading: controller.isLoading.value, 
                       onPressed: () => controller.sendSosAlert(),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF4F46E5),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
-                        padding: EdgeInsets.symmetric(vertical: 12.h),
-                      ),
-                      child: Text('Phát tín hiệu', style: TextStyle(fontSize: 16.sp, color: Colors.white)),
-                    ),
+                    )),
                   ),
                 ],
               )
