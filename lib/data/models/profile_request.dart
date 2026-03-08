@@ -1,7 +1,7 @@
 class ProfileRequest {
   int? id;
   String? username;
-  String? fullName;
+  String? fullname;
   String? email;
   String? province;
   String? phoneNumber; 
@@ -12,7 +12,7 @@ class ProfileRequest {
   ProfileRequest({
     this.id,
     this.username,
-    this.fullName,
+    this.fullname,
     this.email,
     this.province,
     this.phoneNumber,
@@ -25,7 +25,7 @@ class ProfileRequest {
     return ProfileRequest(
       id: json['id'],
       username: json['username'],
-      fullName: json['fullName'], 
+      fullname: json['fullname'], 
       email: json['email'],
       province: json['province'],
       phoneNumber: json['phoneNumber'], 
@@ -37,7 +37,7 @@ class ProfileRequest {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {
-      'fullName': fullName,
+      'fullname': fullname,
       'email': email,
       'province': province,
     };

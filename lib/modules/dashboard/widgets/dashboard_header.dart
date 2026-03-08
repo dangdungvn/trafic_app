@@ -52,7 +52,13 @@ class DashboardHeader extends StatelessWidget {
         // Avatar - hiển thị từ ProfileController
         GestureDetector(
           onTap: () {
-            Get.offNamed(Routes.PROFILE);
+            Get.to(
+              () => const UserProfileScreen(),
+              arguments: {
+                'heroTag': 'user_avatar', 
+                'initialAvatar': profileController.currentAvatarUrl.value, 
+              },
+            );
           },
           child: Hero(
             tag: 'user_avatar',

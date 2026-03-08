@@ -92,14 +92,14 @@ class ProfileController extends GetxController {
 
       final user = await _userRepository.getProfile();
 
-      nameController.text = user.fullName ?? "";
+      nameController.text = user.fullname ?? "";
       emailController.text = user.email ?? "";
       phoneController.text = user.phoneNumber ?? "";
       addressController.text = user.province ?? "";
       relativePhoneController.text = user.relativePhone ?? "";
 
       StorageService.to.saveUserInfo(
-        fullName: user.fullName,
+        fullname: user.fullname,
         province: user.province,
         relativePhone: user.relativePhone,
       );
@@ -176,7 +176,7 @@ class ProfileController extends GetxController {
       Get.back(); // Quay về home ngay lập tức, không đợi API
 
       final updatedUser = ProfileRequest(
-        fullName: nameController.text.trim(),
+        fullname: nameController.text.trim(),
         email: emailController.text.trim(),
         phoneNumber: phoneController.text.trim(),
         province: selectedProvince.value!['name'],
