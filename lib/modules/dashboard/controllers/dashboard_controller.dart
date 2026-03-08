@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
@@ -31,6 +33,11 @@ class DashboardController extends GetxController {
   // Animation: id của bài viết mới nhất vừa được prepend
   final newPostId = RxnString();
 
+  // Search
+  final isSearching = false.obs;
+  final currentKeyword = ''.obs;
+  Timer? _debounceTimer;
+
   // Pagination
   int currentPage = 0;
   final int pageSize = 10;
@@ -48,6 +55,7 @@ class DashboardController extends GetxController {
 
   @override
   void onClose() {
+    _debounceTimer?.cancel();
     scrollController.dispose();
     searchController.dispose();
     refreshController.dispose();
@@ -58,6 +66,29 @@ class DashboardController extends GetxController {
   void onInit() {
     super.onInit();
     _initializeLocation();
+    _setupSearchDebounce();
+  }
+
+  /// Thiết lập debounce 300ms cho ô tìm kiếm
+  void _setupSearchDebounce() {
+    searchController.addListener(() {
+      final keyword = searchController.text.trim();
+      if (keyword == currentKeyword.value) return;
+
+      _debounceTimer?.cancel();
+      isSearching.value = keyword.isNotEmpty;
+
+      _debounceTimer = Timer(const Duration(milliseconds: 300), () {
+        currentKeyword.value = keyword;
+        refreshController.resetNoData();
+        loadPosts(refresh: true);
+      });
+    });
+  }
+
+  /// Xóa nội dung tìm kiếm và load lại tất cả bài viết
+  void clearSearch() {
+    searchController.clear();
   }
 
   /// Khởi tạo location từ storage và load posts
@@ -94,6 +125,7 @@ class DashboardController extends GetxController {
         location: currentLocation,
         page: currentPage,
         size: pageSize,
+        keyword: currentKeyword.value.isNotEmpty ? currentKeyword.value : null,
       );
 
       if (newPosts.isEmpty) {

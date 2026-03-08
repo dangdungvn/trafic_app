@@ -98,7 +98,9 @@ class DashboardView extends GetView<DashboardController> {
                         ),
                         SizedBox(height: 16.h),
                         Text(
-                          'dashboard_no_posts'.tr,
+                          controller.currentKeyword.value.isNotEmpty
+                              ? 'dashboard_no_search_results'.tr
+                              : 'dashboard_no_posts'.tr,
                           style: TextStyle(
                             fontSize: 16.sp,
                             color: Colors.grey[600],

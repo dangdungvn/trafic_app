@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:iconly/iconly.dart';
 
 import '../../../theme/app_theme.dart';
+import '../../../widgets/custom_text_field.dart';
+import '../controllers/dashboard_controller.dart';
 
 class DashboardSearchBar extends StatefulWidget {
   final TextEditingController controller;
@@ -15,89 +17,81 @@ class DashboardSearchBar extends StatefulWidget {
 }
 
 class _DashboardSearchBarState extends State<DashboardSearchBar> {
-  bool _isFocused = false;
-  late FocusNode _focusNode;
+  final _hasText = false.obs;
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
-    _focusNode = FocusNode();
-    _focusNode.addListener(_onFocusChange);
+    _hasText.value = widget.controller.text.isNotEmpty;
+    widget.controller.addListener(_onTextChange);
   }
 
   @override
   void dispose() {
-    _focusNode.removeListener(_onFocusChange);
+    widget.controller.removeListener(_onTextChange);
     _focusNode.dispose();
     super.dispose();
   }
 
-  void _onFocusChange() {
-    setState(() {
-      _isFocused = _focusNode.hasFocus;
-    });
+  void _onTextChange() {
+    _hasText.value = widget.controller.text.isNotEmpty;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 56.h,
-      padding: EdgeInsets.symmetric(horizontal: 20.w),
-      decoration: BoxDecoration(
-        color: _isFocused
-            ? AppTheme.primaryColor.withOpacity(0.08)
-            : const Color(0xFFF5F5F5),
-        borderRadius: BorderRadius.circular(12.r),
-        border: _isFocused
-            ? Border.all(color: AppTheme.primaryColor, width: 1)
-            : null,
-      ),
-      child: Row(
-        children: [
-          SvgPicture.asset(
-            'assets/icons/search.svg',
-            width: 20.w,
-            height: 20.w,
-            colorFilter: ColorFilter.mode(
-              _isFocused ? AppTheme.primaryColor : AppTheme.subTextColor,
-              BlendMode.srcIn,
-            ),
+    final dashboardController = Get.find<DashboardController>();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Obx(
+          () => CustomTextField(
+            hintText: 'dashboard_search_hint'.tr,
+            prefixIcon: IconlyBroken.search,
+            controller: widget.controller,
+            focusNode: _focusNode,
+            textInputAction: TextInputAction.search,
+            onSubmitted: (_) => _focusNode.unfocus(),
+            isLoading:
+                dashboardController.isSearching.value &&
+                dashboardController.isLoading.value,
+            showClearButton: _hasText.value,
+            onClear: () {
+              dashboardController.clearSearch();
+              _focusNode.unfocus();
+            },
+            trailingIconAsset: 'assets/icons/voice.svg',
           ),
-          SizedBox(width: 12.w),
-          Expanded(
-            child: TextField(
-              controller: widget.controller,
-              focusNode: _focusNode,
-              cursorColor: AppTheme.primaryColor,
-              decoration: InputDecoration(
-                hintText: "Tìm kiếm bài đăng theo địa điểm ...".tr,
-                hintStyle: TextStyle(
-                  fontSize: 14.sp,
-                  color: AppTheme.subTextColor,
-                  fontWeight: FontWeight.w400,
+        ),
+        // Label từ khóa đang tìm
+        Obx(() {
+          final keyword = dashboardController.currentKeyword.value;
+          if (keyword.isEmpty) return const SizedBox.shrink();
+          return Padding(
+            padding: EdgeInsets.only(top: 8.h),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.search_rounded,
+                  size: 14.w,
+                  color: AppTheme.primaryColor,
                 ),
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.zero,
-                isDense: true,
-              ),
-              style: TextStyle(
-                fontSize: 14.sp,
-                color: AppTheme.textColor,
-                fontWeight: FontWeight.w400,
-              ),
+                SizedBox(width: 4.w),
+                Text(
+                  '${'dashboard_searching_for'.tr} "$keyword"',
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    color: AppTheme.primaryColor,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
-          ),
-          SvgPicture.asset(
-            'assets/icons/voice.svg',
-            width: 20.w,
-            height: 20.w,
-            colorFilter: ColorFilter.mode(
-              _isFocused ? AppTheme.primaryColor : AppTheme.subTextColor,
-              BlendMode.srcIn,
-            ),
-          ),
-        ],
-      ),
+          );
+        }),
+      ],
     );
   }
 }
