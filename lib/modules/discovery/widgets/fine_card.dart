@@ -266,7 +266,7 @@ class FineResolveSection extends StatelessWidget {
       padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
         color: AppTheme.primaryBgColor,
-        borderRadius: BorderRadius.circular(10.r),
+        borderRadius: BorderRadius.circular(26.r),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

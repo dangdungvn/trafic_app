@@ -156,13 +156,16 @@ class _LiquidGlassBottomBarState extends State<LiquidGlassBottomBar> {
         LiquidGlassSettings(
           refractiveIndex: 1.08,
           thickness: 20,
-          blur: 5,
+          blur: 10,
           saturation: 1.1,
           lightIntensity: isDark ? .8 : 1.4,
           ambientStrength: isDark ? .3 : .7,
           lightAngle: math.pi / 4,
-          glassColor: const Color(
-            0x33FFFFFF,
+          glassColor: const Color.fromARGB(
+            255,
+            236,
+            236,
+            236,
           ).withValues(alpha: isDark ? 0.25 : 0.65),
         );
 
