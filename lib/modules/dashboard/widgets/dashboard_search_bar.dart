@@ -74,7 +74,7 @@ class _DashboardSearchBarState extends State<DashboardSearchBar> {
             child: Row(
               children: [
                 Icon(
-                  Icons.search_rounded,
+                  IconlyBroken.search,
                   size: 14.w,
                   color: AppTheme.primaryColor,
                 ),
