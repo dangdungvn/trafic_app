@@ -17,7 +17,7 @@ class FineResultList extends StatelessWidget {
         16.w,
         12.h,
         16.w,
-        MediaQuery.of(context).viewPadding.bottom + 24.h,
+        MediaQuery.of(context).viewPadding.bottom + 80.h,
       ),
       itemCount: records.length,
       itemBuilder: (_, index) => FineCard(record: records[index], index: index),
