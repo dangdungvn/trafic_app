@@ -62,7 +62,6 @@ class EmergencyScreen extends GetView<EmergencyController> {
             SizedBox(height: 16.h),
 
             // Option 2: Gọi cứu thương
-<<<<<<< HEAD
             Obx(() => _buildOptionCard(
                   index: 1,
                   icon: Icons.medical_services_outlined,
@@ -80,16 +79,6 @@ class EmergencyScreen extends GetView<EmergencyController> {
                   subtitle: 'emergency_hint_3'.tr,
                   isSelected: controller.selectedOption.value == 2,
                 )),
-=======
-            Obx(
-              () => _buildOptionCard(
-                index: 1,
-                icon: Icons.medical_services_outlined,
-                title: 'emergency_method_2'.tr,
-                isSelected: controller.selectedOption.value == 1,
-              ),
-            ),
->>>>>>> dca673d0edb22aef6af479042a16836922435f06
           ],
         ),
       ),
@@ -98,34 +87,6 @@ class EmergencyScreen extends GetView<EmergencyController> {
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(24.w),
-<<<<<<< HEAD
-          child: SizedBox(
-            width: double.infinity,
-            height: 54.h,
-            child: ElevatedButton(
-              onPressed: () {
-                   if (controller.selectedOption.value == 2) {
-                     _showSosInputDialog();
-                   } else {
-                     controller.onContinue();
-                   }
-                },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF4F46E5), // Màu xanh tím (Primary)
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16.r),
-                ),
-                elevation: 0,
-              ),
-              child: Text(
-                'emergency_button'.tr,
-                style: TextStyle(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
-              ),
-=======
           child: PrimaryButton(
             text: 'emergency_button'.tr,
             onPressed: () => CustomDialog.showConfirm(
@@ -138,7 +99,6 @@ class EmergencyScreen extends GetView<EmergencyController> {
               cancelText: 'Hủy',
               type: DialogType.warning,
               onConfirm: controller.onContinue,
->>>>>>> dca673d0edb22aef6af479042a16836922435f06
             ),
           ),
         ),
@@ -235,7 +195,6 @@ class EmergencyScreen extends GetView<EmergencyController> {
       ),
     );
   }
-<<<<<<< HEAD
 
   // Hàm hiển thị Popup nhập ghi chú (Chỉ UI)
   void _showSosInputDialog() {
@@ -298,6 +257,3 @@ class EmergencyScreen extends GetView<EmergencyController> {
     );
   }
 }
-=======
-}
->>>>>>> dca673d0edb22aef6af479042a16836922435f06
