@@ -29,6 +29,8 @@
   "chatbot_bottom_navbar": "Chatbot",
   "Tìm kiếm bài đăng theo địa điểm ...": "Tìm kiếm bài đăng theo địa điểm ...",
   "dashboard_no_search_results": "Không tìm thấy bài viết nào",
+  "dashboard_voice_not_available": "Thiết bị không hỗ trợ nhận dạng giọng nói",
+  "dashboard_voice_error": "Không thể nhận dạng giọng nói. Vui lòng thử lại.",
   "Đã báo cáo": "Đã báo cáo",
   "Báo cáo": "Báo cáo",
   "Quản lý tài khoản": "Quản lý tài khoản",

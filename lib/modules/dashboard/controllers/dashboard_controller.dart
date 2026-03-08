@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
+import 'package:speech_to_text/speech_recognition_error.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 import 'package:traffic_app/widgets/custom_alert.dart';
 
 import '../../../data/models/traffic_post_model.dart';
@@ -38,6 +40,11 @@ class DashboardController extends GetxController {
   final currentKeyword = ''.obs;
   Timer? _debounceTimer;
 
+  // Voice search
+  final isListening = false.obs;
+  final SpeechToText _speechToText = SpeechToText();
+  bool _speechAvailable = false;
+
   // Pagination
   int currentPage = 0;
   final int pageSize = 10;
@@ -56,6 +63,7 @@ class DashboardController extends GetxController {
   @override
   void onClose() {
     _debounceTimer?.cancel();
+    if (isListening.value) _speechToText.stop();
     scrollController.dispose();
     searchController.dispose();
     refreshController.dispose();
@@ -67,6 +75,12 @@ class DashboardController extends GetxController {
     super.onInit();
     _initializeLocation();
     _setupSearchDebounce();
+    _initSpeech();
+  }
+
+  /// Khởi tạo speech_to_text
+  Future<void> _initSpeech() async {
+    _speechAvailable = await _speechToText.initialize(onError: _onSpeechError);
   }
 
   /// Thiết lập debounce 300ms cho ô tìm kiếm
@@ -89,6 +103,64 @@ class DashboardController extends GetxController {
   /// Xóa nội dung tìm kiếm và load lại tất cả bài viết
   void clearSearch() {
     searchController.clear();
+  }
+
+  /// Bắt đầu / dừng tìm kiếm bằng giọng nói
+  Future<void> toggleVoiceSearch() async {
+    if (isListening.value) {
+      await _speechToText.stop();
+      isListening.value = false;
+      return;
+    }
+
+    if (!_speechAvailable) {
+      // Thử khởi tạo lại nếu chưa sẵn sàng
+      _speechAvailable = await _speechToText.initialize(
+        onError: _onSpeechError,
+      );
+    }
+
+    if (!_speechAvailable) {
+      CustomAlert.show(
+        message: 'dashboard_voice_not_available'.tr,
+        type: AlertType.warning,
+      );
+      return;
+    }
+
+    isListening.value = true;
+    await _speechToText.listen(
+      onResult: (result) {
+        // Đổ text realtime vào ô tìm kiếm
+        searchController.text = result.recognizedWords;
+        // Đặt cursor cuối dòng
+        searchController.selection = TextSelection.fromPosition(
+          TextPosition(offset: searchController.text.length),
+        );
+        // Khi kết quả final, dừng listening
+        if (result.finalResult) {
+          isListening.value = false;
+        }
+      },
+      localeId: Get.locale?.toString().replaceAll('_', '-') ?? 'vi-VN',
+      pauseFor: const Duration(seconds: 3),
+      listenFor: const Duration(seconds: 30),
+      listenOptions: SpeechListenOptions(
+        partialResults: true,
+        cancelOnError: true,
+      ),
+    );
+  }
+
+  void _onSpeechError(SpeechRecognitionError error) {
+    isListening.value = false;
+    if (error.errorMsg != 'error_speech_timeout' &&
+        error.errorMsg != 'error_no_match') {
+      CustomAlert.show(
+        message: 'dashboard_voice_error'.tr,
+        type: AlertType.error,
+      );
+    }
   }
 
   /// Khởi tạo location từ storage và load posts

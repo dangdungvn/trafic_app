@@ -54,8 +54,7 @@ class _DashboardSearchBarState extends State<DashboardSearchBar> {
             focusNode: _focusNode,
             textInputAction: TextInputAction.search,
             onSubmitted: (_) => _focusNode.unfocus(),
-            isLoading:
-                dashboardController.isSearching.value &&
+            isLoading: dashboardController.isSearching.value &&
                 dashboardController.isLoading.value,
             showClearButton: _hasText.value,
             onClear: () {
@@ -63,6 +62,8 @@ class _DashboardSearchBarState extends State<DashboardSearchBar> {
               _focusNode.unfocus();
             },
             trailingIconAsset: 'assets/icons/voice.svg',
+            isListening: dashboardController.isListening.value,
+            onVoiceTap: dashboardController.toggleVoiceSearch,
           ),
         ),
         // Label từ khóa đang tìm

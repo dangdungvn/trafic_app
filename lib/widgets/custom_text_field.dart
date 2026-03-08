@@ -25,6 +25,8 @@ class CustomTextField extends StatefulWidget {
   final bool showClearButton;
   final VoidCallback? onClear;
   final String? trailingIconAsset;
+  final bool isListening;
+  final VoidCallback? onVoiceTap;
 
   const CustomTextField({
     super.key,
@@ -45,6 +47,8 @@ class CustomTextField extends StatefulWidget {
     this.showClearButton = false,
     this.onClear,
     this.trailingIconAsset,
+    this.isListening = false,
+    this.onVoiceTap,
   });
 
   @override
@@ -165,16 +169,23 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 ),
               )
             else if (widget.trailingIconAsset != null)
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.w),
-                child: SvgPicture.asset(
-                  widget.trailingIconAsset!,
-                  width: 20.w,
-                  height: 20.w,
-                  colorFilter: ColorFilter.mode(
-                    _isFocused ? AppTheme.primaryColor : AppTheme.subTextColor,
-                    BlendMode.srcIn,
-                  ),
+              GestureDetector(
+                onTap: widget.onVoiceTap,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.w),
+                  child: widget.isListening
+                      ? _PulsingMicIcon(color: AppTheme.primaryColor)
+                      : SvgPicture.asset(
+                          widget.trailingIconAsset!,
+                          width: 20.w,
+                          height: 20.w,
+                          colorFilter: ColorFilter.mode(
+                            _isFocused
+                                ? AppTheme.primaryColor
+                                : AppTheme.subTextColor,
+                            BlendMode.srcIn,
+                          ),
+                        ),
                 ),
               )
             else if (widget.isPassword)
@@ -195,6 +206,45 @@ class _CustomTextFieldState extends State<CustomTextField> {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Widget icon mic nhấp nháy khi đang lắng nghe giọng nói
+class _PulsingMicIcon extends StatefulWidget {
+  final Color color;
+  const _PulsingMicIcon({required this.color});
+
+  @override
+  State<_PulsingMicIcon> createState() => _PulsingMicIconState();
+}
+
+class _PulsingMicIconState extends State<_PulsingMicIcon>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _opacity;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 700),
+    )..repeat(reverse: true);
+    _opacity = Tween<double>(begin: 0.4, end: 1.0).animate(_controller);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: _opacity,
+      child: Icon(IconlyBold.voice, size: 20.w, color: widget.color),
     );
   }
 }

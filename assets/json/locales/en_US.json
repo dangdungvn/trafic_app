@@ -29,6 +29,8 @@
   "chatbot_bottom_navbar": "Chatbot",
   "Tìm kiếm bài đăng theo địa điểm ...": "Search posts by location ...",
   "dashboard_no_search_results": "No posts found",
+  "dashboard_voice_not_available": "Voice recognition not available on this device",
+  "dashboard_voice_error": "Could not recognize voice. Please try again.",
   "Đã báo cáo": "Reported",
   "Báo cáo": "Report",
   "Quản lý tài khoản": "Account Management",
