@@ -17,7 +17,7 @@ class FineResultList extends StatelessWidget {
         16.w,
         12.h,
         16.w,
-        MediaQuery.of(context).viewPadding.bottom + 24.h,
+        MediaQuery.of(context).viewPadding.bottom + 80.h,
       ),
       itemCount: records.length,
       itemBuilder: (_, index) => FineCard(record: records[index], index: index),
@@ -266,7 +266,7 @@ class FineResolveSection extends StatelessWidget {
       padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
         color: AppTheme.primaryBgColor,
-        borderRadius: BorderRadius.circular(10.r),
+        borderRadius: BorderRadius.circular(26.r),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

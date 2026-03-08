@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:traffic_app/theme/app_theme.dart';
 
 import '../controllers/map_controller.dart';
 
@@ -119,7 +120,7 @@ class MapView extends GetView<MapController> {
               FloatingActionButton(
                 heroTag: 'map_type',
                 onPressed: controller.toggleMapType,
-                backgroundColor: Colors.white,
+                backgroundColor: AppTheme.backgroundColor,
                 child: const Icon(Icons.layers, color: Colors.black87),
               ),
               const SizedBox(height: 10),
@@ -131,7 +132,7 @@ class MapView extends GetView<MapController> {
                   onPressed: controller.toggleTraffic,
                   backgroundColor: controller.isTrafficEnabled.value
                       ? Colors.blue
-                      : Colors.white,
+                      : AppTheme.backgroundColor,
                   child: Icon(
                     Icons.traffic,
                     color: controller.isTrafficEnabled.value
@@ -146,7 +147,7 @@ class MapView extends GetView<MapController> {
               FloatingActionButton(
                 heroTag: 'my_location',
                 onPressed: controller.goToMyLocation,
-                backgroundColor: Colors.white,
+                backgroundColor: AppTheme.backgroundColor,
                 child: Obx(
                   () => controller.isLoading.value
                       ? const CircularProgressIndicator(strokeWidth: 2)

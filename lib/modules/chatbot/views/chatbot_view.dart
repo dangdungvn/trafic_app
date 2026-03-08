@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:traffic_app/theme/app_theme.dart';
 
 import '../controllers/chatbot_controller.dart';
 import '../widgets/chat_header.dart';
@@ -14,7 +15,7 @@ class ChatbotView extends GetView<ChatbotController> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppTheme.backgroundColor,
         resizeToAvoidBottomInset: true,
         body: Column(
           children: [

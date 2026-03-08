@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:traffic_app/theme/app_theme.dart';
 import 'package:traffic_app/widgets/custom_text_field.dart';
 
 import '../controllers/camera_controller.dart';
@@ -17,7 +18,7 @@ class CameraView extends GetView<CameraController> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppTheme.backgroundColor,
         body: SafeArea(
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),

@@ -25,7 +25,8 @@ class ChatInputBar extends StatelessWidget {
             top: 10.h,
             bottom:
                 MediaQuery.of(context).viewPadding.bottom +
-                (isFocused ? 115.h : 65.h),
+                (isFocused ? 95.h : 65.h) +
+                (GetPlatform.isAndroid ? 50.h : 0),
           ),
           decoration: BoxDecoration(
             color: Colors.white,

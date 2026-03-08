@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
+import 'package:traffic_app/theme/app_theme.dart';
 import 'package:traffic_app/widgets/loading_widget.dart';
 
 import '../../../services/assets_service.dart';
@@ -21,7 +22,7 @@ class DashboardView extends GetView<DashboardController> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppTheme.backgroundColor,
         body: Column(
           children: [
             // Header cố định

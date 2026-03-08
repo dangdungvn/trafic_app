@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
+import 'package:traffic_app/theme/app_theme.dart';
 
 import '../../../widgets/liquid_glass_bottom_bar.dart';
 import '../../../widgets/location_permission_banner.dart';
@@ -20,7 +21,7 @@ class HomeView extends GetView<HomeController> {
     return Obx(
       () => Scaffold(
         extendBody: true,
-        backgroundColor: Colors.white,
+        backgroundColor: AppTheme.backgroundColor,
         body: Stack(
           children: [
             IndexedStack(
@@ -44,27 +45,27 @@ class HomeView extends GetView<HomeController> {
                   tabs: [
                     LiquidGlassBottomBarTab(
                       label: 'home_bottom_navbar'.tr,
-                      icon: IconlyLight.home,
+                      icon: IconlyBroken.home,
                       selectedIcon: IconlyBold.home,
                     ),
                     LiquidGlassBottomBarTab(
                       label: 'map_bottom_navbar'.tr,
-                      icon: IconlyLight.location,
+                      icon: IconlyBroken.location,
                       selectedIcon: IconlyBold.location,
                     ),
                     LiquidGlassBottomBarTab(
                       label: 'camera_bottom_navbar'.tr,
-                      icon: IconlyLight.camera,
+                      icon: IconlyBroken.camera,
                       selectedIcon: IconlyBold.camera,
                     ),
                     LiquidGlassBottomBarTab(
                       label: 'discovery_bottom_navbar'.tr,
-                      icon: IconlyLight.search,
+                      icon: IconlyBroken.search,
                       selectedIcon: IconlyBold.search,
                     ),
                     LiquidGlassBottomBarTab(
                       label: 'chatbot_bottom_navbar'.tr,
-                      icon: IconlyLight.chat,
+                      icon: IconlyBroken.chat,
                       selectedIcon: IconlyBold.chat,
                     ),
                   ],
