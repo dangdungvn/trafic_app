@@ -15,8 +15,8 @@ class LoginController extends GetxController {
   final AuthRepository _authRepository = Get.find<AuthRepository>();
   final StorageService _storageService = Get.find<StorageService>();
 
-  final usernameController = TextEditingController();
-  final passwordController = TextEditingController();
+  late TextEditingController usernameController;
+  late TextEditingController passwordController;
 
   final usernameFocusNode = FocusNode();
   final passwordFocusNode = FocusNode();
@@ -24,6 +24,9 @@ class LoginController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    usernameController = TextEditingController();
+    passwordController = TextEditingController();
+
     // Clear focus and keyboard state on init to prevent keyboard event issues
     WidgetsBinding.instance.addPostFrameCallback((_) {
       usernameFocusNode.unfocus();

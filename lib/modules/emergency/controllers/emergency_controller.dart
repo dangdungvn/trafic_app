@@ -7,6 +7,7 @@ import '../../../services/storage_service.dart';
 import '../../../widgets/custom_alert.dart';
 import '../../../data/repositories/sos_repository.dart';
 import '../views/sos_active_screen.dart'; 
+import '../../../data/services/sos_stream_service.dart';
 
 class EmergencyController extends GetxController {
   var selectedOption = 0.obs;
@@ -132,6 +133,8 @@ class EmergencyController extends GetxController {
       if (activeSosId.value.isNotEmpty) {
         await _sosRepo.cancelSosAlert(activeSosId.value);
       }
+
+      SosStreamService.to.sosList.removeWhere((sos) => sos.sosId == activeSosId.value);
       CustomAlert.showSuccess('Đã hủy tín hiệu cứu hộ');
     } catch (e) {
       CustomAlert.showError('Lỗi: $e');
@@ -149,6 +152,8 @@ class EmergencyController extends GetxController {
       if (activeSosId.value.isNotEmpty) {
         await _sosRepo.resolveSosAlert(activeSosId.value);
       }
+
+      SosStreamService.to.sosList.removeWhere((sos) => sos.sosId == activeSosId.value);
       CustomAlert.showSuccess('Sự cố của bạn đã được giải quyết!');
     } catch (e) {
       CustomAlert.showError('Lỗi khi cập nhật trạng thái : $e');
