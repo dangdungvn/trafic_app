@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:iconly/iconly.dart';
 
 import '../theme/app_theme.dart';
 
@@ -44,7 +45,7 @@ class UploadProgressOverlay extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12.r),
                 ),
                 child: Icon(
-                  Icons.cloud_upload_outlined,
+                  IconlyBroken.upload,
                   color: AppTheme.primaryColor,
                   size: 20.sp,
                 ),
@@ -78,7 +79,7 @@ class UploadProgressOverlay extends StatelessWidget {
                 IconButton(
                   onPressed: onCancel,
                   icon: Icon(
-                    Icons.close,
+                    IconlyBroken.close_square,
                     size: 20.sp,
                     color: AppTheme.subTextColor,
                   ),

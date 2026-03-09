@@ -1,6 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:iconly/iconly.dart';
 
 /// Background message handler — phải là top-level function
 @pragma('vm:entry-point')
@@ -85,7 +86,7 @@ class NotificationService extends GetxService {
       colorText: Colors.white,
       margin: const EdgeInsets.all(16),
       borderRadius: 12,
-      icon: const Icon(Icons.notifications, color: Colors.white),
+      icon: const Icon(IconlyBold.notification, color: Colors.white),
     );
   }
 

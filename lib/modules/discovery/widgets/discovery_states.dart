@@ -153,7 +153,7 @@ class DiscoveryErrorState extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                IconlyLight.danger,
+                IconlyBroken.danger,
                 size: 52.r,
                 color: AppTheme.errorColor,
               ),

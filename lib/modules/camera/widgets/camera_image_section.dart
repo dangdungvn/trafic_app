@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:iconly/iconly.dart';
 
 import '../controllers/camera_controller.dart';
 
@@ -33,7 +34,7 @@ class CameraImageSection extends GetView<CameraController> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.camera_alt, size: 64.sp, color: Colors.white54),
+                  Icon(IconlyBroken.camera, size: 64.sp, color: Colors.white54),
                   SizedBox(height: 12.h),
                   Text(
                     'camera_capture_or_pick'.tr,

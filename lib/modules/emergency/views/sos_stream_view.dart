@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:iconly/iconly.dart';
 import 'package:intl/intl.dart';
 
 import '../../../data/models/sos_model.dart';
@@ -252,7 +253,7 @@ class _StatusBanner extends StatelessWidget {
             ? error
             : 'Kết nối thất bại. Kéo xuống để thử lại.';
         bg = Colors.red.shade50;
-        icon = Icons.error_outline;
+        icon = IconlyBroken.danger;
         break;
       default:
         return const SizedBox.shrink();
@@ -315,7 +316,7 @@ class _EmptyState extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            Icons.notifications_none,
+            IconlyBroken.notification,
             size: 48.r,
             color: AppTheme.dividerColor,
           ),
@@ -381,7 +382,11 @@ class _SosCard extends StatelessWidget {
                 ),
               ),
               const Spacer(),
-              Icon(Icons.access_time, size: 12.r, color: AppTheme.subTextColor),
+              Icon(
+                IconlyBroken.time_circle,
+                size: 12.r,
+                color: AppTheme.subTextColor,
+              ),
               SizedBox(width: 3.w),
               Text(
                 timeStr,
@@ -392,7 +397,7 @@ class _SosCard extends StatelessWidget {
           SizedBox(height: 10.h),
           if (sos.phoneNumber != null) ...[
             _InfoRow(
-              icon: Icons.phone,
+              icon: IconlyBroken.call,
               text: sos.phoneNumber!,
               iconColor: Colors.green,
             ),
@@ -400,7 +405,7 @@ class _SosCard extends StatelessWidget {
           ],
           if (sos.address != null) ...[
             _InfoRow(
-              icon: Icons.location_on,
+              icon: IconlyBroken.location,
               text: sos.address!,
               iconColor: Colors.red,
             ),
@@ -408,7 +413,7 @@ class _SosCard extends StatelessWidget {
           ],
           if (sos.latitude != null && sos.longitude != null) ...[
             _InfoRow(
-              icon: Icons.my_location,
+              icon: IconlyBold.location,
               text:
                   '${sos.latitude!.toStringAsFixed(5)}, ${sos.longitude!.toStringAsFixed(5)}',
               iconColor: AppTheme.primaryColor,
@@ -418,7 +423,7 @@ class _SosCard extends StatelessWidget {
           if (sos.note != null && sos.note!.isNotEmpty) ...[
             Divider(height: 12.h, color: AppTheme.dividerColor),
             _InfoRow(
-              icon: Icons.notes,
+              icon: IconlyBroken.document,
               text: sos.note!,
               iconColor: AppTheme.subTextColor,
             ),

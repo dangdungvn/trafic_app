@@ -45,13 +45,6 @@ class DashboardView extends GetView<DashboardController> {
                   bottomLeft: Radius.circular(16.r),
                   bottomRight: Radius.circular(16.r),
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF04060F).withOpacity(0.05),
-                    offset: const Offset(0, 2),
-                    blurRadius: 50,
-                  ),
-                ],
               ),
               child: DashboardSearchBar(
                 controller: controller.searchController,
@@ -73,7 +66,45 @@ class DashboardView extends GetView<DashboardController> {
                   );
                 }
 
-                // 2. SMART REFRESHER BỌC NGOÀI CÙNG
+                if (controller.posts.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          height: 260.h,
+                          child:
+                              AssetsService.to.notFoundComposition.value != null
+                              ? Lottie(
+                                  composition: AssetsService
+                                      .to
+                                      .notFoundComposition
+                                      .value!,
+                                  fit: BoxFit.contain,
+                                  repeat: true,
+                                )
+                              : Lottie.asset(
+                                  'assets/animations/404_not_found.json',
+                                  fit: BoxFit.contain,
+                                  repeat: true,
+                                  renderCache: RenderCache.drawingCommands,
+                                ),
+                        ),
+                        SizedBox(height: 16.h),
+                        Text(
+                          controller.currentKeyword.value.isNotEmpty
+                              ? 'dashboard_no_search_results'.tr
+                              : 'dashboard_no_posts'.tr,
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
                 return SmartRefresher(
                   controller: controller.refreshController,
                   scrollController: controller.scrollController,

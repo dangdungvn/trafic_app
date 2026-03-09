@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:iconly/iconly.dart';
 
 import '../theme/app_theme.dart';
 
@@ -46,8 +47,8 @@ class LocationPermissionBanner extends StatelessWidget {
                 ),
                 child: Icon(
                   isServiceDisabled
-                      ? Icons.location_disabled_outlined
-                      : Icons.location_off_outlined,
+                      ? IconlyBold.location
+                      : IconlyBroken.location,
                   color: AppTheme.warningColor,
                   size: 20.sp,
                 ),
@@ -85,7 +86,7 @@ class LocationPermissionBanner extends StatelessWidget {
                 IconButton(
                   onPressed: onDismiss,
                   icon: Icon(
-                    Icons.close,
+                    IconlyBroken.close_square,
                     size: 20.sp,
                     color: AppTheme.subTextColor,
                   ),

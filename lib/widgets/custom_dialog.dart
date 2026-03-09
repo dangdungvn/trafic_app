@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:iconly/iconly.dart';
 
 import '../main.dart';
 import '../theme/app_theme.dart';
@@ -82,13 +83,13 @@ class CustomDialog extends StatelessWidget {
   IconData get _icon {
     switch (type) {
       case DialogType.success:
-        return Icons.check_rounded;
+        return IconlyBold.tick_square;
       case DialogType.error:
-        return Icons.close_rounded;
+        return IconlyBold.close_square;
       case DialogType.warning:
-        return Icons.warning_amber_rounded;
+        return IconlyBold.danger;
       case DialogType.info:
-        return Icons.info_outline_rounded;
+        return IconlyBold.info_square;
     }
   }
 

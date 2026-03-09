@@ -1,7 +1,15 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart'
+    show openAppSettings;
 import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
+import 'package:speech_to_text/speech_recognition_error.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 import 'package:traffic_app/widgets/custom_alert.dart';
+import 'package:traffic_app/widgets/custom_dialog.dart';
 
 import '../../../data/models/traffic_post_model.dart';
 import '../../../data/repositories/follow_repository.dart';
@@ -31,6 +39,16 @@ class DashboardController extends GetxController {
   // Animation: id của bài viết mới nhất vừa được prepend
   final newPostId = RxnString();
 
+  // Search
+  final isSearching = false.obs;
+  final currentKeyword = ''.obs;
+  Timer? _debounceTimer;
+
+  // Voice search
+  final isListening = false.obs;
+  SpeechToText _speechToText = SpeechToText();
+  bool _speechAvailable = false;
+
   // Pagination
   int currentPage = 0;
   final int pageSize = 10;
@@ -48,6 +66,8 @@ class DashboardController extends GetxController {
 
   @override
   void onClose() {
+    _debounceTimer?.cancel();
+    if (isListening.value) _speechToText.stop();
     scrollController.dispose();
     searchController.dispose();
     refreshController.dispose();
@@ -58,6 +78,101 @@ class DashboardController extends GetxController {
   void onInit() {
     super.onInit();
     _initializeLocation();
+    _setupSearchDebounce();
+  }
+
+  /// Thiết lập debounce 300ms cho ô tìm kiếm
+  void _setupSearchDebounce() {
+    searchController.addListener(() {
+      final keyword = searchController.text.trim();
+      if (keyword == currentKeyword.value) return;
+
+      _debounceTimer?.cancel();
+      isSearching.value = keyword.isNotEmpty;
+
+      _debounceTimer = Timer(const Duration(milliseconds: 300), () {
+        currentKeyword.value = keyword;
+        refreshController.resetNoData();
+        loadPosts(refresh: true);
+      });
+    });
+  }
+
+  /// Xóa nội dung tìm kiếm và load lại tất cả bài viết
+  void clearSearch() {
+    searchController.clear();
+  }
+
+  void _showVoicePermissionDialog() {
+    CustomDialog.showConfirm(
+      context: Get.context!,
+      title: 'dashboard_voice_permission_title'.tr,
+      message: Platform.isIOS
+          ? 'dashboard_voice_permission_message_ios'.tr
+          : 'dashboard_voice_permission_message'.tr,
+      confirmText: 'dashboard_voice_open_settings'.tr,
+      cancelText: 'chatbot_cancel'.tr,
+      onConfirm: () {
+        Get.back();
+        openAppSettings();
+      },
+      type: DialogType.warning,
+    );
+  }
+
+  /// Bắt đầu / dừng tìm kiếm bằng giọng nói
+  Future<void> toggleVoiceSearch() async {
+    if (isListening.value) {
+      await _speechToText.stop();
+      isListening.value = false;
+      return;
+    }
+
+    // Luôn tạo instance mới để tránh stale state từ lần init trước
+    // speech_to_text tự xử lý cả mic lẫn speech permission trên iOS
+    _speechToText = SpeechToText();
+    _speechAvailable = await _speechToText.initialize(onError: _onSpeechError);
+
+    if (!_speechAvailable) {
+      // Init thất bại: do quyền bị từ chối hoặc thiết bị không hỗ trợ
+      // Hướng dẫn vào Settings để cấp quyền
+      _showVoicePermissionDialog();
+      return;
+    }
+
+    isListening.value = true;
+    await _speechToText.listen(
+      onResult: (result) {
+        // Đổ text realtime vào ô tìm kiếm
+        searchController.text = result.recognizedWords;
+        // Đặt cursor cuối dòng
+        searchController.selection = TextSelection.fromPosition(
+          TextPosition(offset: searchController.text.length),
+        );
+        // Khi kết quả final, dừng listening
+        if (result.finalResult) {
+          isListening.value = false;
+        }
+      },
+      localeId: Get.locale?.toString().replaceAll('_', '-') ?? 'vi-VN',
+      pauseFor: const Duration(seconds: 3),
+      listenFor: const Duration(seconds: 30),
+      listenOptions: SpeechListenOptions(
+        partialResults: true,
+        cancelOnError: true,
+      ),
+    );
+  }
+
+  void _onSpeechError(SpeechRecognitionError error) {
+    isListening.value = false;
+    if (error.errorMsg != 'error_speech_timeout' &&
+        error.errorMsg != 'error_no_match') {
+      CustomAlert.show(
+        message: 'dashboard_voice_error'.tr,
+        type: AlertType.error,
+      );
+    }
   }
 
   /// Khởi tạo location từ storage và load posts
@@ -94,6 +209,7 @@ class DashboardController extends GetxController {
         location: currentLocation,
         page: currentPage,
         size: pageSize,
+        keyword: currentKeyword.value.isNotEmpty ? currentKeyword.value : null,
       );
 
       if (newPosts.isEmpty) {

@@ -38,6 +38,8 @@
 	<string>Ứng dụng cần quyền truy cập vị trí để hiển thị bản đồ.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Ứng dụng cần truy cập microphone cho tính năng quay video.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Ứng dụng cần quyền nhận dạng giọng nói để hỗ trợ tìm kiếm bằng giọng nói.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Ứng dụng cần truy cập thư viện ảnh để bạn thay đổi ảnh đại diện.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

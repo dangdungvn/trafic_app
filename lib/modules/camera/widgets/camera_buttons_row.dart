@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:iconly/iconly.dart';
 import 'package:traffic_app/theme/app_theme.dart';
 
 import '../controllers/camera_controller.dart';
@@ -48,7 +49,7 @@ class CameraButtonsRow extends GetView<CameraController> {
                       ],
                     ),
                     child: Icon(
-                      Icons.close_rounded,
+                      IconlyBroken.close_square,
                       color: AppTheme.primaryColor,
                       size: 22.sp,
                     ),
