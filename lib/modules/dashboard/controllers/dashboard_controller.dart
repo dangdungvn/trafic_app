@@ -1,11 +1,15 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart'
+    show openAppSettings;
 import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
 import 'package:speech_to_text/speech_recognition_error.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:traffic_app/widgets/custom_alert.dart';
+import 'package:traffic_app/widgets/custom_dialog.dart';
 
 import '../../../data/models/traffic_post_model.dart';
 import '../../../data/repositories/follow_repository.dart';
@@ -42,7 +46,7 @@ class DashboardController extends GetxController {
 
   // Voice search
   final isListening = false.obs;
-  final SpeechToText _speechToText = SpeechToText();
+  SpeechToText _speechToText = SpeechToText();
   bool _speechAvailable = false;
 
   // Pagination
@@ -75,12 +79,6 @@ class DashboardController extends GetxController {
     super.onInit();
     _initializeLocation();
     _setupSearchDebounce();
-    _initSpeech();
-  }
-
-  /// Khởi tạo speech_to_text
-  Future<void> _initSpeech() async {
-    _speechAvailable = await _speechToText.initialize(onError: _onSpeechError);
   }
 
   /// Thiết lập debounce 300ms cho ô tìm kiếm
@@ -105,6 +103,23 @@ class DashboardController extends GetxController {
     searchController.clear();
   }
 
+  void _showVoicePermissionDialog() {
+    CustomDialog.showConfirm(
+      context: Get.context!,
+      title: 'dashboard_voice_permission_title'.tr,
+      message: Platform.isIOS
+          ? 'dashboard_voice_permission_message_ios'.tr
+          : 'dashboard_voice_permission_message'.tr,
+      confirmText: 'dashboard_voice_open_settings'.tr,
+      cancelText: 'chatbot_cancel'.tr,
+      onConfirm: () {
+        Get.back();
+        openAppSettings();
+      },
+      type: DialogType.warning,
+    );
+  }
+
   /// Bắt đầu / dừng tìm kiếm bằng giọng nói
   Future<void> toggleVoiceSearch() async {
     if (isListening.value) {
@@ -113,18 +128,15 @@ class DashboardController extends GetxController {
       return;
     }
 
-    if (!_speechAvailable) {
-      // Thử khởi tạo lại nếu chưa sẵn sàng
-      _speechAvailable = await _speechToText.initialize(
-        onError: _onSpeechError,
-      );
-    }
+    // Luôn tạo instance mới để tránh stale state từ lần init trước
+    // speech_to_text tự xử lý cả mic lẫn speech permission trên iOS
+    _speechToText = SpeechToText();
+    _speechAvailable = await _speechToText.initialize(onError: _onSpeechError);
 
     if (!_speechAvailable) {
-      CustomAlert.show(
-        message: 'dashboard_voice_not_available'.tr,
-        type: AlertType.warning,
-      );
+      // Init thất bại: do quyền bị từ chối hoặc thiết bị không hỗ trợ
+      // Hướng dẫn vào Settings để cấp quyền
+      _showVoicePermissionDialog();
       return;
     }
 
