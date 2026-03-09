@@ -45,13 +45,6 @@ class DashboardView extends GetView<DashboardController> {
                   bottomLeft: Radius.circular(16.r),
                   bottomRight: Radius.circular(16.r),
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF04060F).withOpacity(0.05),
-                    offset: const Offset(0, 2),
-                    blurRadius: 50,
-                  ),
-                ],
               ),
               child: DashboardSearchBar(
                 controller: controller.searchController,
