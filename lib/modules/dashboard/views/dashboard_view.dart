@@ -31,7 +31,7 @@ class DashboardView extends GetView<DashboardController> {
               padding: EdgeInsets.only(
                 left: 24.w,
                 right: 24.w,
-                top: MediaQuery.of(context).padding.top + 10.h,
+                top: MediaQuery.paddingOf(context).top + 10.h,
                 bottom: 10.h,
               ),
               child: const DashboardHeader(),
@@ -174,29 +174,40 @@ class DashboardView extends GetView<DashboardController> {
                   child: ListView.builder(
                     padding: EdgeInsets.symmetric(horizontal: 24.w),
                     itemCount: controller.posts.length,
+                    cacheExtent: 1200,
+                    addRepaintBoundaries: false,
                     itemBuilder: (context, index) {
                       final post = controller.posts[index];
-                      final isNew = controller.newPostId.value == post.id;
+                      final postId = post.id ?? '';
                       final child = RepaintBoundary(
-                        key: ValueKey(post.id),
+                        key: ValueKey(postId),
                         child: PostItem(
-                          key: ValueKey(post.id),
+                          key: ValueKey(postId),
                           post: post,
+                          isLikedRx: controller.likedState(postId),
+                          likeCountRx: controller.likeCount(postId),
+                          isFollowedRx: controller.followedState(postId),
                           onLike: () => controller.toggleLike(post),
                           onReport: () => controller.reportPost(post),
                           onFollow: () => controller.toggleFollow(post),
                           currentUserId: controller.currentUserId,
                         ),
                       );
-                      return Padding(
-                        padding: EdgeInsets.only(bottom: 20.h),
-                        child: isNew
-                            ? NewPostAnimator(
-                                key: ValueKey('anim_${post.id}'),
-                                dashController: controller,
-                                child: child,
-                              )
-                            : child,
+                      return _PostKeepAlive(
+                        key: ValueKey('keep_$postId'),
+                        child: Padding(
+                          padding: EdgeInsets.only(bottom: 20.h),
+                          child: Obx(() {
+                            final isNew = controller.newPostId.value == post.id;
+                            return isNew
+                                ? NewPostAnimator(
+                                    key: ValueKey('anim_$postId'),
+                                    dashController: controller,
+                                    child: child,
+                                  )
+                                : child;
+                          }),
+                        ),
                       );
                     },
                   ),
@@ -207,5 +218,26 @@ class DashboardView extends GetView<DashboardController> {
         ),
       ),
     );
+  }
+}
+
+class _PostKeepAlive extends StatefulWidget {
+  final Widget child;
+
+  const _PostKeepAlive({super.key, required this.child});
+
+  @override
+  State<_PostKeepAlive> createState() => _PostKeepAliveState();
+}
+
+class _PostKeepAliveState extends State<_PostKeepAlive>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return widget.child;
   }
 }

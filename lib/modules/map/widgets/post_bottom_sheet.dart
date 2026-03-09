@@ -15,6 +15,9 @@ class PostBottomSheet {
     required void Function(TrafficPostModel) onReport,
   }) {
     final postRx = post.obs;
+    final isLikedRx = (post.isLiked ?? false).obs;
+    final likeCountRx = (post.likes ?? 0).obs;
+    final isFollowedRx = (post.isFollowedByCurrentUser ?? false).obs;
 
     Get.bottomSheet(
       Container(
@@ -40,12 +43,15 @@ class PostBottomSheet {
             SizedBox(height: 8.h),
             SingleChildScrollView(
               padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 24.h),
-              child: Obx(
-                () => Column(
-                  children: [
-                    PostItem(
+              child: Column(
+                children: [
+                  Obx(
+                    () => PostItem(
                       post: postRx.value,
                       currentUserId: currentUserId,
+                      isLikedRx: isLikedRx,
+                      likeCountRx: likeCountRx,
+                      isFollowedRx: isFollowedRx,
                       onLike: () => onLike(postRx),
                       onReport: () {
                         Get.back();
@@ -53,16 +59,16 @@ class PostBottomSheet {
                       },
                       onFollow: () => onFollow(postRx),
                     ),
-                    SizedBox(height: 20.h),
-                    SizedBox(
-                      width: double.infinity,
-                      child: PrimaryButton(
-                        onPressed: () => Get.back(),
-                        text: 'map_close'.tr,
-                      ),
+                  ),
+                  SizedBox(height: 20.h),
+                  SizedBox(
+                    width: double.infinity,
+                    child: PrimaryButton(
+                      onPressed: () => Get.back(),
+                      text: 'map_close'.tr,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ],
