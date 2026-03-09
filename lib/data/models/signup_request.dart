@@ -2,7 +2,7 @@ class SignupRequest {
   final String? email;
   final String password;
   final String userName;
-  final String fullName;
+  final String fullname;
   final String province;
   final String? relativePhone;
   final String? phoneNumber;
@@ -13,7 +13,7 @@ class SignupRequest {
     this.email,
     required this.password,
     required this.userName,
-    required this.fullName,
+    required this.fullname,
     required this.province,
     this.relativePhone,
     this.phoneNumber,
@@ -25,7 +25,7 @@ class SignupRequest {
     return {
       'password': password,
       'userName': userName,
-      'fullName': fullName,
+      'fullname': fullname,
       'province': province,
     };
   }

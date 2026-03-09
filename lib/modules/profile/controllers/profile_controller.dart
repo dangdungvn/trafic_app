@@ -195,12 +195,12 @@ class ProfileController extends GetxController {
         },
       );
 
-      // await StorageService.to.saveUserInfo(
-      //   fullName: updatedUser.fullName,
-      //   province: updatedUser.province,
-      //   relativePhone: updatedUser.relativePhone,
-      //   phoneNumber: updatedUser.phoneNumber,
-      // );
+      await StorageService.to.saveUserInfo(
+        fullname: updatedUser.fullname,
+        province: updatedUser.province,
+        relativePhone: updatedUser.relativePhone,
+        phoneNumber: updatedUser.phoneNumber,
+      );
 
       homeController.completeUpload();
       selectedImagePath.value = '';

@@ -81,7 +81,7 @@ class SignupController extends GetxController {
       isLoading.value = true;
       final request = SignupRequest(
         userName: usernameController.text,
-        fullName: fullNameController.text,
+        fullname: fullNameController.text,
         password: passwordController.text,
         province: selectedProvince.value!['name'],
       );

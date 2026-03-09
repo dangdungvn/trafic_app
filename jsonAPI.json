@@ -720,7 +720,7 @@
                     "username": {
                         "type": "string"
                     },
-                    "fullName": {
+                    "fullname": {
                         "type": "string"
                     },
                     "email": {
@@ -849,7 +849,7 @@
                     "userName": {
                         "type": "string"
                     },
-                    "fullName": {
+                    "fullname": {
                         "type": "string"
                     },
                     "province": {
