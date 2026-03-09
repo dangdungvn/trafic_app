@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:lottie/lottie.dart'; // ✅ Thêm Lottie
+import 'package:lottie/lottie.dart'; 
 import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
 
 import '../../../theme/app_theme.dart';
 import '../../../widgets/custom_dialog.dart';
-import '../../../widgets/loading_widget.dart'; // ✅ Thêm LoadingWidget
-import '../../../services/assets_service.dart'; // ✅ Thêm AssetsService
+import '../../../widgets/loading_widget.dart'; 
+import '../../../services/assets_service.dart'; 
 import '../../dashboard/widgets/post_item.dart'; 
-import '../../dashboard/widgets/post_item_shimmer.dart'; // ✅ Thêm Shimmer
+import '../../dashboard/widgets/post_item_shimmer.dart'; 
 import '../controllers/user_profile_controller.dart';
 import 'package:traffic_app/modules/profile/views/profile_view.dart';
 
@@ -205,7 +205,7 @@ class UserProfileScreen extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        SizedBox(height: 40.h), // Đẩy nhẹ xuống dưới cho cân đối
+                        SizedBox(height: 40.h), 
                         SizedBox(
                           height: 260.h,
                           child: AssetsService.to.notFoundComposition.value != null
@@ -239,11 +239,17 @@ class UserProfileScreen extends StatelessWidget {
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
                       final post = controller.posts[index];
+                      final postId = post.id ?? '';
+
                       return Padding(
                         padding: EdgeInsets.only(bottom: 20.h),
                         child: PostItem(
                           key: ValueKey(post.id),
                           post: post,
+                          isLikedRx: controller.likedState(postId),
+                          likeCountRx: controller.likeCount(postId),
+                          isFollowedRx: controller.followedState(postId),
+
                           currentUserId: controller.currentUserId,
                           onLike: () => controller.toggleLike(post),
                           onReport: () => controller.reportPost(post),

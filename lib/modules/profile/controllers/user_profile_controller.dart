@@ -15,6 +15,15 @@ class UserProfileController extends GetxController {
   // profile cache 
   static final Map<String, Map<String, dynamic>> _profileCache = {};
 
+  final _likedStates = <String, RxBool>{};
+  final _likeCounts = <String, RxInt>{};
+  final _followedStates = <String, RxBool>{};
+
+  // Các hàm xuất state ra UI (Rx)
+  RxBool likedState(String postId) => _likedStates[postId] ?? false.obs;
+  RxInt likeCount(String postId) => _likeCounts[postId] ?? 0.obs;
+  RxBool followedState(String postId) => _followedStates[postId] ?? false.obs;
+
   final UserRepository _userRepo = UserRepository();
   final TrafficPostRepository _postRepository = TrafficPostRepository();
   final FollowRepository _followRepository = FollowRepository();
@@ -48,7 +57,6 @@ class UserProfileController extends GetxController {
     targetUserId = Get.arguments?['userId']?.toString() ?? myId;
     isMyProfile = (targetUserId == myId);
 
-    // ✅ Thay thế loadProfileData bằng hàm check cache
     _checkCacheAndLoad();
   }
 
@@ -69,31 +77,43 @@ class UserProfileController extends GetxController {
     }
   }
 
-  // =========================================================================
-  // LOGIC KIỂM TRA BỘ NHỚ ĐỆM TRƯỚC KHI GỌI API
-  // =========================================================================
   void _checkCacheAndLoad() {
     if (_profileCache.containsKey(targetUserId)) {
-      // 1. CÓ CACHE: Nạp dữ liệu lên màn hình ngay lập tức (0s chờ đợi)
       final cachedData = _profileCache[targetUserId]!;
       userInfo.value = cachedData['userInfo'];
       posts.assignAll(cachedData['posts']);
+
+      initPostStates(cachedData['posts']);
+
       isFollowing.value = userInfo.value?.follow ?? false;
       _calculateTotalLikes();
       
       isLoading.value = false;
 
-      // 2. Gọi API ngầm ở nền để cập nhật số Like/Follow mới nhất (Không hiện vòng xoay)
       loadProfileData(refresh: true, showLoading: false);
     } else {
-      // 3. CHƯA CÓ CACHE: Load bình thường và bật Shimmer
       loadProfileData(refresh: true, showLoading: true);
     }
   }
 
-  // =========================================================================
-  // TẢI DỮ LIỆU TỪ API (Có hỗ trợ showLoading để ẩn/hiện vòng xoay)
-  // =========================================================================
+  /// Hàm này dùng để khởi tạo trạng thái khi vừa tải danh sách bài viết về
+  void initPostStates(List<TrafficPostModel> fetchedPosts) {
+    for (var post in fetchedPosts) {
+      final postId = post.id ?? '';
+      if (postId.isEmpty) continue;
+
+      if (!_likedStates.containsKey(postId)) {
+        _likedStates[postId] = (post.isLiked ?? false).obs;
+      }
+      if (!_likeCounts.containsKey(postId)) {
+        _likeCounts[postId] = (post.likes ?? 0).obs;
+      }
+      if (!_followedStates.containsKey(postId)) {
+        _followedStates[postId] = (post.isFollowedByCurrentUser ?? false).obs;
+      }
+    }
+  }
+
   Future<void> loadProfileData({bool refresh = false, bool showLoading = true}) async {
     if (refresh) {
       currentPage = 0;
@@ -124,6 +144,8 @@ class UserProfileController extends GetxController {
       final newUserInfo = result['userInfo'] as UserInfoModel;
       final newPosts = result['posts'] as List<TrafficPostModel>;
 
+      initPostStates(newPosts);
+
       userInfo.value = newUserInfo;
       isFollowing.value = newUserInfo.follow ?? false;
 
@@ -139,7 +161,7 @@ class UserProfileController extends GetxController {
           posts.value = newPosts;
           refreshController.refreshCompleted();
           
-          // ✅ LƯU KẾT QUẢ MỚI VÀO BỘ NHỚ ĐỆM TĨNH ĐỂ LẦN SAU DÙNG
+          // LƯU KẾT QUẢ MỚI VÀO BỘ NHỚ ĐỆM TĨNH ĐỂ LẦN SAU DÙNG
           _profileCache[targetUserId] = {
             'userInfo': newUserInfo,
             'posts': List<TrafficPostModel>.from(newPosts), // Tạo bản sao danh sách
@@ -218,27 +240,36 @@ class UserProfileController extends GetxController {
 
   /// Toggle like/unlike post 
   Future<void> toggleLike(TrafficPostModel post) async {
-    final index = posts.indexWhere((p) => p.id == post.id);
-    if (index == -1 || post.id == null) return;
+    final postId = post.id ?? '';
+    if (postId.isEmpty) return;
 
-    final currentIsLiked = post.isLiked ?? false;
-    final currentLikes = post.likes ?? 0;
+    // 1. Lấy trạng thái hiện tại từ bộ Rx
+    final isLiked = _likedStates[postId]?.value ?? false;
+    final currentCount = _likeCounts[postId]?.value ?? 0;
 
-    // Optimistic update: cập nhật UI ngay
-    posts[index] = post.copyWith(
-      isLiked: !currentIsLiked,
-      likes: currentIsLiked ? currentLikes - 1 : currentLikes + 1,
-    );
-    _calculateTotalLikes();
+    // 2. Optimistic update: Cập nhật biến Rx để UI đổi màu ngay lập tức
+    _likedStates[postId]?.value = !isLiked;
+    _likeCounts[postId]?.value = isLiked ? currentCount - 1 : currentCount + 1;
+
+    // 3. Cập nhật luôn vào mảng posts gốc để đồng bộ hàm tính tổng Like (Total Likes)
+    final index = posts.indexWhere((p) => p.id == postId);
+    if (index != -1) {
+      posts[index] = post.copyWith(
+        isLiked: !isLiked,
+        likes: isLiked ? currentCount - 1 : currentCount + 1,
+      );
+      _calculateTotalLikes();
+    }
 
     try {
-      await _postRepository.likePost(post.id!);
+      // 4. Bắn API
+      await _postRepository.likePost(postId);
     } catch (_) {
-      if (index < posts.length) {
-        posts[index] = post.copyWith(
-          isLiked: currentIsLiked,
-          likes: currentLikes,
-        );
+      // 5. Nếu mạng lỗi, Rollback (Hoàn tác) lại toàn bộ
+      _likedStates[postId]?.value = isLiked;
+      _likeCounts[postId]?.value = currentCount;
+      if (index != -1) {
+        posts[index] = post.copyWith(isLiked: isLiked, likes: currentCount);
         _calculateTotalLikes();
       }
     }

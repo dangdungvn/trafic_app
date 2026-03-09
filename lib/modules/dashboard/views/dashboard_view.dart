@@ -172,7 +172,6 @@ class DashboardView extends GetView<DashboardController> {
                   ),
                   onRefresh: controller.refresh,
                   onLoading: controller.loadMore,
-<<<<<<< HEAD
                   
                   // 3. XỬ LÝ GIAO DIỆN BÊN TRONG SMART REFRESHER
                   child: controller.posts.isEmpty
@@ -210,36 +209,6 @@ class DashboardView extends GetView<DashboardController> {
                         )
                       // TRƯỜNG HỢP CÓ DỮ LIỆU: Giữ nguyên code cũ của bạn
                       : ListView.builder(
-                          padding: EdgeInsets.symmetric(horizontal: 24.w),
-                          itemCount: controller.posts.length,
-                          itemBuilder: (context, index) {
-                            final post = controller.posts[index];
-                            final isNew = controller.newPostId.value == post.id;
-                            final child = RepaintBoundary(
-                              key: ValueKey(post.id),
-                              child: PostItem(
-                                key: ValueKey(post.id),
-                                post: post,
-                                onLike: () => controller.toggleLike(post),
-                                onReport: () => controller.reportPost(post),
-                                onFollow: () => controller.toggleFollow(post),
-                                currentUserId: controller.currentUserId,
-                              ),
-                            );
-                            return Padding(
-                              padding: EdgeInsets.only(bottom: 20.h),
-                              child: isNew
-                                  ? NewPostAnimator(
-                                      key: ValueKey('anim_${post.id}'),
-                                      dashController: controller,
-                                      child: child,
-                                    )
-                                  : child,
-                            );
-                          },
-                        ),
-=======
-                  child: ListView.builder(
                     padding: EdgeInsets.symmetric(horizontal: 24.w),
                     itemCount: controller.posts.length,
                     cacheExtent: 1200,
@@ -279,7 +248,6 @@ class DashboardView extends GetView<DashboardController> {
                       );
                     },
                   ),
->>>>>>> bd6aa30f9bbe8360dd478f5293a88a20b1dc1089
                 );
               }),
             ),
