@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:iconly/iconly.dart';
 
 import '../../../theme/app_theme.dart';
 import '../../../widgets/custom_dropdown.dart';
@@ -120,7 +121,7 @@ class ProfileView extends GetView<ProfileController> {
                                   ),
                                 ),
                                 child: Icon(
-                                  Icons.person,
+                                  IconlyBroken.profile,
                                   size: 50.sp,
                                   color: AppTheme.subTextColor,
                                 ),
@@ -141,7 +142,7 @@ class ProfileView extends GetView<ProfileController> {
                               border: Border.all(color: Colors.white, width: 2),
                             ),
                             child: Icon(
-                              Icons.person,
+                              IconlyBroken.profile,
                               size: 50.sp,
                               color: AppTheme.subTextColor,
                             ),
@@ -163,7 +164,7 @@ class ProfileView extends GetView<ProfileController> {
                               border: Border.all(color: Colors.white, width: 2),
                             ),
                             child: Icon(
-                              Icons.edit,
+                              IconlyBroken.edit,
                               color: Colors.white,
                               size: 14.sp,
                             ),
@@ -180,7 +181,7 @@ class ProfileView extends GetView<ProfileController> {
               CustomTextField(
                 controller: controller.nameController,
                 hintText: "full_name".tr,
-                prefixIcon: Icons.person_outline,
+                prefixIcon: IconlyBroken.profile,
                 keyboardType: TextInputType.name,
               ),
               SizedBox(height: 16.h),
@@ -188,7 +189,7 @@ class ProfileView extends GetView<ProfileController> {
               CustomTextField(
                 controller: controller.emailController,
                 hintText: "Email",
-                prefixIcon: Icons.email_outlined,
+                prefixIcon: IconlyBroken.message,
                 keyboardType: TextInputType.emailAddress,
               ),
               SizedBox(height: 16.h),
@@ -196,7 +197,7 @@ class ProfileView extends GetView<ProfileController> {
               CustomTextField(
                 controller: controller.phoneController,
                 hintText: "phone_number".tr,
-                prefixIcon: Icons.phone_android,
+                prefixIcon: IconlyBroken.call,
                 keyboardType: TextInputType.phone,
               ),
               SizedBox(height: 16.h),
@@ -204,11 +205,11 @@ class ProfileView extends GetView<ProfileController> {
               CustomTextField(
                 controller: controller.relativePhoneController,
                 hintText: "relative_phone".tr,
-                prefixIcon: Icons.phone_in_talk,
+                prefixIcon: IconlyBold.call,
                 keyboardType: TextInputType.phone,
               ),
               SizedBox(height: 16.h),
-              
+
               Obx(
                 () => CustomDropdown<Map<String, dynamic>>(
                   key: ValueKey(
@@ -278,6 +279,14 @@ class ProfileView extends GetView<ProfileController> {
               PrimaryButton(
                 text: 'Lưu thay đổi'.tr,
                 onPressed: controller.saveProfile,
+              ),
+              SizedBox(height: 16.h),
+
+              // 5. Nút Đăng xuất
+              PrimaryButton(
+                text: 'Đăng xuất',
+                onPressed: controller.logout,
+                color: Colors.red,
               ),
               SizedBox(height: 20.h),
             ],

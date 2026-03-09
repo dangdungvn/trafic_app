@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:iconly/iconly.dart';
 
 import '../../../data/models/traffic_post_model.dart';
 import '../../../widgets/loading_widget.dart';
@@ -11,13 +12,33 @@ class PostItem extends StatelessWidget {
   final TrafficPostModel post;
   final VoidCallback onLike;
   final VoidCallback onReport;
+  final VoidCallback onFollow;
+  final int? currentUserId;
+  final RxBool isLikedRx;
+  final RxInt likeCountRx;
+  final RxBool isFollowedRx;
 
   const PostItem({
     super.key,
     required this.post,
     required this.onLike,
     required this.onReport,
+    required this.onFollow,
+    required this.isLikedRx,
+    required this.likeCountRx,
+    required this.isFollowedRx,
+    this.currentUserId,
   });
+
+  /// Hiện badge "+" khi:
+  /// 1. API trả về follow == false
+  /// 2. Không phải bài viết của chính mình
+  bool _shouldShowFollowBadge(bool isFollowed) {
+    if (isFollowed) return false;
+    final postUserId = int.tryParse(post.userId ?? '');
+    if (postUserId != null && postUserId == currentUserId) return false;
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +48,7 @@ class PostItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF04060F).withOpacity(0.05),
+            color: const Color(0x0D04060F), // 5% opacity pre-computed
             offset: const Offset(0, 4),
             blurRadius: 60,
           ),
@@ -52,11 +73,14 @@ class PostItem extends StatelessWidget {
                   ? CachedNetworkImage(
                       imageUrl: post.fullImageUrls!.first,
                       fit: BoxFit.cover,
+                      memCacheWidth: 800,
+                      fadeInDuration: Duration.zero,
+                      fadeOutDuration: Duration.zero,
                       placeholder: (context, url) =>
                           const Center(child: LoadingWidget()),
                       errorWidget: (context, url, error) => Center(
                         child: Icon(
-                          Icons.broken_image,
+                          IconlyBroken.image_2,
                           size: 48.w,
                           color: Colors.grey[400],
                         ),
@@ -64,7 +88,7 @@ class PostItem extends StatelessWidget {
                     )
                   : Center(
                       child: Icon(
-                        Icons.location_on,
+                        IconlyBroken.location,
                         size: 48.w,
                         color: Colors.grey[400],
                       ),
@@ -73,57 +97,102 @@ class PostItem extends StatelessWidget {
           ),
           SizedBox(height: 12.h),
           // User Info
-          Row(
-            children: [
-              ClipOval(
-                child: post.fullAvatarUrl != null
-                    ? CachedNetworkImage(
-                        imageUrl: post.fullAvatarUrl!,
-                        width: 40.w,
-                        height: 40.w,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(
-                          width: 40.w,
-                          height: 40.w,
-                          color: Colors.grey[300],
-                          child: LoadingWidget(width: 40.w, height: 40.w),
+          Obx(() {
+            final showBadge = _shouldShowFollowBadge(isFollowedRx.value);
+            return Row(
+              children: [
+                GestureDetector(
+                  onTap: showBadge ? onFollow : null,
+                  child: SizedBox(
+                    width: 46.w,
+                    height: 46.w,
+                    child: Stack(
+                      children: [
+                        ClipOval(
+                          child: post.fullAvatarUrl != null
+                              ? CachedNetworkImage(
+                                  imageUrl: post.fullAvatarUrl!,
+                                  width: 40.w,
+                                  height: 40.w,
+                                  fit: BoxFit.cover,
+                                  memCacheWidth: 120,
+                                  memCacheHeight: 120,
+                                  fadeInDuration: Duration.zero,
+                                  fadeOutDuration: Duration.zero,
+                                  placeholder: (context, url) => Container(
+                                    width: 40.w,
+                                    height: 40.w,
+                                    color: Colors.grey[300],
+                                    child: LoadingWidget(
+                                      width: 40.w,
+                                      height: 40.w,
+                                    ),
+                                  ),
+                                  errorWidget: (context, url, error) =>
+                                      Container(
+                                        width: 40.w,
+                                        height: 40.w,
+                                        color: Colors.grey[300],
+                                        child: Icon(
+                                          IconlyBroken.profile,
+                                          size: 24.w,
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                )
+                              : Container(
+                                  width: 40.w,
+                                  height: 40.w,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.grey[300],
+                                  ),
+                                  child: Icon(
+                                    IconlyBroken.profile,
+                                    size: 24.w,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
                         ),
-                        errorWidget: (context, url, error) => Container(
-                          width: 40.w,
-                          height: 40.w,
-                          color: Colors.grey[300],
-                          child: Icon(
-                            Icons.person,
-                            size: 24.w,
-                            color: Colors.grey[600],
+                        // "+" badge – chỉ hiện khi chưa follow và không phải bài của mình
+                        if (showBadge)
+                          Positioned(
+                            right: 0,
+                            bottom: 0,
+                            child: Container(
+                              width: 24.w,
+                              height: 24.w,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF4D5DFA),
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 1.5,
+                                ),
+                              ),
+                              child: Icon(
+                                Icons.add_rounded,
+                                color: Colors.white,
+                                size: 18.sp,
+                              ),
+                            ),
                           ),
-                        ),
-                      )
-                    : Container(
-                        width: 40.w,
-                        height: 40.w,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.grey[300],
-                        ),
-                        child: Icon(
-                          Icons.person,
-                          size: 24.w,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-              ),
-              SizedBox(width: 12.w),
-              Text(
-                post.userName ?? 'Người dùng',
-                style: TextStyle(
-                  fontSize: 15.2.sp,
-                  fontWeight: FontWeight.w600,
-                  color: const Color(0xFF1C1C1E),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-            ],
-          ),
+                SizedBox(width: 12.w),
+                Text(
+                  post.userName ?? 'Người dùng',
+                  style: TextStyle(
+                    fontSize: 15.2.sp,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF1C1C1E),
+                  ),
+                ),
+              ],
+            );
+          }),
           SizedBox(height: 8.h),
           // Content
           RichText(
@@ -138,7 +207,7 @@ class PostItem extends StatelessWidget {
                 TextSpan(text: "${post.content} "),
                 if (post.hashtags?.isNotEmpty ?? false)
                   TextSpan(
-                    text: post.hashtags?.join(" ") ?? '',
+                    text: " #${post.hashtags?.join(" #") ?? ''}",
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       color: const Color(0xFF4D5DFA),
@@ -154,21 +223,23 @@ class PostItem extends StatelessWidget {
             children: [
               GestureDetector(
                 onTap: onLike,
-                child: Row(
-                  children: [
-                    LikeIcon(isLiked: post.isLiked ?? false),
-                    SizedBox(width: 8.w),
-                    Text(
-                      (post.likes ?? 0).toString(),
-                      style: TextStyle(
-                        fontSize: 14.4.sp,
-                        fontWeight: FontWeight.w600,
-                        color: (post.isLiked ?? false)
-                            ? const Color(0xFF4D5DFA)
-                            : Colors.grey,
+                child: Obx(
+                  () => Row(
+                    children: [
+                      LikeIcon(isLiked: isLikedRx.value),
+                      SizedBox(width: 8.w),
+                      Text(
+                        likeCountRx.value.toString(),
+                        style: TextStyle(
+                          fontSize: 14.4.sp,
+                          fontWeight: FontWeight.w600,
+                          color: isLikedRx.value
+                              ? const Color(0xFF4D5DFA)
+                              : Colors.grey,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               GestureDetector(

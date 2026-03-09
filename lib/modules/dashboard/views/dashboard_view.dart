@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
+import 'package:traffic_app/theme/app_theme.dart';
 import 'package:traffic_app/widgets/loading_widget.dart';
 
 import '../../../services/assets_service.dart';
@@ -21,7 +22,7 @@ class DashboardView extends GetView<DashboardController> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppTheme.backgroundColor,
         body: Column(
           children: [
             // Header cố định
@@ -30,7 +31,7 @@ class DashboardView extends GetView<DashboardController> {
               padding: EdgeInsets.only(
                 left: 24.w,
                 right: 24.w,
-                top: MediaQuery.of(context).padding.top + 10.h,
+                top: MediaQuery.paddingOf(context).top + 10.h,
                 bottom: 10.h,
               ),
               child: const DashboardHeader(),
@@ -44,13 +45,6 @@ class DashboardView extends GetView<DashboardController> {
                   bottomLeft: Radius.circular(16.r),
                   bottomRight: Radius.circular(16.r),
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF04060F).withOpacity(0.05),
-                    offset: const Offset(0, 2),
-                    blurRadius: 50,
-                  ),
-                ],
               ),
               child: DashboardSearchBar(
                 controller: controller.searchController,
@@ -97,7 +91,9 @@ class DashboardView extends GetView<DashboardController> {
                         ),
                         SizedBox(height: 16.h),
                         Text(
-                          'dashboard_no_posts'.tr,
+                          controller.currentKeyword.value.isNotEmpty
+                              ? 'dashboard_no_search_results'.tr
+                              : 'dashboard_no_posts'.tr,
                           style: TextStyle(
                             fontSize: 16.sp,
                             color: Colors.grey[600],
@@ -178,27 +174,40 @@ class DashboardView extends GetView<DashboardController> {
                   child: ListView.builder(
                     padding: EdgeInsets.symmetric(horizontal: 24.w),
                     itemCount: controller.posts.length,
+                    cacheExtent: 1200,
+                    addRepaintBoundaries: false,
                     itemBuilder: (context, index) {
                       final post = controller.posts[index];
-                      final isNew = controller.newPostId.value == post.id;
+                      final postId = post.id ?? '';
                       final child = RepaintBoundary(
-                        key: ValueKey(post.id),
+                        key: ValueKey(postId),
                         child: PostItem(
-                          key: ValueKey(post.id),
+                          key: ValueKey(postId),
                           post: post,
+                          isLikedRx: controller.likedState(postId),
+                          likeCountRx: controller.likeCount(postId),
+                          isFollowedRx: controller.followedState(postId),
                           onLike: () => controller.toggleLike(post),
                           onReport: () => controller.reportPost(post),
+                          onFollow: () => controller.toggleFollow(post),
+                          currentUserId: controller.currentUserId,
                         ),
                       );
-                      return Padding(
-                        padding: EdgeInsets.only(bottom: 20.h),
-                        child: isNew
-                            ? NewPostAnimator(
-                                key: ValueKey('anim_${post.id}'),
-                                dashController: controller,
-                                child: child,
-                              )
-                            : child,
+                      return _PostKeepAlive(
+                        key: ValueKey('keep_$postId'),
+                        child: Padding(
+                          padding: EdgeInsets.only(bottom: 20.h),
+                          child: Obx(() {
+                            final isNew = controller.newPostId.value == post.id;
+                            return isNew
+                                ? NewPostAnimator(
+                                    key: ValueKey('anim_$postId'),
+                                    dashController: controller,
+                                    child: child,
+                                  )
+                                : child;
+                          }),
+                        ),
                       );
                     },
                   ),
@@ -209,5 +218,26 @@ class DashboardView extends GetView<DashboardController> {
         ),
       ),
     );
+  }
+}
+
+class _PostKeepAlive extends StatefulWidget {
+  final Widget child;
+
+  const _PostKeepAlive({super.key, required this.child});
+
+  @override
+  State<_PostKeepAlive> createState() => _PostKeepAliveState();
+}
+
+class _PostKeepAliveState extends State<_PostKeepAlive>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return widget.child;
   }
 }

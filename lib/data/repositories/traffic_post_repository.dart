@@ -12,14 +12,16 @@ class TrafficPostRepository {
     required String location,
     int page = 0,
     int size = 10,
+    String? keyword,
   }) async {
     try {
+      final queryParams = <String, dynamic>{'page': page, 'size': size};
+      if (keyword != null && keyword.isNotEmpty) {
+        queryParams['keyword'] = keyword;
+      }
       final response = await _apiService.dio.get(
         '/TrafficPost',
-        queryParameters: {
-          // 'location': location,
-          'page': page, 'size': size,
-        },
+        queryParameters: queryParams,
       );
       // Check response structure
       if (response.data == null) {

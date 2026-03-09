@@ -152,24 +152,178 @@ class Model {
 }
 ```
 
-## Widget Library
+## Widget Library (UI-Kit)
 
-Reusable widgets in [lib/widgets/](../lib/widgets/):
+**CRITICAL**: When building any new view, you **MUST** use the components from `lib/widgets/` instead of raw Flutter widgets. Never use raw `ElevatedButton`, `TextButton`, `TextField`, `SnackBar`, `AlertDialog`, etc. when a UI-kit equivalent exists.
 
-- `PrimaryButton` - Standard action button with loading state
-- `CustomTextField` - Styled text input
-- `CustomDialog` - Modal dialogs
-- `LoadingWidget` - Uses preloaded Lottie animations from `AssetsService`
+All widgets are in [lib/widgets/](../lib/widgets/). Import them from their respective files.
 
-**Always check existing widgets** before creating new ones.
+### `AppButton` ([widgets/app_button.dart](../lib/widgets/app_button.dart))
+
+General-purpose button supporting primary/secondary styles, icon, and loading state.
+
+```dart
+AppButton(
+  text: 'button_label'.tr,
+  onPressed: controller.doSomething,
+  type: ButtonType.primary,   // or ButtonType.secondary
+  isLoading: controller.isLoading.value,
+  icon: Icons.save,           // optional
+  width: double.infinity,     // optional
+)
+```
+
+### `PrimaryButton` ([widgets/primary_button.dart](../lib/widgets/primary_button.dart))
+
+Simpler primary-only action button with loading state.
+
+```dart
+PrimaryButton(
+  text: 'save'.tr,
+  onPressed: controller.save,
+  isLoading: controller.isLoading.value,
+  width: double.infinity,
+)
+```
+
+### `CustomTextField` ([widgets/custom_text_field.dart](../lib/widgets/custom_text_field.dart))
+
+Styled text input with built-in password toggle and optional prefix icon.
+
+```dart
+CustomTextField(
+  hintText: 'email_hint'.tr,
+  prefixIcon: Icons.email_outlined,
+  controller: controller.emailController,
+  keyboardType: TextInputType.emailAddress,
+  textInputAction: TextInputAction.next,
+  isPassword: false,
+  maxLines: 1,
+)
+```
+
+### `CustomDropdown<T>` ([widgets/custom_dropdown.dart](../lib/widgets/custom_dropdown.dart))
+
+Searchable/filterable dropdown with type safety.
+
+```dart
+CustomDropdown<Province>(
+  hintText: 'select_province'.tr,
+  prefixIcon: Icons.location_on_outlined,
+  items: controller.provinces,
+  itemLabel: (p) => p.name,
+  value: controller.selectedProvince.value,
+  onChanged: (v) => controller.selectedProvince.value = v,
+)
+```
+
+### `CustomAlert` ([widgets/custom_alert.dart](../lib/widgets/custom_alert.dart))
+
+Snackbar-style alert. Use instead of `Get.snackbar()` or `ScaffoldMessenger`.
+
+```dart
+// Types: AlertType.success | .error | .warning | .info
+CustomAlert.show(message: 'save_success'.tr, type: AlertType.success);
+CustomAlert.show(message: 'network_error'.tr, type: AlertType.error);
+```
+
+### `CustomDialog` ([widgets/custom_dialog.dart](../lib/widgets/custom_dialog.dart))
+
+Modal dialog. Use instead of `showDialog` with raw `AlertDialog`.
+
+```dart
+// Info / confirmation dialog
+CustomDialog.show(
+  title: 'confirm_title'.tr,
+  message: 'confirm_message'.tr,
+  type: DialogType.warning,   // .success | .error | .warning | .info
+  buttonText: 'confirm'.tr,
+  onPressed: controller.confirm,
+  cancelText: 'cancel'.tr,    // omit for single-button dialogs
+  onCancel: Get.back,
+);
+```
+
+### `LoadingWidget` ([widgets/loading_widget.dart](../lib/widgets/loading_widget.dart))
+
+Lottie-based loading indicator from preloaded `AssetsService`.
+
+```dart
+// Inline loading indicator
+LoadingWidget(height: 48.h)
+
+// Full-screen centered loading
+Center(child: LoadingWidget())
+```
+
+### `SocialButton` ([widgets/social_button.dart](../lib/widgets/social_button.dart))
+
+OAuth/social login button accepting an icon or SVG asset path.
+
+```dart
+SocialButton(
+  iconAssetPath: 'assets/icons/google.svg',
+  onPressed: controller.loginWithGoogle,
+)
+```
+
+### `LocationPermissionBanner` ([widgets/location_permission_banner.dart](../lib/widgets/location_permission_banner.dart))
+
+Banner displayed when location permission is denied or service is disabled.
+
+```dart
+LocationPermissionBanner(
+  isServiceDisabled: controller.isLocationServiceDisabled.value,
+  onAction: controller.openLocationSettings,
+  onDismiss: controller.dismissBanner,
+)
+```
+
+### `UploadProgressOverlay` ([widgets/upload_progress_overlay.dart](../lib/widgets/upload_progress_overlay.dart))
+
+Overlay widget showing file upload progress with optional cancel.
+
+```dart
+UploadProgressOverlay(
+  progress: controller.uploadProgress.value,  // 0.0 – 1.0
+  label: 'uploading_post'.tr,
+  onCancel: controller.cancelUpload,
+)
+```
+
+---
+
+**Rules:**
+
+1. **Always check `lib/widgets/` first** before writing any button, text field, dialog, alert, or loading UI.
+2. **Never use raw Flutter equivalents** (`ElevatedButton`, `TextField`, `AlertDialog`, `SnackBar`) when a UI-kit widget covers the use case.
+3. **Do not create one-off custom widgets** for things the UI-kit already handles — extend or reuse existing widgets instead.
 
 ## Localization
 
-Uses GetX translations - keys stored in `assets/json/locales/`. Access via:
+Uses GetX translations - keys stored in `assets/json/locales/` (`vi_VN.json` and `en_US.json`). Access via:
 
 ```dart
-'key_name'.tr // In code
-Text('welcome_message'.tr)
+'key_name'.tr                          // Simple string
+'key_with_param'.trParams({'x': val})  // Interpolation: use @x in locale value
+```
+
+**CRITICAL RULES — must be followed for every text string:**
+
+1. **Never hardcode any user-visible text** — all strings (labels, hints, dialog titles/messages, button text, snackbar messages, error messages) MUST use `.tr`.
+2. **Add the key to both locale files** (`vi_VN.json` AND `en_US.json`) before using it in code.
+3. **Naming convention** — keys use `snake_case` prefixed by feature (e.g., `chatbot_title`, `profile_update_success`).
+4. **Dynamic values** — use `.trParams({'param': value})` in code and `@param` placeholder in the locale JSON value.
+
+```dart
+// ✅ Correct
+Text('chatbot_title'.tr)
+Get.snackbar('notice_title'.tr, 'profile_update_success'.tr)
+CustomDialog.showConfirm(title: 'chatbot_open_link_title'.tr, message: 'chatbot_open_link_message'.trParams({'href': url}))
+
+// ❌ Wrong — never do this
+Text('Trợ lý Giao thông AI')
+Get.snackbar('Thông báo', 'Cập nhật thành công')
 ```
 
 Service initialized in [main.dart](../lib/main.dart) before app start.

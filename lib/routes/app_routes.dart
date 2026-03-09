@@ -9,6 +9,7 @@ abstract class Routes {
   static const PROFILE = _Paths.PROFILE;
   static const CAMERA = _Paths.CAMERA;
   static const EMERGENCY = _Paths.EMERGENCY;
+  static const SOS_STREAM = _Paths.SOS_STREAM;
 }
 
 abstract class _Paths {
@@ -19,4 +20,5 @@ abstract class _Paths {
   static const PROFILE = '/profile';
   static const CAMERA = '/camera';
   static const EMERGENCY = '/emergency';
+  static const SOS_STREAM = '/sos-stream';
 }

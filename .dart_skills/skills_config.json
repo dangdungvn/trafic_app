@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "installations": {
+    "copilot": {
+      "flutter": {
+        "skills": [
+          {
+            "name": "flutter-native-interop",
+            "installedAt": "2026-03-09T02:33:29.589562Z"
+          },
+          {
+            "name": "flutter-testing",
+            "installedAt": "2026-03-09T02:33:29.590221Z"
+          },
+          {
+            "name": "flutter-environment-setup-macos",
+            "installedAt": "2026-03-09T02:33:29.590625Z"
+          },
+          {
+            "name": "flutter-architecture",
+            "installedAt": "2026-03-09T02:33:29.591068Z"
+          },
+          {
+            "name": "flutter-http-and-json",
+            "installedAt": "2026-03-09T02:33:29.591595Z"
+          },
+          {
+            "name": "flutter-state-management",
+            "installedAt": "2026-03-09T02:33:29.592187Z"
+          },
+          {
+            "name": "flutter-concurrency",
+            "installedAt": "2026-03-09T02:33:29.592837Z"
+          },
+          {
+            "name": "flutter-theming",
+            "installedAt": "2026-03-09T02:33:29.593314Z"
+          },
+          {
+            "name": "flutter-accessibility",
+            "installedAt": "2026-03-09T02:33:29.593837Z"
+          },
+          {
+            "name": "flutter-performance",
+            "installedAt": "2026-03-09T02:33:29.594271Z"
+          },
+          {
+            "name": "flutter-caching",
+            "installedAt": "2026-03-09T02:33:29.594780Z"
+          },
+          {
+            "name": "flutter-layout",
+            "installedAt": "2026-03-09T02:33:29.595286Z"
+          },
+          {
+            "name": "flutter-platform-views",
+            "installedAt": "2026-03-09T02:33:29.595802Z"
+          },
+          {
+            "name": "flutter-localization",
+            "installedAt": "2026-03-09T02:33:29.596318Z"
+          },
+          {
+            "name": "flutter-routing-and-navigation",
+            "installedAt": "2026-03-09T02:33:29.596805Z"
+          },
+          {
+            "name": "flutter-app-size",
+            "installedAt": "2026-03-09T02:33:29.597318Z"
+          },
+          {
+            "name": "flutter-environment-setup-linux",
+            "installedAt": "2026-03-09T02:33:29.597798Z"
+          },
+          {
+            "name": "flutter-animation",
+            "installedAt": "2026-03-09T02:33:29.600619Z"
+          },
+          {
+            "name": "flutter-plugins",
+            "installedAt": "2026-03-09T02:33:29.601274Z"
+          },
+          {
+            "name": "flutter-environment-setup-windows",
+            "installedAt": "2026-03-09T02:33:29.602475Z"
+          },
+          {
+            "name": "flutter-databases",
+            "installedAt": "2026-03-09T02:33:29.602952Z"
+          }
+        ]
+      }
+    }
+  }
+}

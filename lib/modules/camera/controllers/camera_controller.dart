@@ -8,17 +8,34 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 import '../../../data/repositories/traffic_post_repository.dart';
+import '../../../services/image_picker_service.dart';
 import '../../../widgets/custom_alert.dart';
 import '../../dashboard/controllers/dashboard_controller.dart';
 import '../../home/controllers/home_controller.dart';
 
 class CameraController extends GetxController {
-  final ImagePicker _picker = ImagePicker();
+  ImagePicker get _picker => ImagePickerService.to.picker;
   final TrafficPostRepository _repository = TrafficPostRepository();
 
   final hasImage = false.obs;
   final imagePath = ''.obs;
   final contentController = TextEditingController();
+
+  final availableHashtags = ['ketxe', 'tainan', 'ngaplutnuoc', 'baocaotainan'];
+  final selectedHashtags = <String>[].obs;
+
+  void toggleHashtag(String tag) {
+    if (selectedHashtags.contains(tag)) {
+      selectedHashtags.remove(tag);
+    } else {
+      selectedHashtags.add(tag);
+    }
+  }
+
+  void clearImage() {
+    hasImage.value = false;
+    imagePath.value = '';
+  }
 
   final time = ''.obs;
   final location = 'camera_loading_location'.tr.obs;
@@ -45,6 +62,13 @@ class CameraController extends GetxController {
 
   Future<void> _getCurrentLocation() async {
     try {
+      // Kiểm tra dịch vụ vị trí có được bật không
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        location.value = 'map_location_service_disabled'.tr;
+        return;
+      }
+
       // Kiểm tra permission
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
@@ -147,7 +171,16 @@ class CameraController extends GetxController {
       return;
     }
 
+    if (selectedHashtags.isEmpty) {
+      CustomAlert.showWarning('camera_please_select_hashtag'.tr);
+      return;
+    }
+
     if (currentLat.value == 0.0 || currentLng.value == 0.0) {
+      // Trigger the location banner in HomeView so user can grant permission
+      final homeController = Get.find<HomeController>();
+      homeController.locationBannerDismissed.value = false;
+      homeController.checkLocationStatus();
       CustomAlert.showError('camera_cannot_get_current_location'.tr);
       return;
     }
@@ -162,7 +195,7 @@ class CameraController extends GetxController {
       'lat': currentLat.value,
       'lng': currentLng.value,
       'address': location.value,
-      'hashtags': <String>[], // Có thể parse từ content
+      'hashtags': List<String>.from(selectedHashtags),
       'status': 'TRAFFIC_REPORT',
       'filePath': imagePath.value,
     };
@@ -178,6 +211,7 @@ class CameraController extends GetxController {
     hasImage.value = false;
     imagePath.value = '';
     contentController.clear();
+    selectedHashtags.clear();
 
     // Upload trong isolate
     _uploadInIsolate(postData, homeController, imagePathTemp);

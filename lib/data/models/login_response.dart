@@ -1,4 +1,5 @@
 class LoginResponse {
+  final int? id;
   final String? token;
   final String? username;
   final String? fullName;
@@ -7,6 +8,7 @@ class LoginResponse {
   final String? phoneNumber;
 
   LoginResponse({
+    this.id,
     this.token,
     this.username,
     this.fullName,
@@ -17,6 +19,7 @@ class LoginResponse {
 
   factory LoginResponse.fromJson(Map<String, dynamic> json) {
     return LoginResponse(
+      id: json['id'] as int?,
       token: json['token'] as String?,
       username: json['username'] as String?,
       fullName: json['fullName'] as String?,
@@ -28,6 +31,7 @@ class LoginResponse {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'token': token,
       'username': username,
       'fullName': fullName,

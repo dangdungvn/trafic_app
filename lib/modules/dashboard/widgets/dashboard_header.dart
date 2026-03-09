@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:iconly/iconly.dart';
 import 'package:traffic_app/widgets/loading_widget.dart';
 
 import '../../../routes/app_pages.dart';
@@ -67,7 +68,11 @@ class DashboardHeader extends StatelessWidget {
                 child: isLoading
                     ? Center(child: LoadingWidget(width: 20.w))
                     : (avatarUrl.isEmpty
-                          ? Icon(Icons.person, size: 20.sp, color: Colors.white)
+                          ? Icon(
+                              IconlyBroken.profile,
+                              size: 20.sp,
+                              color: Colors.white,
+                            )
                           : CachedNetworkImage(
                               imageUrl: avatarUrl,
                               fit: BoxFit.cover,
@@ -76,7 +81,7 @@ class DashboardHeader extends StatelessWidget {
                               placeholder: (context, url) =>
                                   Center(child: LoadingWidget(width: 20.w)),
                               errorWidget: (context, url, error) => Icon(
-                                Icons.person,
+                                IconlyBroken.profile,
                                 size: 20.sp,
                                 color: Colors.white,
                               ),

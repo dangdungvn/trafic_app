@@ -10,8 +10,10 @@ import 'package:traffic_app/widgets/custom_dialog.dart';
 
 import '../../../data/models/profile_request.dart';
 import '../../../data/repositories/user_repository.dart';
-import '../../home/controllers/home_controller.dart';
+import '../../../data/services/api_service.dart';
+import '../../../routes/app_pages.dart';
 import '../../../services/storage_service.dart';
+import '../../home/controllers/home_controller.dart';
 
 class ProfileController extends GetxController {
   final UserRepository _userRepository = UserRepository();
@@ -231,5 +233,24 @@ class ProfileController extends GetxController {
         type: DialogType.error,
       );
     }
+  }
+
+  void logout() {
+    CustomDialog.showConfirm(
+      context: Get.context!,
+      title: 'Đăng xuất',
+      message: 'Bạn có chắc chắn muốn đăng xuất không?',
+      confirmText: 'Đăng xuất',
+      cancelText: 'Hủy',
+      type: DialogType.warning,
+      onConfirm: () async {
+        final storage = StorageService.to;
+        await storage.removeToken();
+        await storage.clearCredentials();
+        await storage.clearUserInfo();
+        ApiService().clearToken();
+        Get.offAllNamed(Routes.LOGIN);
+      },
+    );
   }
 }

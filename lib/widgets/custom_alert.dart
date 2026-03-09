@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:iconly/iconly.dart';
+
+import '../theme/app_theme.dart';
 
 enum AlertType { success, error, warning, info }
 
@@ -17,7 +20,7 @@ class CustomAlert {
         margin: const EdgeInsets.all(16),
         padding: EdgeInsets.zero,
         borderRadius: 8,
-        snackPosition: SnackPosition.TOP,
+        snackPosition: SnackPosition.BOTTOM,
         duration: duration,
         animationDuration: const Duration(milliseconds: 300),
       );
@@ -28,7 +31,7 @@ class CustomAlert {
 
   /// Check if Overlay widget is available in the current context
   static bool _isOverlayAvailable() {
-    final context = Get.overlayContext;
+    final context = Get.overlayContext ?? Get.context;
     if (context == null) return false;
 
     try {
@@ -66,10 +69,7 @@ class CustomAlert {
             top: MediaQuery.of(context).padding.top + 16,
             left: 16,
             right: 16,
-            bottom:
-                MediaQuery.of(context).size.height -
-                MediaQuery.of(context).padding.top -
-                100,
+            bottom: MediaQuery.of(context).padding.bottom + 16,
           ),
           padding: EdgeInsets.zero,
           duration: duration,
@@ -176,7 +176,11 @@ class _AlertWidget extends StatelessWidget {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(Icons.close, size: 16, color: _getIconColor()),
+                child: Icon(
+                  IconlyBroken.close_square,
+                  size: 16,
+                  color: _getIconColor(),
+                ),
               ),
             ),
         ],
@@ -187,52 +191,52 @@ class _AlertWidget extends StatelessWidget {
   Color _getBackgroundColor() {
     switch (type) {
       case AlertType.success:
-        return const Color(0xFFEAF7F0); // Light green
+        return AppTheme.successAlertBgColor;
       case AlertType.error:
-        return const Color(0xFFFDEDEF); // Light red (from Figma)
+        return AppTheme.errorAlertBgColor;
       case AlertType.warning:
-        return const Color(0xFFFFF3CD); // Light yellow
+        return AppTheme.warningAlertBgColor;
       case AlertType.info:
-        return const Color(0xFFE3F2FD); // Light blue
+        return AppTheme.infoAlertBgColor;
     }
   }
 
   IconData _getIcon() {
     switch (type) {
       case AlertType.success:
-        return Icons.check_circle;
+        return IconlyBold.tick_square;
       case AlertType.error:
-        return Icons.cancel;
+        return IconlyBold.close_square;
       case AlertType.warning:
-        return Icons.warning;
+        return IconlyBold.danger;
       case AlertType.info:
-        return Icons.info;
+        return IconlyBold.info_square;
     }
   }
 
   Color _getIconColor() {
     switch (type) {
       case AlertType.success:
-        return const Color(0xFF4CAF50); // Green
+        return AppTheme.successAlertIconColor;
       case AlertType.error:
-        return const Color(0xFFE53B4C); // Red (from Figma)
+        return AppTheme.errorAlertIconColor;
       case AlertType.warning:
-        return const Color(0xFFF57C00); // Orange
+        return AppTheme.warningColor;
       case AlertType.info:
-        return const Color(0xFF2196F3); // Blue
+        return AppTheme.infoAlertIconColor;
     }
   }
 
   Color _getTextColor() {
     switch (type) {
       case AlertType.success:
-        return const Color(0xFF2E7D32); // Dark green
+        return AppTheme.successAlertTextColor;
       case AlertType.error:
-        return const Color(0xFFCB1B2C); // Dark red (from Figma)
+        return AppTheme.errorAlertTextColor;
       case AlertType.warning:
-        return const Color(0xFFE65100); // Dark orange
+        return AppTheme.warningAlertTextColor;
       case AlertType.info:
-        return const Color(0xFF1565C0); // Dark blue
+        return AppTheme.infoAlertTextColor;
     }
   }
 }

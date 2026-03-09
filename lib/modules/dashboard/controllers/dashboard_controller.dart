@@ -1,9 +1,18 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart'
+    show openAppSettings;
 import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
+import 'package:speech_to_text/speech_recognition_error.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 import 'package:traffic_app/widgets/custom_alert.dart';
+import 'package:traffic_app/widgets/custom_dialog.dart';
 
 import '../../../data/models/traffic_post_model.dart';
+import '../../../data/repositories/follow_repository.dart';
 import '../../../data/repositories/traffic_post_repository.dart';
 import '../../../services/storage_service.dart';
 import '../widgets/report_bottom_sheet.dart';
@@ -11,7 +20,11 @@ import '../widgets/report_bottom_sheet.dart';
 class DashboardController extends GetxController {
   final TextEditingController searchController = TextEditingController();
   final TrafficPostRepository _postRepository = TrafficPostRepository();
+  final FollowRepository _followRepository = FollowRepository();
   final StorageService _storageService = Get.find<StorageService>();
+
+  /// ID của user hiện tại (dùng để ẩn nút follow trên bài viết của chính mình)
+  int? get currentUserId => _storageService.getUserId();
 
   final refreshController = RefreshController(initialRefresh: false);
   final ScrollController scrollController = ScrollController();
@@ -25,6 +38,37 @@ class DashboardController extends GetxController {
 
   // Animation: id của bài viết mới nhất vừa được prepend
   final newPostId = RxnString();
+
+  // Per-post reactive state (tránh rebuild toàn bộ list khi like/follow)
+  final _likedStates = <String, RxBool>{};
+  final _likeCounts = <String, RxInt>{};
+  final _followedStates = <String, RxBool>{};
+
+  RxBool likedState(String postId) =>
+      _likedStates.putIfAbsent(postId, () => false.obs);
+  RxInt likeCount(String postId) =>
+      _likeCounts.putIfAbsent(postId, () => 0.obs);
+  RxBool followedState(String postId) =>
+      _followedStates.putIfAbsent(postId, () => false.obs);
+
+  void _syncPostStates(List<TrafficPostModel> newPosts) {
+    for (final p in newPosts) {
+      if (p.id == null) continue;
+      likedState(p.id!).value = p.isLiked ?? false;
+      likeCount(p.id!).value = p.likes ?? 0;
+      followedState(p.id!).value = p.isFollowedByCurrentUser ?? false;
+    }
+  }
+
+  // Search
+  final isSearching = false.obs;
+  final currentKeyword = ''.obs;
+  Timer? _debounceTimer;
+
+  // Voice search
+  final isListening = false.obs;
+  SpeechToText _speechToText = SpeechToText();
+  bool _speechAvailable = false;
 
   // Pagination
   int currentPage = 0;
@@ -43,6 +87,8 @@ class DashboardController extends GetxController {
 
   @override
   void onClose() {
+    _debounceTimer?.cancel();
+    if (isListening.value) _speechToText.stop();
     scrollController.dispose();
     searchController.dispose();
     refreshController.dispose();
@@ -53,6 +99,101 @@ class DashboardController extends GetxController {
   void onInit() {
     super.onInit();
     _initializeLocation();
+    _setupSearchDebounce();
+  }
+
+  /// Thiết lập debounce 300ms cho ô tìm kiếm
+  void _setupSearchDebounce() {
+    searchController.addListener(() {
+      final keyword = searchController.text.trim();
+      if (keyword == currentKeyword.value) return;
+
+      _debounceTimer?.cancel();
+      isSearching.value = keyword.isNotEmpty;
+
+      _debounceTimer = Timer(const Duration(milliseconds: 300), () {
+        currentKeyword.value = keyword;
+        refreshController.resetNoData();
+        loadPosts(refresh: true);
+      });
+    });
+  }
+
+  /// Xóa nội dung tìm kiếm và load lại tất cả bài viết
+  void clearSearch() {
+    searchController.clear();
+  }
+
+  void _showVoicePermissionDialog() {
+    CustomDialog.showConfirm(
+      context: Get.context!,
+      title: 'dashboard_voice_permission_title'.tr,
+      message: Platform.isIOS
+          ? 'dashboard_voice_permission_message_ios'.tr
+          : 'dashboard_voice_permission_message'.tr,
+      confirmText: 'dashboard_voice_open_settings'.tr,
+      cancelText: 'chatbot_cancel'.tr,
+      onConfirm: () {
+        Get.back();
+        openAppSettings();
+      },
+      type: DialogType.warning,
+    );
+  }
+
+  /// Bắt đầu / dừng tìm kiếm bằng giọng nói
+  Future<void> toggleVoiceSearch() async {
+    if (isListening.value) {
+      await _speechToText.stop();
+      isListening.value = false;
+      return;
+    }
+
+    // Luôn tạo instance mới để tránh stale state từ lần init trước
+    // speech_to_text tự xử lý cả mic lẫn speech permission trên iOS
+    _speechToText = SpeechToText();
+    _speechAvailable = await _speechToText.initialize(onError: _onSpeechError);
+
+    if (!_speechAvailable) {
+      // Init thất bại: do quyền bị từ chối hoặc thiết bị không hỗ trợ
+      // Hướng dẫn vào Settings để cấp quyền
+      _showVoicePermissionDialog();
+      return;
+    }
+
+    isListening.value = true;
+    await _speechToText.listen(
+      onResult: (result) {
+        // Đổ text realtime vào ô tìm kiếm
+        searchController.text = result.recognizedWords;
+        // Đặt cursor cuối dòng
+        searchController.selection = TextSelection.fromPosition(
+          TextPosition(offset: searchController.text.length),
+        );
+        // Khi kết quả final, dừng listening
+        if (result.finalResult) {
+          isListening.value = false;
+        }
+      },
+      localeId: Get.locale?.toString().replaceAll('_', '-') ?? 'vi-VN',
+      pauseFor: const Duration(seconds: 3),
+      listenFor: const Duration(seconds: 30),
+      listenOptions: SpeechListenOptions(
+        partialResults: true,
+        cancelOnError: true,
+      ),
+    );
+  }
+
+  void _onSpeechError(SpeechRecognitionError error) {
+    isListening.value = false;
+    if (error.errorMsg != 'error_speech_timeout' &&
+        error.errorMsg != 'error_no_match') {
+      CustomAlert.show(
+        message: 'dashboard_voice_error'.tr,
+        type: AlertType.error,
+      );
+    }
   }
 
   /// Khởi tạo location từ storage và load posts
@@ -89,6 +230,7 @@ class DashboardController extends GetxController {
         location: currentLocation,
         page: currentPage,
         size: pageSize,
+        keyword: currentKeyword.value.isNotEmpty ? currentKeyword.value : null,
       );
 
       if (newPosts.isEmpty) {
@@ -99,6 +241,7 @@ class DashboardController extends GetxController {
           refreshController.loadNoData();
         }
       } else {
+        _syncPostStates(newPosts);
         if (refresh) {
           posts.value = newPosts;
           refreshController.refreshCompleted();
@@ -152,6 +295,11 @@ class DashboardController extends GetxController {
 
   /// Thêm bài viết mới lên đầu danh sách (không rebuild toàn trang)
   void prependPost(TrafficPostModel post) {
+    if (post.id != null) {
+      likedState(post.id!).value = post.isLiked ?? false;
+      likeCount(post.id!).value = post.likes ?? 0;
+      followedState(post.id!).value = post.isFollowedByCurrentUser ?? false;
+    }
     newPostId.value = post.id;
     posts.insert(0, post);
   }
@@ -166,28 +314,44 @@ class DashboardController extends GetxController {
   /// - Gọi API ở nền
   /// - Nếu API lỗi: rollback lại trạng thái cũ
   Future<void> toggleLike(TrafficPostModel post) async {
-    final index = posts.indexWhere((p) => p.id == post.id);
-    if (index == -1 || post.id == null) return;
+    if (post.id == null) return;
 
-    final currentIsLiked = post.isLiked ?? false;
-    final currentLikes = post.likes ?? 0;
+    final likedRx = likedState(post.id!);
+    final countRx = likeCount(post.id!);
+    final wasLiked = likedRx.value;
+    final prevCount = countRx.value;
 
-    // Optimistic update: cập nhật UI ngay
-    posts[index] = post.copyWith(
-      isLiked: !currentIsLiked,
-      likes: currentIsLiked ? currentLikes - 1 : currentLikes + 1,
-    );
+    // Optimistic update: chỉ rebuild phần like của bài đó
+    likedRx.value = !wasLiked;
+    countRx.value = wasLiked ? prevCount - 1 : prevCount + 1;
 
     try {
       await _postRepository.likePost(post.id!);
     } catch (_) {
       // Rollback nếu API thất bại
-      if (index < posts.length) {
-        posts[index] = post.copyWith(
-          isLiked: currentIsLiked,
-          likes: currentLikes,
-        );
-      }
+      likedRx.value = wasLiked;
+      countRx.value = prevCount;
+    }
+  }
+
+  /// Toggle follow/unfollow user với Optimistic Update
+  Future<void> toggleFollow(TrafficPostModel post) async {
+    if (post.id == null || post.userId == null) return;
+
+    final userId = int.tryParse(post.userId!);
+    if (userId == null) return;
+
+    final followedRx = followedState(post.id!);
+    final wasFollowed = followedRx.value;
+
+    // Optimistic update: chỉ rebuild phần follow badge của bài đó
+    followedRx.value = !wasFollowed;
+
+    try {
+      await _followRepository.followUser(userId);
+    } catch (_) {
+      // Rollback nếu API thất bại
+      followedRx.value = wasFollowed;
     }
   }
 
