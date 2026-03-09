@@ -15,6 +15,9 @@ class PostItem extends StatelessWidget {
   final VoidCallback onReport;
   final VoidCallback onFollow;
   final int? currentUserId;
+  final RxBool isLikedRx;
+  final RxInt likeCountRx;
+  final RxBool isFollowedRx;
 
   const PostItem({
     super.key,
@@ -22,14 +25,17 @@ class PostItem extends StatelessWidget {
     required this.onLike,
     required this.onReport,
     required this.onFollow,
+    required this.isLikedRx,
+    required this.likeCountRx,
+    required this.isFollowedRx,
     this.currentUserId,
   });
 
   /// Hiện badge "+" khi:
   /// 1. API trả về follow == false
   /// 2. Không phải bài viết của chính mình
-  bool get _showFollowBadge {
-    if (post.isFollowedByCurrentUser == true) return false;
+  bool _shouldShowFollowBadge(bool isFollowed) {
+    if (isFollowed) return false;
     final postUserId = int.tryParse(post.userId ?? '');
     if (postUserId != null && postUserId == currentUserId) return false;
     return true;
@@ -43,7 +49,7 @@ class PostItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF04060F).withOpacity(0.05),
+            color: const Color(0x0D04060F), // 5% opacity pre-computed
             offset: const Offset(0, 4),
             blurRadius: 60,
           ),
@@ -68,6 +74,9 @@ class PostItem extends StatelessWidget {
                   ? CachedNetworkImage(
                       imageUrl: post.fullImageUrls!.first,
                       fit: BoxFit.cover,
+                      memCacheWidth: 800,
+                      fadeInDuration: Duration.zero,
+                      fadeOutDuration: Duration.zero,
                       placeholder: (context, url) =>
                           const Center(child: LoadingWidget()),
                       errorWidget: (context, url, error) => Center(
@@ -89,112 +98,15 @@ class PostItem extends StatelessWidget {
           ),
           SizedBox(height: 12.h),
           // User Info
-          Row(
-            children: [
-              GestureDetector(
-                behavior: HitTestBehavior.translucent,
-                onTap: () {
-                  if (post.userId != null) {
-                    final heroTag = 'avatar_${post.id}';
-                    Get.to(
-                      () => const UserProfileScreen(), 
-                      arguments: {
-                        'userId': post.userId,
-                        'heroTag': heroTag, 
-                        'initialAvatarUrl': post.fullAvatarUrl,
-                        'initialUserName': post.userName,
-                      },
-                    );
-                  }
-                },
-                child: Padding(
-                  padding: EdgeInsets.only(right: 12.w, top: 8.h, bottom: 8.h),
-                  child: SizedBox(
-                    width: 46.w,
-                    height: 46.w,
-                    child: Stack(
-                      children: [
-                        // BỌC HERO Ở ĐÂY
-                        Hero(
-                          tag: 'avatar_${post.id}', 
-                          child: ClipOval(
-                            child: post.fullAvatarUrl != null
-                                ? CachedNetworkImage(
-                                    imageUrl: post.fullAvatarUrl!,
-                                    width: 40.w,
-                                    height: 40.w,
-                                    fit: BoxFit.cover,
-                                    placeholder: (context, url) => Container(
-                                      width: 40.w,
-                                      height: 40.w,
-                                      color: Colors.grey[300],
-                                      child: LoadingWidget(
-                                        width: 40.w,
-                                        height: 40.w,
-                                      ),
-                                    ),
-                                    errorWidget: (context, url, error) => Container(
-                                  width: 40.w,
-                                  height: 40.w,
-                                  color: Colors.grey[300],
-                                  child: Icon(
-                                    IconlyBroken.profile,
-                                    size: 24.w,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                              )
-                            : Container(
-                                width: 40.w,
-                                height: 40.w,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Colors.grey[300],
-                                ),
-                                child: Icon(
-                                  IconlyBroken.profile,
-                                  size: 24.w,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                          ),
-                        ),
-                        
-                        // Khung Dấu "+" (Follow)
-                        if (_showFollowBadge)
-                          Positioned(
-                            right: 0,
-                            bottom: 0,
-                            child: GestureDetector(
-                              onTap: onFollow, // Bấm vào dấu + thì sẽ chạy hàm Follow
-                              child: Container(
-                                width: 24.w,
-                                height: 24.w,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF4D5DFA),
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: Colors.white,
-                                    width: 1.5,
-                                  ),
-                                ),
-                                child: Icon(
-                                  Icons.add_rounded,
-                                  color: Colors.white,
-                                  size: 18.sp,
-                                ),
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              
-              // 3. TÊN NGƯỜI DÙNG
-              Expanded(
-                child: GestureDetector(
+          Obx(() {
+            // Giữ lại logic check badge realtime 
+            final showBadge = _shouldShowFollowBadge(isFollowedRx.value);
+            
+            return Row(
+              children: [
+                // gestureDetector bao quanh cả avatar để chuyển trang
+                GestureDetector(
+                  behavior: HitTestBehavior.translucent,
                   onTap: () {
                     if (post.userId != null) {
                       final heroTag = 'avatar_${post.id}';
@@ -202,25 +114,131 @@ class PostItem extends StatelessWidget {
                         () => const UserProfileScreen(), 
                         arguments: {
                           'userId': post.userId,
-                          'heroTag': heroTag,
+                          'heroTag': heroTag, 
+                          'initialAvatarUrl': post.fullAvatarUrl,
+                          'initialUserName': post.userName,
                         },
                       );
                     }
                   },
-                  child: Text(
-                    post.userName ?? 'Người dùng',
-                    style: TextStyle(
-                      fontSize: 15.2.sp,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF1C1C1E),
+                  child: Padding(
+                    padding: EdgeInsets.only(right: 12.w, top: 8.h, bottom: 8.h),
+                    child: SizedBox(
+                      width: 46.w,
+                      height: 46.w,
+                      child: Stack(
+                        children: [
+                          // bọc avatar bằng Hero để chuyển động mượt mà khi vào trang profile
+                          Hero(
+                            tag: 'avatar_${post.id}', 
+                            child: ClipOval(
+                              child: post.fullAvatarUrl != null
+                                  ? CachedNetworkImage(
+                                      imageUrl: post.fullAvatarUrl!,
+                                      width: 40.w,
+                                      height: 40.w,
+                                      fit: BoxFit.cover,
+                                      memCacheWidth: 120,
+                                      memCacheHeight: 120,
+                                      fadeInDuration: Duration.zero,
+                                      fadeOutDuration: Duration.zero,
+                                      placeholder: (context, url) => Container(
+                                        width: 40.w,
+                                        height: 40.w,
+                                        color: Colors.grey[300],
+                                        child: LoadingWidget(
+                                          width: 40.w,
+                                          height: 40.w,
+                                        ),
+                                      ),
+                                      errorWidget: (context, url, error) => Container(
+                                        width: 40.w,
+                                        height: 40.w,
+                                        color: Colors.grey[300],
+                                        child: Icon(
+                                          IconlyBroken.profile,
+                                          size: 24.w,
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                    )
+                                  : Container(
+                                      width: 40.w,
+                                      height: 40.w,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.grey[300],
+                                      ),
+                                      child: Icon(
+                                        IconlyBroken.profile,
+                                        size: 24.w,
+                                        color: Colors.grey[600],
+                                      ),
+                                    ),
+                            ),
+                          ),
+                          // tách follow và chuyển trang profile
+                          if (showBadge)
+                            Positioned(
+                              right: 0,
+                              bottom: 0,
+                              child: GestureDetector(
+                                onTap: onFollow, // Bấm chính xác vào dấu + mới follow
+                                child: Container(
+                                  width: 24.w,
+                                  height: 24.w,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF4D5DFA),
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  child: Icon(
+                                    Icons.add_rounded,
+                                    color: Colors.white,
+                                    size: 18.sp,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-              ),
-            ],
-          ),
+                
+                // BẤM VÀO TÊN ĐỂ CHUYỂN TRANG
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      if (post.userId != null) {
+                        final heroTag = 'avatar_${post.id}';
+                        Get.to(
+                          () => const UserProfileScreen(), 
+                          arguments: {
+                            'userId': post.userId,
+                            'heroTag': heroTag,
+                          },
+                        );
+                      }
+                    },
+                    child: Text(
+                      post.userName ?? 'Người dùng',
+                      style: TextStyle(
+                        fontSize: 15.2.sp,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF1C1C1E),
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }),
           SizedBox(height: 8.h),
           // Content
           RichText(
@@ -251,21 +269,23 @@ class PostItem extends StatelessWidget {
             children: [
               GestureDetector(
                 onTap: onLike,
-                child: Row(
-                  children: [
-                    LikeIcon(isLiked: post.isLiked ?? false),
-                    SizedBox(width: 8.w),
-                    Text(
-                      (post.likes ?? 0).toString(),
-                      style: TextStyle(
-                        fontSize: 14.4.sp,
-                        fontWeight: FontWeight.w600,
-                        color: (post.isLiked ?? false)
-                            ? const Color(0xFF4D5DFA)
-                            : Colors.grey,
+                child: Obx(
+                  () => Row(
+                    children: [
+                      LikeIcon(isLiked: isLikedRx.value),
+                      SizedBox(width: 8.w),
+                      Text(
+                        likeCountRx.value.toString(),
+                        style: TextStyle(
+                          fontSize: 14.4.sp,
+                          fontWeight: FontWeight.w600,
+                          color: isLikedRx.value
+                              ? const Color(0xFF4D5DFA)
+                              : Colors.grey,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               GestureDetector(

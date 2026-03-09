@@ -39,6 +39,27 @@ class DashboardController extends GetxController {
   // Animation: id của bài viết mới nhất vừa được prepend
   final newPostId = RxnString();
 
+  // Per-post reactive state (tránh rebuild toàn bộ list khi like/follow)
+  final _likedStates = <String, RxBool>{};
+  final _likeCounts = <String, RxInt>{};
+  final _followedStates = <String, RxBool>{};
+
+  RxBool likedState(String postId) =>
+      _likedStates.putIfAbsent(postId, () => false.obs);
+  RxInt likeCount(String postId) =>
+      _likeCounts.putIfAbsent(postId, () => 0.obs);
+  RxBool followedState(String postId) =>
+      _followedStates.putIfAbsent(postId, () => false.obs);
+
+  void _syncPostStates(List<TrafficPostModel> newPosts) {
+    for (final p in newPosts) {
+      if (p.id == null) continue;
+      likedState(p.id!).value = p.isLiked ?? false;
+      likeCount(p.id!).value = p.likes ?? 0;
+      followedState(p.id!).value = p.isFollowedByCurrentUser ?? false;
+    }
+  }
+
   // Search
   final isSearching = false.obs;
   final currentKeyword = ''.obs;
@@ -220,6 +241,7 @@ class DashboardController extends GetxController {
           refreshController.loadNoData();
         }
       } else {
+        _syncPostStates(newPosts);
         if (refresh) {
           posts.value = newPosts;
           refreshController.refreshCompleted();
@@ -273,6 +295,11 @@ class DashboardController extends GetxController {
 
   /// Thêm bài viết mới lên đầu danh sách (không rebuild toàn trang)
   void prependPost(TrafficPostModel post) {
+    if (post.id != null) {
+      likedState(post.id!).value = post.isLiked ?? false;
+      likeCount(post.id!).value = post.likes ?? 0;
+      followedState(post.id!).value = post.isFollowedByCurrentUser ?? false;
+    }
     newPostId.value = post.id;
     posts.insert(0, post);
   }
@@ -287,51 +314,44 @@ class DashboardController extends GetxController {
   /// - Gọi API ở nền
   /// - Nếu API lỗi: rollback lại trạng thái cũ
   Future<void> toggleLike(TrafficPostModel post) async {
-    final index = posts.indexWhere((p) => p.id == post.id);
-    if (index == -1 || post.id == null) return;
+    if (post.id == null) return;
 
-    final currentIsLiked = post.isLiked ?? false;
-    final currentLikes = post.likes ?? 0;
+    final likedRx = likedState(post.id!);
+    final countRx = likeCount(post.id!);
+    final wasLiked = likedRx.value;
+    final prevCount = countRx.value;
 
-    // Optimistic update: cập nhật UI ngay
-    posts[index] = post.copyWith(
-      isLiked: !currentIsLiked,
-      likes: currentIsLiked ? currentLikes - 1 : currentLikes + 1,
-    );
+    // Optimistic update: chỉ rebuild phần like của bài đó
+    likedRx.value = !wasLiked;
+    countRx.value = wasLiked ? prevCount - 1 : prevCount + 1;
 
     try {
       await _postRepository.likePost(post.id!);
     } catch (_) {
       // Rollback nếu API thất bại
-      if (index < posts.length) {
-        posts[index] = post.copyWith(
-          isLiked: currentIsLiked,
-          likes: currentLikes,
-        );
-      }
+      likedRx.value = wasLiked;
+      countRx.value = prevCount;
     }
   }
 
   /// Toggle follow/unfollow user với Optimistic Update
   Future<void> toggleFollow(TrafficPostModel post) async {
-    final index = posts.indexWhere((p) => p.id == post.id);
-    if (index == -1 || post.userId == null) return;
+    if (post.id == null || post.userId == null) return;
 
     final userId = int.tryParse(post.userId!);
     if (userId == null) return;
 
-    final currentFollow = post.isFollowedByCurrentUser ?? false;
+    final followedRx = followedState(post.id!);
+    final wasFollowed = followedRx.value;
 
-    // Optimistic update: cập nhật UI ngay
-    posts[index] = post.copyWith(isFollowedByCurrentUser: !currentFollow);
+    // Optimistic update: chỉ rebuild phần follow badge của bài đó
+    followedRx.value = !wasFollowed;
 
     try {
       await _followRepository.followUser(userId);
     } catch (_) {
       // Rollback nếu API thất bại
-      if (index < posts.length) {
-        posts[index] = post.copyWith(isFollowedByCurrentUser: currentFollow);
-      }
+      followedRx.value = wasFollowed;
     }
   }
 
