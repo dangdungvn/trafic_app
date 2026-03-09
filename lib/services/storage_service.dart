@@ -56,18 +56,20 @@ class StorageService extends GetxService {
   Future<void> saveUserInfo({
     int? userId,
     String? username,
-    String? fullName,
+    String? fullname,
     String? province,
     String? relativePhone,
+    String? phoneNumber,
   }) async {
     if (userId != null) await _prefs.setInt('user_id', userId);
     if (username != null) await _prefs.setString('user_username', username);
-    if (fullName != null) await _prefs.setString('user_fullName', fullName);
+    if (fullname != null) await _prefs.setString('user_fullname', fullname);
     if (province != null) await _prefs.setString('user_province', province);
-    if (relativePhone != null) {
+    if (relativePhone != null && relativePhone.isNotEmpty) {
       await _prefs.setString('user_relativePhone', relativePhone);
-    } else {
-      await _prefs.remove('user_relativePhone');
+    }
+    if (phoneNumber != null && phoneNumber.isNotEmpty) {
+      await _prefs.setString('user_phoneNumber', phoneNumber);
     }
   }
 
@@ -81,11 +83,14 @@ class StorageService extends GetxService {
 
   String? getRelativePhone() => _prefs.getString('user_relativePhone');
 
+  String? getPhoneNumber() => _prefs.getString('user_phoneNumber');
+
   Future<void> clearUserInfo() async {
     await _prefs.remove('user_id');
     await _prefs.remove('user_username');
     await _prefs.remove('user_fullName');
     await _prefs.remove('user_province');
     await _prefs.remove('user_relativePhone');
+    await _prefs.remove('user_phoneNumber');
   }
 }

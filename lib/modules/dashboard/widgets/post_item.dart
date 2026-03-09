@@ -6,6 +6,7 @@ import 'package:iconly/iconly.dart';
 
 import '../../../data/models/traffic_post_model.dart';
 import '../../../widgets/loading_widget.dart';
+import '../../profile/views/user_profile_screen.dart';
 import 'like_icon.dart';
 
 class PostItem extends StatelessWidget {
@@ -60,7 +61,7 @@ class PostItem extends StatelessWidget {
         children: [
           // Image/Map Area
           Container(
-            height: 180.h,
+            height: 300.h,
             width: double.infinity,
             decoration: BoxDecoration(
               color: Colors.grey[200],
@@ -98,38 +99,59 @@ class PostItem extends StatelessWidget {
           SizedBox(height: 12.h),
           // User Info
           Obx(() {
+            // Giữ lại logic check badge realtime 
             final showBadge = _shouldShowFollowBadge(isFollowedRx.value);
+            
             return Row(
               children: [
+                // gestureDetector bao quanh cả avatar để chuyển trang
                 GestureDetector(
-                  onTap: showBadge ? onFollow : null,
-                  child: SizedBox(
-                    width: 46.w,
-                    height: 46.w,
-                    child: Stack(
-                      children: [
-                        ClipOval(
-                          child: post.fullAvatarUrl != null
-                              ? CachedNetworkImage(
-                                  imageUrl: post.fullAvatarUrl!,
-                                  width: 40.w,
-                                  height: 40.w,
-                                  fit: BoxFit.cover,
-                                  memCacheWidth: 120,
-                                  memCacheHeight: 120,
-                                  fadeInDuration: Duration.zero,
-                                  fadeOutDuration: Duration.zero,
-                                  placeholder: (context, url) => Container(
-                                    width: 40.w,
-                                    height: 40.w,
-                                    color: Colors.grey[300],
-                                    child: LoadingWidget(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: () {
+                    if (post.userId != null) {
+                      final heroTag = 'avatar_${post.id}';
+                      Get.to(
+                        () => const UserProfileScreen(), 
+                        arguments: {
+                          'userId': post.userId,
+                          'heroTag': heroTag, 
+                          'initialAvatarUrl': post.fullAvatarUrl,
+                          'initialUserName': post.userName,
+                        },
+                      );
+                    }
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.only(right: 12.w, top: 8.h, bottom: 8.h),
+                    child: SizedBox(
+                      width: 46.w,
+                      height: 46.w,
+                      child: Stack(
+                        children: [
+                          // bọc avatar bằng Hero để chuyển động mượt mà khi vào trang profile
+                          Hero(
+                            tag: 'avatar_${post.id}', 
+                            child: ClipOval(
+                              child: post.fullAvatarUrl != null
+                                  ? CachedNetworkImage(
+                                      imageUrl: post.fullAvatarUrl!,
                                       width: 40.w,
                                       height: 40.w,
-                                    ),
-                                  ),
-                                  errorWidget: (context, url, error) =>
-                                      Container(
+                                      fit: BoxFit.cover,
+                                      memCacheWidth: 120,
+                                      memCacheHeight: 120,
+                                      fadeInDuration: Duration.zero,
+                                      fadeOutDuration: Duration.zero,
+                                      placeholder: (context, url) => Container(
+                                        width: 40.w,
+                                        height: 40.w,
+                                        color: Colors.grey[300],
+                                        child: LoadingWidget(
+                                          width: 40.w,
+                                          height: 40.w,
+                                        ),
+                                      ),
+                                      errorWidget: (context, url, error) => Container(
                                         width: 40.w,
                                         height: 40.w,
                                         color: Colors.grey[300],
@@ -139,55 +161,79 @@ class PostItem extends StatelessWidget {
                                           color: Colors.grey[600],
                                         ),
                                       ),
-                                )
-                              : Container(
-                                  width: 40.w,
-                                  height: 40.w,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.grey[300],
-                                  ),
-                                  child: Icon(
-                                    IconlyBroken.profile,
-                                    size: 24.w,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                        ),
-                        // "+" badge – chỉ hiện khi chưa follow và không phải bài của mình
-                        if (showBadge)
-                          Positioned(
-                            right: 0,
-                            bottom: 0,
-                            child: Container(
-                              width: 24.w,
-                              height: 24.w,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF4D5DFA),
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.white,
-                                  width: 1.5,
-                                ),
-                              ),
-                              child: Icon(
-                                Icons.add_rounded,
-                                color: Colors.white,
-                                size: 18.sp,
-                              ),
+                                    )
+                                  : Container(
+                                      width: 40.w,
+                                      height: 40.w,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.grey[300],
+                                      ),
+                                      child: Icon(
+                                        IconlyBroken.profile,
+                                        size: 24.w,
+                                        color: Colors.grey[600],
+                                      ),
+                                    ),
                             ),
                           ),
-                      ],
+                          // tách follow và chuyển trang profile
+                          if (showBadge)
+                            Positioned(
+                              right: 0,
+                              bottom: 0,
+                              child: GestureDetector(
+                                onTap: onFollow, // Bấm chính xác vào dấu + mới follow
+                                child: Container(
+                                  width: 24.w,
+                                  height: 24.w,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF4D5DFA),
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  child: Icon(
+                                    Icons.add_rounded,
+                                    color: Colors.white,
+                                    size: 18.sp,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-                SizedBox(width: 12.w),
-                Text(
-                  post.userName ?? 'Người dùng',
-                  style: TextStyle(
-                    fontSize: 15.2.sp,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF1C1C1E),
+                
+                // BẤM VÀO TÊN ĐỂ CHUYỂN TRANG
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      if (post.userId != null) {
+                        final heroTag = 'avatar_${post.id}';
+                        Get.to(
+                          () => const UserProfileScreen(), 
+                          arguments: {
+                            'userId': post.userId,
+                            'heroTag': heroTag,
+                          },
+                        );
+                      }
+                    },
+                    child: Text(
+                      post.userName ?? 'Người dùng',
+                      style: TextStyle(
+                        fontSize: 15.2.sp,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF1C1C1E),
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ),
               ],

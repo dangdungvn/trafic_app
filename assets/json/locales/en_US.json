@@ -108,6 +108,8 @@
   "discovery_notification_mesg_1": "Cannot open the discovery page.",
   "discovery_notification_mesg_2": "Please check your internet connection.",
   "traffic_fine_lookup": "Traffic Fine Lookup",
+  "emergency_method_3": "Broadcast SOS",
+  "emergency_hint_3": "Share your location for immediate assistance",
   "chatbot_title": "AI Traffic Assistant",
   "chatbot_online_status": "Online · Gemini AI",
   "chatbot_new_conversation": "New Conversation",

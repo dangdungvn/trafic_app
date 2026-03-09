@@ -109,8 +109,35 @@ class ApiService {
       ),
     );
 
+    // BÊN TRONG HÀM ApiService._internal(), THAY THẾ CHO LOG INTERCEPTOR CŨ
+
+    // ✅ TỐI ƯU LOG INTERCEPTOR: Chỉ in đường link và tính thời gian tải
     _dio.interceptors.add(
-      LogInterceptor(requestBody: true, responseBody: true),
+      InterceptorsWrapper(
+        onRequest: (options, handler) {
+          // Gắn cờ thời gian bắt đầu gọi API
+          options.extra['startTime'] = DateTime.now().millisecondsSinceEpoch;
+          print('🚀 [API START] ${options.method} ${options.uri}');
+          return handler.next(options);
+        },
+        onResponse: (response, handler) {
+          // Tính toán thời gian API trả về
+          final int startTime = response.requestOptions.extra['startTime'] ?? 0;
+          final int endTime = DateTime.now().millisecondsSinceEpoch;
+          final int duration = endTime - startTime;
+          
+          print('✅ [API DONE] ${response.requestOptions.method} ${response.requestOptions.uri} ⏳ ${duration}ms');
+          return handler.next(response);
+        },
+        onError: (DioException e, handler) {
+          final int startTime = e.requestOptions.extra['startTime'] ?? 0;
+          final int endTime = DateTime.now().millisecondsSinceEpoch;
+          final int duration = endTime - startTime;
+          
+          print('❌ [API ERROR] ${e.requestOptions.method} ${e.requestOptions.uri} ⏳ ${duration}ms');
+          return handler.next(e);
+        },
+      ),
     );
   }
 

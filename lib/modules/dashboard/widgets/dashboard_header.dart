@@ -8,6 +8,7 @@ import 'package:traffic_app/widgets/loading_widget.dart';
 
 import '../../../routes/app_pages.dart';
 import '../../profile/controllers/profile_controller.dart';
+import '../../profile/views/user_profile_screen.dart';
 
 class DashboardHeader extends StatelessWidget {
   const DashboardHeader({super.key});
@@ -52,7 +53,13 @@ class DashboardHeader extends StatelessWidget {
         // Avatar - hiển thị từ ProfileController
         GestureDetector(
           onTap: () {
-            Get.toNamed(Routes.PROFILE);
+            Get.to(
+              () => const UserProfileScreen(),
+              arguments: {
+                'heroTag': 'user_avatar', 
+                'initialAvatar': profileController.currentAvatarUrl.value, 
+              },
+            );
           },
           child: Hero(
             tag: 'user_avatar',

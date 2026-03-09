@@ -7,6 +7,7 @@ import '../../../theme/app_theme.dart';
 import '../../../widgets/custom_dialog.dart';
 import '../../../widgets/primary_button.dart';
 import '../controllers/emergency_controller.dart';
+import '../../../widgets/app_button.dart';
 
 class EmergencyScreen extends GetView<EmergencyController> {
   const EmergencyScreen({super.key});
@@ -63,14 +64,23 @@ class EmergencyScreen extends GetView<EmergencyController> {
             SizedBox(height: 16.h),
 
             // Option 2: Gọi cứu thương
-            Obx(
-              () => _buildOptionCard(
-                index: 1,
-                icon: Icons.medical_services_outlined,
-                title: 'emergency_method_2'.tr,
-                isSelected: controller.selectedOption.value == 1,
-              ),
-            ),
+            Obx(() => _buildOptionCard(
+                  index: 1,
+                  icon: Icons.medical_services_outlined,
+                  title: 'emergency_method_2'.tr,
+                  isSelected: controller.selectedOption.value == 1,
+                )),
+
+            SizedBox(height: 16.h),
+
+            // Option 3: Cầu cứu sự trợ giúp từ cộng đồng (tùy chọn, có thể thêm sau nếu cần)
+            Obx(() => _buildOptionCard(
+                  index: 2,
+                  icon: Icons.group_outlined,
+                  title: 'emergency_method_3'.tr,
+                  subtitle: 'emergency_hint_3'.tr,
+                  isSelected: controller.selectedOption.value == 2,
+                )),
           ],
         ),
       ),
@@ -81,17 +91,23 @@ class EmergencyScreen extends GetView<EmergencyController> {
           padding: EdgeInsets.all(24.w),
           child: PrimaryButton(
             text: 'emergency_button'.tr,
-            onPressed: () => CustomDialog.showConfirm(
-              context: context,
-              title: 'emergency_title_1'.tr,
-              message: controller.selectedOption.value == 0
-                  ? 'emergency_hint'.tr
-                  : 'Gọi số cứu thương 115?',
-              confirmText: 'emergency_button'.tr,
-              cancelText: 'Hủy',
-              type: DialogType.warning,
-              onConfirm: controller.onContinue,
-            ),
+            onPressed: () {
+              if (controller.selectedOption.value == 2) {
+                _showSosInputDialog();
+              } else {
+                CustomDialog.showConfirm(
+                  context: context,
+                  title: 'emergency_title_1'.tr,
+                  message: controller.selectedOption.value == 0
+                      ? 'emergency_hint'.tr
+                      : 'Gọi số cứu thương 115?',
+                  confirmText: 'emergency_button'.tr,
+                  cancelText: 'Hủy',
+                  type: DialogType.warning,
+                  onConfirm: controller.onContinue,
+                );
+              }
+            },
           ),
         ),
       ),
@@ -185,6 +201,81 @@ class EmergencyScreen extends GetView<EmergencyController> {
           ],
         ),
       ),
+    );
+  }
+
+  // Hàm hiển thị Popup nhập ghi chú 
+  void _showSosInputDialog() {
+    Get.dialog(
+      Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24.r)),
+        backgroundColor: AppTheme.backgroundColor, 
+        child: Padding(
+          padding: EdgeInsets.all(24.w),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Chi tiết sự cố',
+                style: TextStyle(
+                  fontSize: 20.sp, 
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.errorColor, 
+                ),
+              ),
+              SizedBox(height: 16.h),
+              
+              // Ô nhập nội dung
+              TextField(
+                controller: controller.noteController,
+                maxLines: 4,
+                decoration: InputDecoration(
+                  hintText: 'VD: Xe bị thủng lốp, hết xăng...',
+                  hintStyle: TextStyle(color: AppTheme.subTextColor), 
+                  filled: true,
+                  fillColor: AppTheme.inputFillColor, 
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.r),
+                    borderSide: BorderSide.none, 
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.r),
+                    borderSide: const BorderSide(color: AppTheme.errorColor), 
+                  ),
+                ),
+              ),
+              SizedBox(height: 24.h),
+              
+              Row(
+                children: [
+                  Expanded(
+                    child: AppButton(
+                      text: 'Hủy',
+                      type: ButtonType.secondary, 
+                      onPressed: () {
+                        // Vẫn chặn không cho Hủy nếu đang gửi dữ liệu
+                        if (!controller.isLoading.value) Get.back();
+                      },
+                    ),
+                  ),
+                  SizedBox(width: 12.w), // Khoảng cách giữa 2 nút
+                  
+                  Expanded(
+                    child: Obx(() => AppButton(
+                      text: 'Phát tín hiệu',
+                      type: ButtonType.primary,
+                      isLoading: controller.isLoading.value, 
+                      onPressed: () => controller.sendSosAlert(),
+                    )),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: false,
     );
   }
 }

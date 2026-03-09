@@ -2,17 +2,19 @@ class LoginResponse {
   final int? id;
   final String? token;
   final String? username;
-  final String? fullName;
+  final String? fullname;
   final String? province;
   final String? relativePhone;
+  final String? phoneNumber;
 
   LoginResponse({
     this.id,
     this.token,
     this.username,
-    this.fullName,
+    this.fullname,
     this.province,
     this.relativePhone,
+    this.phoneNumber,
   });
 
   factory LoginResponse.fromJson(Map<String, dynamic> json) {
@@ -20,9 +22,10 @@ class LoginResponse {
       id: json['id'] as int?,
       token: json['token'] as String?,
       username: json['username'] as String?,
-      fullName: json['fullName'] as String?,
+      fullname: json['fullname'] as String?,
       province: json['province'] as String?,
       relativePhone: json['relativePhone'] as String?,
+      phoneNumber: json['phoneNumber'] as String?,
     );
   }
 
@@ -31,9 +34,10 @@ class LoginResponse {
       'id': id,
       'token': token,
       'username': username,
-      'fullName': fullName,
+      'fullname': fullname,
       'province': province,
       'relativePhone': relativePhone,
+      'phoneNumber': phoneNumber,
     };
   }
 }

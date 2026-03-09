@@ -108,6 +108,8 @@
   "discovery_notification_mesg_1": "Không thể mở trang tra cứu.",
   "discovery_notification_mesg_2": "Vui lòng kiểm tra kết nối internet",
   "traffic_fine_lookup": "Tra cứu phạt nguội",
+  "emergency_method_3": "Phát tín hiệu cứu hộ",
+  "emergency_hint_3": "Chia sẻ vị trí để nhận sự trợ giúp tức thời",
   "chatbot_title": "Trợ lý Giao thông AI",
   "chatbot_online_status": "Trực tuyến · Gemini AI",
   "chatbot_new_conversation": "Cuộc trò chuyện mới",

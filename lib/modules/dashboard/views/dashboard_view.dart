@@ -54,7 +54,8 @@ class DashboardView extends GetView<DashboardController> {
             // Content với SmartRefresher
             Expanded(
               child: Obx(() {
-                if (controller.isLoading.value) {
+                // 1. Trạng thái Loading (Shimmer)
+                if (controller.isLoading.value && controller.posts.isEmpty) {
                   return ListView.builder(
                     padding: EdgeInsets.symmetric(horizontal: 24.w),
                     itemCount: 5,
@@ -108,7 +109,8 @@ class DashboardView extends GetView<DashboardController> {
                   controller: controller.refreshController,
                   scrollController: controller.scrollController,
                   enablePullDown: true,
-                  enablePullUp: true,
+                  // Tối ưu: Chỉ cho vuốt lên tải thêm khi danh sách CÓ bài viết
+                  enablePullUp: controller.posts.isNotEmpty, 
                   header: const WaterDropHeader(),
                   footer: CustomFooter(
                     builder: (context, mode) {
@@ -140,8 +142,7 @@ class DashboardView extends GetView<DashboardController> {
                           ),
                         );
                       } else {
-                        final closeComp =
-                            AssetsService.to.closeComposition.value;
+                        final closeComp = AssetsService.to.closeComposition.value;
                         body = SizedBox(
                           height: 120.h,
                           width: 120.h,
@@ -171,7 +172,43 @@ class DashboardView extends GetView<DashboardController> {
                   ),
                   onRefresh: controller.refresh,
                   onLoading: controller.loadMore,
-                  child: ListView.builder(
+                  
+                  // 3. XỬ LÝ GIAO DIỆN BÊN TRONG SMART REFRESHER
+                  child: controller.posts.isEmpty
+                      // TRƯỜNG HỢP TRỐNG: Dùng ListView ảo để cho phép vuốt
+                      ? ListView(
+                          physics: const AlwaysScrollableScrollPhysics(), // ĐÂY LÀ CHÌA KHÓA!
+                          padding: EdgeInsets.only(top: 80.h), // Canh giữa Lottie
+                          children: [
+                            SizedBox(
+                              height: 260.h,
+                              child: AssetsService.to.notFoundComposition.value != null
+                                  ? Lottie(
+                                      composition: AssetsService.to.notFoundComposition.value!,
+                                      fit: BoxFit.contain,
+                                      repeat: true,
+                                    )
+                                  : Lottie.asset(
+                                      'assets/animations/404_not_found.json',
+                                      fit: BoxFit.contain,
+                                      repeat: true,
+                                      renderCache: RenderCache.drawingCommands,
+                                    ),
+                            ),
+                            SizedBox(height: 16.h),
+                            Center(
+                              child: Text(
+                                'dashboard_no_posts'.tr,
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      // TRƯỜNG HỢP CÓ DỮ LIỆU: Giữ nguyên code cũ của bạn
+                      : ListView.builder(
                     padding: EdgeInsets.symmetric(horizontal: 24.w),
                     itemCount: controller.posts.length,
                     cacheExtent: 1200,

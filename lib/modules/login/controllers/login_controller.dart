@@ -15,8 +15,8 @@ class LoginController extends GetxController {
   final AuthRepository _authRepository = Get.find<AuthRepository>();
   final StorageService _storageService = Get.find<StorageService>();
 
-  final usernameController = TextEditingController();
-  final passwordController = TextEditingController();
+  late TextEditingController usernameController;
+  late TextEditingController passwordController;
 
   final usernameFocusNode = FocusNode();
   final passwordFocusNode = FocusNode();
@@ -24,6 +24,9 @@ class LoginController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    usernameController = TextEditingController();
+    passwordController = TextEditingController();
+
     // Clear focus and keyboard state on init to prevent keyboard event issues
     WidgetsBinding.instance.addPostFrameCallback((_) {
       usernameFocusNode.unfocus();
@@ -80,10 +83,19 @@ class LoginController extends GetxController {
       await _storageService.saveUserInfo(
         userId: loginResponse.id,
         username: loginResponse.username,
-        fullName: loginResponse.fullName,
+        fullname: loginResponse.fullname,
         province: loginResponse.province,
         relativePhone: loginResponse.relativePhone,
+        phoneNumber: loginResponse.phoneNumber,
       );
+
+      debugPrint('==== 🕵️ KIỂM TRA KHO LƯU TRỮ SAU KHI ĐĂNG NHẬP ====');
+      debugPrint('ID: ${StorageService.to.getUserId()}');
+      debugPrint('Username: ${StorageService.to.getUsername()}');
+      debugPrint('Họ và tên: ${StorageService.to.getFullName()}');
+      debugPrint('SĐT Người thân: ${StorageService.to.getRelativePhone()}');
+      debugPrint('👉 SĐT CỦA TÔI: ${StorageService.to.getPhoneNumber()}');
+      debugPrint('===================================================');
 
       // Save credentials for auto-login if rememberMe is checked
       if (rememberMe.value) {
