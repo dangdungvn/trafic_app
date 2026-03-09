@@ -58,7 +58,7 @@ void main() async {
       // Save user information
       await storageService.saveUserInfo(
         username: loginResponse.username,
-        fullName: loginResponse.fullName,
+        fullname: loginResponse.fullName,
         province: loginResponse.province,
         relativePhone: loginResponse.relativePhone,
       );
