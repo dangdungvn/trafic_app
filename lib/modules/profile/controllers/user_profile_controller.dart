@@ -9,20 +9,25 @@ import '../../../data/repositories/follow_repository.dart';
 import '../../../data/repositories/traffic_post_repository.dart';
 import '../../../data/repositories/user_repository.dart';
 import '../../../services/storage_service.dart';
+import '../../dashboard/controllers/dashboard_controller.dart';
 import '../../dashboard/widgets/report_bottom_sheet.dart';
 
 class UserProfileController extends GetxController {
-  // profile cache 
+  // profile cache
   static final Map<String, Map<String, dynamic>> _profileCache = {};
 
   final _likedStates = <String, RxBool>{};
   final _likeCounts = <String, RxInt>{};
+  // Follow được key bởi userId để tất cả bài cùng người đồng bộ nhau
   final _followedStates = <String, RxBool>{};
 
-  // Các hàm xuất state ra UI (Rx)
-  RxBool likedState(String postId) => _likedStates[postId] ?? false.obs;
-  RxInt likeCount(String postId) => _likeCounts[postId] ?? 0.obs;
-  RxBool followedState(String postId) => _followedStates[postId] ?? false.obs;
+  // Các hàm xuất state ra UI (Rx) — dùng putIfAbsent để đảm bảo luôn trả về cùng 1 instance
+  RxBool likedState(String postId) =>
+      _likedStates.putIfAbsent(postId, () => false.obs);
+  RxInt likeCount(String postId) =>
+      _likeCounts.putIfAbsent(postId, () => 0.obs);
+  RxBool followedState(String userId) =>
+      _followedStates.putIfAbsent(userId, () => false.obs);
 
   final UserRepository _userRepo = UserRepository();
   final TrafficPostRepository _postRepository = TrafficPostRepository();
@@ -33,7 +38,7 @@ class UserProfileController extends GetxController {
   final ScrollController scrollController = ScrollController();
 
   final userInfo = Rxn<UserInfoModel>();
-  final posts = <TrafficPostModel>[].obs; 
+  final posts = <TrafficPostModel>[].obs;
   final isLoading = false.obs;
   final isLoadingMore = false.obs;
   final hasMore = true.obs;
@@ -87,7 +92,7 @@ class UserProfileController extends GetxController {
 
       isFollowing.value = userInfo.value?.follow ?? false;
       _calculateTotalLikes();
-      
+
       isLoading.value = false;
 
       loadProfileData(refresh: true, showLoading: false);
@@ -98,23 +103,37 @@ class UserProfileController extends GetxController {
 
   /// Hàm này dùng để khởi tạo trạng thái khi vừa tải danh sách bài viết về
   void initPostStates(List<TrafficPostModel> fetchedPosts) {
+    final dashCtrl = Get.isRegistered<DashboardController>()
+        ? Get.find<DashboardController>()
+        : null;
+
     for (var post in fetchedPosts) {
       final postId = post.id ?? '';
       if (postId.isEmpty) continue;
 
+      // Ưu tiên state từ DashboardController nếu bài đó đã được like ở đó
       if (!_likedStates.containsKey(postId)) {
-        _likedStates[postId] = (post.isLiked ?? false).obs;
+        final dashLiked = dashCtrl?.likedState(postId).value;
+        _likedStates[postId] = (dashLiked ?? post.isLiked ?? false).obs;
       }
       if (!_likeCounts.containsKey(postId)) {
-        _likeCounts[postId] = (post.likes ?? 0).obs;
+        final dashCount = dashCtrl?.likeCount(postId).value;
+        _likeCounts[postId] = (dashCount ?? post.likes ?? 0).obs;
       }
-      if (!_followedStates.containsKey(postId)) {
-        _followedStates[postId] = (post.isFollowedByCurrentUser ?? false).obs;
+      // Key bởi userId để đồng bộ tất cả bài của cùng 1 người
+      final userId = post.userId ?? '';
+      if (userId.isNotEmpty && !_followedStates.containsKey(userId)) {
+        final dashFollowed = dashCtrl?.followedState(userId).value;
+        _followedStates[userId] =
+            (dashFollowed ?? post.isFollowedByCurrentUser ?? false).obs;
       }
     }
   }
 
-  Future<void> loadProfileData({bool refresh = false, bool showLoading = true}) async {
+  Future<void> loadProfileData({
+    bool refresh = false,
+    bool showLoading = true,
+  }) async {
     if (refresh) {
       currentPage = 0;
       hasMore.value = true;
@@ -160,11 +179,13 @@ class UserProfileController extends GetxController {
         if (refresh) {
           posts.value = newPosts;
           refreshController.refreshCompleted();
-          
+
           // LƯU KẾT QUẢ MỚI VÀO BỘ NHỚ ĐỆM TĨNH ĐỂ LẦN SAU DÙNG
           _profileCache[targetUserId] = {
             'userInfo': newUserInfo,
-            'posts': List<TrafficPostModel>.from(newPosts), // Tạo bản sao danh sách
+            'posts': List<TrafficPostModel>.from(
+              newPosts,
+            ), // Tạo bản sao danh sách
           };
         } else {
           posts.addAll(newPosts);
@@ -175,7 +196,6 @@ class UserProfileController extends GetxController {
 
       errorMessage.value = '';
       _calculateTotalLikes();
-
     } catch (e) {
       errorMessage.value = e.toString();
       if (refresh) {
@@ -208,7 +228,7 @@ class UserProfileController extends GetxController {
   }
 
   void _calculateTotalLikes() {
-    totalLikes.value = posts.fold(0, (sum, post) => sum + (post.likes ?? 0));
+    totalLikes.value = _likeCounts.values.fold(0, (sum, rx) => sum + rx.value);
   }
 
   Future<void> toggleUserFollow() async {
@@ -216,10 +236,19 @@ class UserProfileController extends GetxController {
 
     // Optimistic Update cho Header
     isFollowing.value = !isFollowing.value;
+
+    // Đồng bộ ngay sang DashboardController nếu đang tồn tại
+    if (Get.isRegistered<DashboardController>()) {
+      Get.find<DashboardController>().followedState(targetUserId).value =
+          isFollowing.value;
+    }
+
     if (userInfo.value != null) {
       int currentFollowers = userInfo.value!.followersCount ?? 0;
-      int newFollowers = isFollowing.value ? currentFollowers + 1 : currentFollowers - 1;
-      
+      int newFollowers = isFollowing.value
+          ? currentFollowers + 1
+          : currentFollowers - 1;
+
       userInfo.value = userInfo.value!.copyWith(
         followersCount: newFollowers > 0 ? newFollowers : 0,
         follow: isFollowing.value,
@@ -232,13 +261,17 @@ class UserProfileController extends GetxController {
         await _followRepository.followUser(userIdInt);
       }
     } catch (_) {
-      // Rollback
+      // Rollback cả 2 nơi
       isFollowing.value = !isFollowing.value;
+      if (Get.isRegistered<DashboardController>()) {
+        Get.find<DashboardController>().followedState(targetUserId).value =
+            isFollowing.value;
+      }
       CustomAlert.showError('Không thể thực hiện. Vui lòng thử lại!');
     }
   }
 
-  /// Toggle like/unlike post 
+  /// Toggle like/unlike post
   Future<void> toggleLike(TrafficPostModel post) async {
     final postId = post.id ?? '';
     if (postId.isEmpty) return;
@@ -247,35 +280,37 @@ class UserProfileController extends GetxController {
     final isLiked = _likedStates[postId]?.value ?? false;
     final currentCount = _likeCounts[postId]?.value ?? 0;
 
-    // 2. Optimistic update: Cập nhật biến Rx để UI đổi màu ngay lập tức
-    _likedStates[postId]?.value = !isLiked;
-    _likeCounts[postId]?.value = isLiked ? currentCount - 1 : currentCount + 1;
-
-    // 3. Cập nhật luôn vào mảng posts gốc để đồng bộ hàm tính tổng Like (Total Likes)
-    final index = posts.indexWhere((p) => p.id == postId);
-    if (index != -1) {
-      posts[index] = post.copyWith(
-        isLiked: !isLiked,
-        likes: isLiked ? currentCount - 1 : currentCount + 1,
-      );
-      _calculateTotalLikes();
-    }
+    // 2. Optimistic update: chỉ cập nhật Rx của bài đó, không đụng đến RxList
+    likedState(postId).value = !isLiked;
+    likeCount(postId).value = isLiked ? currentCount - 1 : currentCount + 1;
+    _calculateTotalLikes();
+    // Sync về DashboardController để khi quay lại dashboard state nhất quán
+    _syncLikeToDashboard(
+      postId,
+      !isLiked,
+      isLiked ? currentCount - 1 : currentCount + 1,
+    );
 
     try {
-      // 4. Bắn API
+      // 3. Bắn API
       await _postRepository.likePost(postId);
     } catch (_) {
-      // 5. Nếu mạng lỗi, Rollback (Hoàn tác) lại toàn bộ
-      _likedStates[postId]?.value = isLiked;
-      _likeCounts[postId]?.value = currentCount;
-      if (index != -1) {
-        posts[index] = post.copyWith(isLiked: isLiked, likes: currentCount);
-        _calculateTotalLikes();
-      }
+      // 4. Rollback nếu mạng lỗi
+      likedState(postId).value = isLiked;
+      likeCount(postId).value = currentCount;
+      _calculateTotalLikes();
+      _syncLikeToDashboard(postId, isLiked, currentCount);
     }
   }
 
-  /// Report post 
+  void _syncLikeToDashboard(String postId, bool isLiked, int count) {
+    if (!Get.isRegistered<DashboardController>()) return;
+    final dash = Get.find<DashboardController>();
+    dash.likedState(postId).value = isLiked;
+    dash.likeCount(postId).value = count;
+  }
+
+  /// Report post
   void reportPost(TrafficPostModel post) {
     if (post.id == null) return;
 

@@ -250,7 +250,7 @@ class CustomDialog extends StatelessWidget {
     String cancelText = 'Hủy',
     VoidCallback? onConfirm,
     VoidCallback? onCancel,
-    DialogType type = DialogType.warning,
+    DialogType type = DialogType.info,
   }) {
     showDialog(
       context: context,

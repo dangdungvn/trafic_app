@@ -156,5 +156,16 @@
   "discovery_retry": "Try Again",
   "discovery_stat_total": "Total",
   "discovery_stat_pending": "Unpaid",
-  "discovery_stat_resolved": "Paid"
+  "discovery_stat_resolved": "Paid",
+  "profile_user_info_title": "User Info",
+  "profile_unfollow_title": "Unfollow",
+  "profile_unfollow_message": "Are you sure you want to unfollow this user?",
+  "profile_confirm": "Confirm",
+  "profile_cancel": "Cancel",
+  "profile_follow_btn": "Follow",
+  "profile_unfollow_btn": "Unfollow",
+  "profile_loading": "Loading...",
+  "profile_stat_following": "Following",
+  "profile_stat_followers": "Followers",
+  "profile_stat_likes": "Likes"
 }

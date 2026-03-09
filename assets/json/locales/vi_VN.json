@@ -156,5 +156,16 @@
   "discovery_retry": "Thử lại",
   "discovery_stat_total": "Tổng vi phạm",
   "discovery_stat_pending": "Chưa xử phạt",
-  "discovery_stat_resolved": "Đã xử phạt"
+  "discovery_stat_resolved": "Đã xử phạt",
+  "profile_user_info_title": "Thông tin người dùng",
+  "profile_unfollow_title": "Hủy follow",
+  "profile_unfollow_message": "Bạn có chắc chắn muốn hủy theo dõi người dùng này?",
+  "profile_confirm": "Xác nhận",
+  "profile_cancel": "Hủy",
+  "profile_follow_btn": "Follow",
+  "profile_unfollow_btn": "Unfollow",
+  "profile_loading": "Đang tải...",
+  "profile_stat_following": "Đã follow",
+  "profile_stat_followers": "Người theo dõi",
+  "profile_stat_likes": "Thích"
 }

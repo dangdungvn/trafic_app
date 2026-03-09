@@ -42,21 +42,24 @@ class DashboardController extends GetxController {
   // Per-post reactive state (tránh rebuild toàn bộ list khi like/follow)
   final _likedStates = <String, RxBool>{};
   final _likeCounts = <String, RxInt>{};
+  // Follow được key bởi userId để tất cả bài cùng người đồng bộ nhau
   final _followedStates = <String, RxBool>{};
 
   RxBool likedState(String postId) =>
       _likedStates.putIfAbsent(postId, () => false.obs);
   RxInt likeCount(String postId) =>
       _likeCounts.putIfAbsent(postId, () => 0.obs);
-  RxBool followedState(String postId) =>
-      _followedStates.putIfAbsent(postId, () => false.obs);
+  RxBool followedState(String userId) =>
+      _followedStates.putIfAbsent(userId, () => false.obs);
 
   void _syncPostStates(List<TrafficPostModel> newPosts) {
     for (final p in newPosts) {
       if (p.id == null) continue;
       likedState(p.id!).value = p.isLiked ?? false;
       likeCount(p.id!).value = p.likes ?? 0;
-      followedState(p.id!).value = p.isFollowedByCurrentUser ?? false;
+      if (p.userId != null) {
+        followedState(p.userId!).value = p.isFollowedByCurrentUser ?? false;
+      }
     }
   }
 
@@ -298,7 +301,10 @@ class DashboardController extends GetxController {
     if (post.id != null) {
       likedState(post.id!).value = post.isLiked ?? false;
       likeCount(post.id!).value = post.likes ?? 0;
-      followedState(post.id!).value = post.isFollowedByCurrentUser ?? false;
+      if (post.userId != null) {
+        followedState(post.userId!).value =
+            post.isFollowedByCurrentUser ?? false;
+      }
     }
     newPostId.value = post.id;
     posts.insert(0, post);
@@ -336,15 +342,15 @@ class DashboardController extends GetxController {
 
   /// Toggle follow/unfollow user với Optimistic Update
   Future<void> toggleFollow(TrafficPostModel post) async {
-    if (post.id == null || post.userId == null) return;
+    if (post.userId == null) return;
 
     final userId = int.tryParse(post.userId!);
     if (userId == null) return;
 
-    final followedRx = followedState(post.id!);
+    final followedRx = followedState(post.userId!);
     final wasFollowed = followedRx.value;
 
-    // Optimistic update: chỉ rebuild phần follow badge của bài đó
+    // Optimistic update: tất cả bài của cùng userId đều cập nhật
     followedRx.value = !wasFollowed;
 
     try {
