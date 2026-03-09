@@ -222,3 +222,20 @@ flutter build appbundle --release
 # iOS (cần Xcode + Apple Developer account)
 flutter build ios --release
 ```
+
+---
+
+## Thay đổi tên và Icon ứng dụng
+
+Ứng dụng đã được đổi tên thành **Flowly** và sử dụng công cụ `flutter_launcher_icons` và `rename` để quản lý icon/thông tin ứng dụng.
+
+Nếu bạn cần thay đổi lại thông tin này trong tương lai, tham khảo các bước sau:
+
+```bash
+# 1. Đổi tên ứng dụng
+dart run rename setAppName --value "Tên Ứng Dụng Mới"
+
+# 2. Cập nhật icon ứng dụng
+# Cấu hình đường dẫn ảnh trong file `flutter_launcher_icons.yaml` sau đó chạy lệnh:
+dart run flutter_launcher_icons -f flutter_launcher_icons.yaml
+```
