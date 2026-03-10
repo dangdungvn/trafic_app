@@ -18,6 +18,7 @@ class PostItem extends StatelessWidget {
   final RxBool isLikedRx;
   final RxInt likeCountRx;
   final RxBool isFollowedRx;
+  final bool enableHeroAvatar;
 
   const PostItem({
     super.key,
@@ -29,6 +30,7 @@ class PostItem extends StatelessWidget {
     required this.likeCountRx,
     required this.isFollowedRx,
     this.currentUserId,
+    this.enableHeroAvatar = true,
   });
 
   /// Hiện badge "+" khi:
@@ -99,9 +101,52 @@ class PostItem extends StatelessWidget {
           SizedBox(height: 12.h),
           // User Info
           Obx(() {
-            // Giữ lại logic check badge realtime 
+            // Giữ lại logic check badge realtime
             final showBadge = _shouldShowFollowBadge(isFollowedRx.value);
-            
+
+            final avatarWidget = ClipOval(
+              child: post.fullAvatarUrl != null
+                  ? CachedNetworkImage(
+                      imageUrl: post.fullAvatarUrl!,
+                      width: 40.w,
+                      height: 40.w,
+                      fit: BoxFit.cover,
+                      memCacheWidth: 120,
+                      memCacheHeight: 120,
+                      fadeInDuration: Duration.zero,
+                      fadeOutDuration: Duration.zero,
+                      placeholder: (context, url) => Container(
+                        width: 40.w,
+                        height: 40.w,
+                        color: Colors.grey[300],
+                        child: LoadingWidget(width: 40.w, height: 40.w),
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                        width: 40.w,
+                        height: 40.w,
+                        color: Colors.grey[300],
+                        child: Icon(
+                          IconlyBroken.profile,
+                          size: 24.w,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    )
+                  : Container(
+                      width: 40.w,
+                      height: 40.w,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.grey[300],
+                      ),
+                      child: Icon(
+                        IconlyBroken.profile,
+                        size: 24.w,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+            );
+
             return Row(
               children: [
                 // gestureDetector bao quanh cả avatar để chuyển trang
@@ -111,10 +156,10 @@ class PostItem extends StatelessWidget {
                     if (post.userId != null) {
                       final heroTag = 'avatar_${post.id}';
                       Get.to(
-                        () => const UserProfileScreen(), 
+                        () => const UserProfileScreen(),
                         arguments: {
                           'userId': post.userId,
-                          'heroTag': heroTag, 
+                          'heroTag': heroTag,
                           'initialAvatarUrl': post.fullAvatarUrl,
                           'initialUserName': post.userName,
                         },
@@ -122,68 +167,31 @@ class PostItem extends StatelessWidget {
                     }
                   },
                   child: Padding(
-                    padding: EdgeInsets.only(right: 12.w, top: 8.h, bottom: 8.h),
+                    padding: EdgeInsets.only(
+                      right: 12.w,
+                      top: 8.h,
+                      bottom: 8.h,
+                    ),
                     child: SizedBox(
                       width: 46.w,
                       height: 46.w,
                       child: Stack(
                         children: [
                           // bọc avatar bằng Hero để chuyển động mượt mà khi vào trang profile
-                          Hero(
-                            tag: 'avatar_${post.id}', 
-                            child: ClipOval(
-                              child: post.fullAvatarUrl != null
-                                  ? CachedNetworkImage(
-                                      imageUrl: post.fullAvatarUrl!,
-                                      width: 40.w,
-                                      height: 40.w,
-                                      fit: BoxFit.cover,
-                                      memCacheWidth: 120,
-                                      memCacheHeight: 120,
-                                      fadeInDuration: Duration.zero,
-                                      fadeOutDuration: Duration.zero,
-                                      placeholder: (context, url) => Container(
-                                        width: 40.w,
-                                        height: 40.w,
-                                        color: Colors.grey[300],
-                                        child: LoadingWidget(
-                                          width: 40.w,
-                                          height: 40.w,
-                                        ),
-                                      ),
-                                      errorWidget: (context, url, error) => Container(
-                                        width: 40.w,
-                                        height: 40.w,
-                                        color: Colors.grey[300],
-                                        child: Icon(
-                                          IconlyBroken.profile,
-                                          size: 24.w,
-                                          color: Colors.grey[600],
-                                        ),
-                                      ),
-                                    )
-                                  : Container(
-                                      width: 40.w,
-                                      height: 40.w,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: Colors.grey[300],
-                                      ),
-                                      child: Icon(
-                                        IconlyBroken.profile,
-                                        size: 24.w,
-                                        color: Colors.grey[600],
-                                      ),
-                                    ),
-                            ),
-                          ),
+                          enableHeroAvatar
+                              ? Hero(
+                                  tag: 'avatar_${post.id}',
+                                  child: avatarWidget,
+                                )
+                              : avatarWidget,
                           // tách follow và chuyển trang profile
                           if (showBadge)
                             Positioned(
                               right: 0,
                               bottom: 0,
                               child: GestureDetector(
-                                onTap: onFollow, // Bấm chính xác vào dấu + mới follow
+                                onTap:
+                                    onFollow, // Bấm chính xác vào dấu + mới follow
                                 child: Container(
                                   width: 24.w,
                                   height: 24.w,
@@ -208,7 +216,7 @@ class PostItem extends StatelessWidget {
                     ),
                   ),
                 ),
-                
+
                 // BẤM VÀO TÊN ĐỂ CHUYỂN TRANG
                 Expanded(
                   child: GestureDetector(
@@ -216,7 +224,7 @@ class PostItem extends StatelessWidget {
                       if (post.userId != null) {
                         final heroTag = 'avatar_${post.id}';
                         Get.to(
-                          () => const UserProfileScreen(), 
+                          () => const UserProfileScreen(),
                           arguments: {
                             'userId': post.userId,
                             'heroTag': heroTag,

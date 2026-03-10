@@ -346,6 +346,7 @@ class UserProfileScreen extends StatelessWidget {
                               onLike: () => controller.toggleLike(post),
                               onReport: () => controller.reportPost(post),
                               onFollow: () {},
+                              enableHeroAvatar: false,
                             ),
                           ),
                         ),
