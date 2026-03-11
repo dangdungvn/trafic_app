@@ -21,21 +21,21 @@ class DashboardHeader extends StatelessWidget {
     return Row(
       children: [
         // Logo placeholder
-        Container(
-          width: 32.w,
-          height: 32.w,
-          decoration: BoxDecoration(
-            color: Colors.grey[300],
-            borderRadius: BorderRadius.circular(100.r),
-          ),
-          child: Icon(Icons.traffic, size: 20.sp, color: Colors.black54),
-        ),
+        // Container(
+        //   width: 32.w,
+        //   height: 32.w,
+        //   decoration: BoxDecoration(
+        //     color: Colors.grey[300],
+        //     borderRadius: BorderRadius.circular(100.r),
+        //   ),
+        //   child: Icon(Icons.traffic, size: 20.sp, color: Colors.black54),
+        // ),
         const Spacer(),
-        SvgPicture.asset(
-          'assets/icons/notification.svg',
-          width: 32.w,
-          height: 32.w,
-        ),
+        // SvgPicture.asset(
+        //   'assets/icons/notification.svg',
+        //   width: 32.w,
+        //   height: 32.w,
+        // ),
         SizedBox(width: 20.w),
         // Map marker
         // Nút Cứu hộ khẩn cấp
