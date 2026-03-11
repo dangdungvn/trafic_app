@@ -43,7 +43,7 @@ class VoiceSearchBottomSheet extends GetView<DashboardController> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 24.w),
             child: Obx(() {
-              final text = controller.searchController.text;
+              final text = controller.recognizedText.value;
               final isListening = controller.isListening.value;
               
               return Text(

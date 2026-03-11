@@ -36,6 +36,7 @@ class DashboardController extends GetxController {
   final isLoadingMore = false.obs;
   final hasMore = true.obs;
   final errorMessage = ''.obs;
+  final recognizedText = ''.obs; 
 
   // Animation: id của bài viết mới nhất vừa được prepend
   final newPostId = RxnString();
@@ -175,22 +176,29 @@ class DashboardController extends GetxController {
   /// 2. Bắt đầu thu âm
   Future<void> startListening() async {
     isListening.value = true;
-    searchController.clear(); // Xóa nội dung cũ để thu từ đầu
+    recognizedText.value = ''; // Reset lại chữ mỗi lần bật mic
+    searchController.clear(); 
 
     await _speechToText.listen(
       onResult: (result) {
-        searchController.text = result.recognizedWords;
+        // Cập nhật text realtime cho Bottom Sheet
+        recognizedText.value = result.recognizedWords; 
         
-        // Khi người dùng ngừng nói và có kết quả cuối cùng
+        // Đổ text vào ô search luôn
+        searchController.text = result.recognizedWords;
+        searchController.selection = TextSelection.fromPosition(
+          TextPosition(offset: searchController.text.length),
+        );
+        
         if (result.finalResult) {
           stopVoiceSearch();
         }
       },
       localeId: Get.locale?.toString().replaceAll('_', '-') ?? 'vi-VN',
-      pauseFor: const Duration(seconds: 3), // Dừng nói 3s là tự chốt kết quả
+      pauseFor: const Duration(seconds: 3), 
       listenFor: const Duration(seconds: 30),
       listenOptions: SpeechListenOptions(
-        partialResults: true,
+        partialResults: true, // Bắt buộc true để hiện chữ ngay khi đang nói
         cancelOnError: true,
       ),
     );
