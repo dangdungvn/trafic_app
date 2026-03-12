@@ -63,7 +63,7 @@ class _DashboardSearchBarState extends State<DashboardSearchBar> {
             },
             trailingIconAsset: 'assets/icons/voice.svg',
             isListening: dashboardController.isListening.value,
-            onVoiceTap: dashboardController.toggleVoiceSearch,
+            onVoiceTap: dashboardController.openVoiceSearch,
           ),
         ),
         // Label từ khóa đang tìm

@@ -16,6 +16,7 @@ import '../../../data/repositories/follow_repository.dart';
 import '../../../data/repositories/traffic_post_repository.dart';
 import '../../../services/storage_service.dart';
 import '../widgets/report_bottom_sheet.dart';
+import '../widgets/voice_search_bottom_sheet.dart';
 
 class DashboardController extends GetxController {
   final TextEditingController searchController = TextEditingController();
@@ -35,6 +36,7 @@ class DashboardController extends GetxController {
   final isLoadingMore = false.obs;
   final hasMore = true.obs;
   final errorMessage = ''.obs;
+  final recognizedText = ''.obs; 
 
   // Animation: id của bài viết mới nhất vừa được prepend
   final newPostId = RxnString();
@@ -145,47 +147,73 @@ class DashboardController extends GetxController {
   }
 
   /// Bắt đầu / dừng tìm kiếm bằng giọng nói
-  Future<void> toggleVoiceSearch() async {
-    if (isListening.value) {
-      await _speechToText.stop();
-      isListening.value = false;
-      return;
-    }
-
-    // Luôn tạo instance mới để tránh stale state từ lần init trước
-    // speech_to_text tự xử lý cả mic lẫn speech permission trên iOS
+  Future<void> openVoiceSearch() async {
+    // Xin quyền và khởi tạo trước khi bật UI
     _speechToText = SpeechToText();
     _speechAvailable = await _speechToText.initialize(onError: _onSpeechError);
 
     if (!_speechAvailable) {
-      // Init thất bại: do quyền bị từ chối hoặc thiết bị không hỗ trợ
-      // Hướng dẫn vào Settings để cấp quyền
       _showVoicePermissionDialog();
       return;
     }
 
+    // Mở Bottom Sheet
+    Get.bottomSheet(
+      const VoiceSearchBottomSheet(), 
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+    ).then((_) {
+      // Bắt sự kiện khi người dùng vuốt xuống để tắt Bottom Sheet
+      if (isListening.value) {
+        stopVoiceSearch();
+      }
+    });
+
+    // Bắt đầu lắng nghe
+    startListening();
+  }
+
+  /// 2. Bắt đầu thu âm
+  Future<void> startListening() async {
     isListening.value = true;
+    recognizedText.value = ''; // Reset lại chữ mỗi lần bật mic
+    searchController.clear(); 
+
     await _speechToText.listen(
       onResult: (result) {
-        // Đổ text realtime vào ô tìm kiếm
+        // Cập nhật text realtime cho Bottom Sheet
+        recognizedText.value = result.recognizedWords; 
+        
+        // Đổ text vào ô search luôn
         searchController.text = result.recognizedWords;
-        // Đặt cursor cuối dòng
         searchController.selection = TextSelection.fromPosition(
           TextPosition(offset: searchController.text.length),
         );
-        // Khi kết quả final, dừng listening
+        
         if (result.finalResult) {
-          isListening.value = false;
+          stopVoiceSearch();
         }
       },
       localeId: Get.locale?.toString().replaceAll('_', '-') ?? 'vi-VN',
-      pauseFor: const Duration(seconds: 3),
+      pauseFor: const Duration(seconds: 3), 
       listenFor: const Duration(seconds: 30),
       listenOptions: SpeechListenOptions(
-        partialResults: true,
+        partialResults: true, // Bắt buộc true để hiện chữ ngay khi đang nói
         cancelOnError: true,
       ),
     );
+  }
+
+  /// 3. Dừng thu âm và đóng Bottom Sheet
+  Future<void> stopVoiceSearch() async {
+    isListening.value = false;
+    await _speechToText.stop();
+    
+    // Đóng Bottom Sheet nếu nó đang mở
+    if (Get.isBottomSheetOpen ?? false) {
+      Get.back();
+    }
+    
   }
 
   void _onSpeechError(SpeechRecognitionError error) {
