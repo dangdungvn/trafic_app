@@ -167,5 +167,9 @@
   "profile_loading": "Đang tải...",
   "profile_stat_following": "Đã follow",
   "profile_stat_followers": "Người theo dõi",
-  "profile_stat_likes": "Thích"
+  "profile_stat_likes": "Thích",
+  "voice_search_title": "Tìm kiếm bằng giọng nói",
+  "voice_search_listening": "Đang nghe...",
+  "voice_search_hint": "Nhấn vào micro để nói",
+  "close_button": "Đóng"
 }

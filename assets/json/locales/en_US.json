@@ -167,5 +167,9 @@
   "profile_loading": "Loading...",
   "profile_stat_following": "Following",
   "profile_stat_followers": "Followers",
-  "profile_stat_likes": "Likes"
+  "profile_stat_likes": "Likes",
+  "voice_search_title": "Voice Search",
+  "voice_search_listening": "Listening...",
+  "voice_search_hint": "Tap microphone to speak",
+  "close_button": "Close"
 }
