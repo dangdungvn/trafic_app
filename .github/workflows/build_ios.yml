@@ -17,8 +17,6 @@ jobs:
         uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: latest-stable
-          
-
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -31,6 +29,13 @@ jobs:
       # Lấy nội dung từ GitHub Secrets để tạo lại file .env
       - name: Create .env file
         run: echo "${{ secrets.ENV_FILE_CONTENT }}" > .env
+
+      - name: Create GoogleService-Info.plist
+        run: |
+          mkdir -p ios/Runner
+          cat << 'EOF' > ios/Runner/GoogleService-Info.plist
+          ${{ secrets.IOS_FIREBASE_SECRET }}
+          EOF
 
       - name: Build iOS (No Codesign)
         run: flutter build ios --release --no-codesign
