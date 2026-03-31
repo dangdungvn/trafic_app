@@ -1,5 +1,10 @@
 name: Build iOS IPA
-on: workflow_dispatch
+on: 
+  push:
+    branches:
+      - NguyenDung831
+  workflow_dispatch:
+  
 
 jobs:
   build:
