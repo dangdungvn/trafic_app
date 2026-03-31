@@ -5,7 +5,6 @@ on:
       - NguyenDung831
   workflow_dispatch:
   
-
 jobs:
   build:
     runs-on: macos-latest
@@ -26,9 +25,16 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      # Lấy nội dung từ GitHub Secrets để tạo lại file .env
+      # Cải thiện cách tạo file .env để tránh lỗi xuống dòng
       - name: Create .env file
-        run: echo "${{ secrets.ENV_FILE_CONTENT }}" > .env
+        run: |
+          cat << 'EOF' > .env
+          ${{ secrets.ENV_FILE_CONTENT }}
+          EOF
+
+      # BƯỚC BỔ SUNG: Bơm key vào file cấu hình native
+      - name: Inject keys into native files
+        run: make inject-keys
 
       - name: Create GoogleService-Info.plist
         run: |
@@ -37,10 +43,16 @@ jobs:
           ${{ secrets.IOS_FIREBASE_SECRET }}
           EOF
 
+      # BƯỚC BỔ SUNG: Cài đặt CocoaPods cho các thư viện native (Maps, Firebase)
+      - name: Install CocoaPods
+        run: |
+          cd ios
+          pod install
+          cd ..
+
       - name: Build iOS (No Codesign)
         run: flutter build ios --release --no-codesign
 
-      # Đóng gói thủ công Runner.app thành file .ipa để Sideloadly nhận diện
       - name: Package into .ipa
         run: |
           mkdir Payload
